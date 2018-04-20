@@ -4,8 +4,6 @@ ZoomIn毕业设计前端
 
 目录结构:
 
-assets:自己写的css、js图片等静态文件
-
-static:引用别人的css,js等文件
+static:静态文件，在里面建文件夹表示某个模块如（static/data-import/css），按模块存自己写的css、js，公共部分放在最外层（static/bootstrap）
 
 templates:html 页面
