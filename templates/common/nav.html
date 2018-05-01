@@ -3,13 +3,11 @@
 <head>
 	<title>Zoom-in</title>
 	<meta charset="utf-8">
-    <link href="http://cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-    <script type="text/javascript" language="javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
-    <script type="text/javascript" src="../../static/js/bootstrap.js"></script>
+
 </head>
 <body>
 	<!--导航部分-->
-<nav class="navbar navbar-default nav-style">
+<nav class="navbar  navbar-style">
   <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
@@ -23,11 +21,10 @@
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1" style="margin-left: 33%">
       <ul class="nav navbar-nav">
-        <ul class="nav navbar-nav">
         <li >
-       		<a href="#">数据导入</a>
+       		<a href="#" id="data-impot">数据导入</a>
         </li>
        	<li >
        		<a href="#">数据处理</a>
@@ -39,25 +36,22 @@
        		<a href="#">数据挖掘</a>
         </li>
         <li >
-       		<a href="#">任务发布</a>
+       		<a href="/task-distribution/">任务发布</a>
         </li>
 
-      </ul>
       </ul>
       <ul class="nav navbar-nav navbar-right">
           {% if request.session.hasLogin %}
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">个人中心<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="#">Action</a></li>
-            <li><a href="#">Another action</a></li>
-            <li><a href="#">Something else here</a></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="#">Separated link</a></li>
+              <li><a href="#"><span class="glyphicon glyphicon-cog" style="color:#00c587"></span>&nbsp;&nbsp;个人中心&nbsp;&nbsp;</a> </li>
+
+            <li><a href="#"><span class="glyphicon glyphicon-log-out" style="color:#00c587"></span>&nbsp;&nbsp;退出登录&nbsp;&nbsp;</a></li>
           </ul>
         </li>
               {% else %}
-              <li><a href="#">登录</a></li>
+              <li><a href="/hello/">登录</a></li>
           {% endif %}
 
       </ul>
@@ -66,21 +60,129 @@
 </nav>
 </body>
 <style type="text/css">
-	.nav-style{
-		background-color: #00c587;
-		color: #fff;
-		border: none;
-	}
-	.nav-style a{
-		color: #fff!important;
-	}
-	.nav-style  li  a:hover, .nav-style  li  a:focus{
-	    text-decoration: none;
-    	background-color: #ececec!important;
-    	color: #00c587!important;
-	}
-	.navbar {
-    border-radius: 0px;
-	}
+
+
 </style>
 </html>
+<style>
+
+    .nav-style li.active a{
+        color: #00c587!important;
+    }
+    .nav>li>a{
+        padding:15px 25px;
+    }
+    body{
+        font-size: 16px;
+    }
+    .navbar-style {
+  background-color: #00c587;
+  border: 0!important;
+}
+.navbar-style .navbar-brand {
+  color: #fff;
+}
+.navbar-style .navbar-brand:hover,
+.navbar-style .navbar-brand:focus {
+  color: #fff;
+  background-color: transparent;
+}
+.navbar-style .navbar-text {
+  color: #fff;
+}
+.navbar-style .navbar-nav > li > a {
+  color: #fff;
+}
+.navbar-style .navbar-nav > li > a:hover,
+.navbar-style .navbar-nav > li > a:focus {
+  color: #fff;
+  background-color: transparent;
+}
+.navbar-style .navbar-nav > .active > a,
+.navbar-style .navbar-nav > .active > a:hover,
+.navbar-style .navbar-nav > .active > a:focus {
+  color: #fff;
+  background-color: #00c587;
+}
+.navbar-style .navbar-nav > .disabled > a,
+.navbar-style .navbar-nav > .disabled > a:hover,
+.navbar-style .navbar-nav > .disabled > a:focus {
+  color: #444;
+  background-color: transparent;
+}
+.navbar-style .navbar-toggle {
+  border-color: #333;
+}
+.navbar-style .navbar-toggle:hover,
+.navbar-style .navbar-toggle:focus {
+  background-color: #333;
+}
+.navbar-style .navbar-toggle .icon-bar {
+  background-color: #fff;
+}
+.navbar-style .navbar-collapse,
+.navbar-style .navbar-nav > .open > a,
+.navbar-style .navbar-nav > .open > a:hover,
+.navbar-style .navbar-nav > .open > a:focus {
+  color: #fff;
+  background-color: #00c587;
+}
+@media (max-width: 767px) {
+  .navbar-style .navbar-nav .open .dropdown-menu > .dropdown-header {
+    border-color: #00c587;
+  }
+  .navbar-style .navbar-nav .open .dropdown-menu .divider {
+    background-color: #00c587;
+  }
+  .navbar-style .navbar-nav .open .dropdown-menu > li > a {
+    color: #fff;
+  }
+  .navbar-style .navbar-nav .open .dropdown-menu > li > a:hover,
+  .navbar-style .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #fff;
+    background-color: transparent;
+  }
+  .navbar-style .navbar-nav .open .dropdown-menu > .active > a,
+  .navbar-style .navbar-nav .open .dropdown-menu > .active > a:hover,
+  .navbar-style .navbar-nav .open .dropdown-menu > .active > a:focus {
+    color: #fff;
+    background-color: #00c587;
+  }
+  .navbar-style .navbar-nav .open .dropdown-menu > .disabled > a,
+  .navbar-style .navbar-nav .open .dropdown-menu > .disabled > a:hover,
+  .navbar-style .navbar-nav .open .dropdown-menu > .disabled > a:focus {
+    color: #444;
+    background-color: transparent;
+  }
+}
+.navbar-style .navbar-link {
+  color: #fff;
+}
+.navbar-style .navbar-link:hover {
+  color: #fff;
+}
+.navbar-style .btn-link {
+  color: #fff;
+}
+.navbar-style .btn-link:hover,
+.navbar-style .btn-link:focus {
+  color: #fff;
+}
+.navbar-style .btn-link[disabled]:hover,
+fieldset[disabled] .navbar-style .btn-link:hover,
+.navbar-style .btn-link[disabled]:focus,
+fieldset[disabled] .navbar-style .btn-link:focus {
+  color: #444;
+}
+.navbar-style .navbar-nav > li > a:hover, .navbar-style .navbar-nav > li > a:focus {
+   color: #00c587;
+    background-color: #f5f5f5;
+}
+     .navbar-style .navbar-nav > .active > a, .navbar-style .navbar-nav > .active > a:hover, .navbar-style .navbar-nav > .active > a:focus {
+    color: #00c587;
+    background-color: #f5f5f5;
+    }
+    .dropdown-menu{
+        min-width: 135px;
+    }
+</style>

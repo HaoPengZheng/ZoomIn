@@ -1,9 +1,130 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-	<title></title>
+    <meta charset="UTF-8">
+    <title>数据导入</title>
+       <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+      <link rel="stylesheet" href="../static/css/font-awesome.css">
+     <link href="../static/examples/libs/prettify/prettify.css">
+    <script src="https://cdn.bootcss.com/echarts/4.0.4/echarts-en.js"></script>
+
+    <style>
+        html {
+            height: 100%
+        }
+
+        .main {
+            flex: 1 0 auto;
+            background-color: #fff;
+        }
+
+        #excel-input {
+            display: none;
+        }
+
+        .input-box {
+            margin-right: 30px;
+        }
+
+        .excel-input-img:hover {
+            cursor: pointer;
+            opacity: 0.8;
+            border: 1px solid #eee;
+        }
+
+        .application-header-box {
+            border-bottom: 1px solid #979797;
+            padding-top: 0;
+            display: block;
+            margin-top: 10px;
+            height: 40px;
+            margin-bottom: 20px;
+            clear: both;
+            margin-top: 20px;
+        }
+
+        .application-box span.application-header {
+            border-bottom: 2px solid #00c587;
+            line-height: 38px;
+            font-size: 24px;
+            margin-left: 60px;
+            text-align: center;
+            display: inline-block;
+        }
+
+    </style>
 </head>
-<body>
+
+<body style="   background: #fff; ">
+    <div style="font-size: 16px">
+        {% include "common/nav2.html" %}
+    </div>
+
+
+    <div class="container-fluid" >
+        <div class="row">
+            {% include "common/left3.html" %}
+            <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" style="min-height:100%;margin-top:56px">
+                <div class=" main-content" style="min-height: 600px;padding-left: 100px">
+                    <div class="application-box col-md-8 offset-md-1">
+                        <div class="application-header-box">
+                            <span class="application-header">我的应用</span>
+                        </div>
+                        <div class="row" style="padding-left: 45px;">
+                            <div class="col-md-3">
+                                <div class="" style="border: 1px solid #c5c5c5;width: 188px;height: 188px">
+                                    <img width="100px" height="100px" class="center-block" style="margin-top: 10px">
+                                    <div style="text-align: center;margin-top: 10px;">
+                                        <p style="color: #666; width: 85%;">XXX文件名</p>
+                                        <p style="font-size: 12px;color: #999;">创建时间:2017/4/21</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="application-box col-md-8 offset-md-1">
+                        <div class="application-header-box">
+                            <span class="application-header">新建任务</span>
+                        </div>
+                        <div class="row " style="padding-left: 45px;">
+                            <div class="input-box col-md-3">
+                                <img src="../static/data-import/images/excel.png" onclick="excelInputClick()" class="excel-input-img" ondragstart="return false;">
+                                <input type="file" onchange="importf(this)" id="excel-input" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
+                            </div>
+                            <div class="input-box col-md-3">
+                                <img src="../static/data-import/images/csv-logo.png" onclick="excelInputClick()" class="excel-input-img" ondragstart="return false;">
+                                <input type="file" onchange="importf(this)" id="excel-input" accept=".csv" />
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div>
+                 {% include "common/footer.html" %}
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+
 
 </body>
+
 </html>
+  <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+<script>
+    $(document).ready(function() {
+        $("#data-impot").parent().addClass("active");
+    });
+
+    function excelInputClick() {
+        $("#excel-input").click();
+    }
+</script>

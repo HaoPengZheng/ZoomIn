@@ -1,59 +1,42 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-       *{
-            padding: 0;
-            margin: 0;
-        }
-        body{
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        a{
-            text-decoration: none;
-        }
-        .footer{
-            font-family: "microsoft YaHei";
-            width: 100%;
-            padding: 0 0 30px 0;
-            background: #4C4C4C;
-            min-width: 1200px;
-            flex: 0 0 auto;
-        }
-        .footer-content{
-            width: 100%;
-            float: left;
-            color: #7c7c7c;
-            font-size: 12px;
-            line-height: 22px;
-        }
-        .footer-link a{
-            padding: 0 10px;
-            color: #f8f8f8;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
     <div class="footer" style="padding: 20px 0">
-        <div style="    width: 1200px;margin: 0 auto; text-align: center;">
-            <div class="footer-content">
-			<div class="footer-link">
-                <a href="#" target="_blank">关于我们</a>|
-                <a href="#" target="_blank">联系我们</a>|
-				<a href="#">北京师范大学珠海分校</a>|
-				<a href="#" target="_blank">帮助中心</a>|
-				<a href="#" target="_blank">合作伙伴</a>|
-			</div>
-			<div >Copyright © 2018 – <span id="year">2018</span> XXXX. All Rights Reserved. XXX 版权所有</div>
-			<div >答疑客服：0000-000000   用户QQ群：000000 &nbsp;&nbsp;&nbsp;&nbsp;数据分析之家QQ群：450547523</div>
-		</div>
+    <div style=" width: 1200px;margin: 0 auto; text-align: center;">
+    <div class="footer-content">
+        <div class="footer-link">
+            <a href="#" target="_blank">关于我们</a>|
+            <a href="#" target="_blank">联系我们</a>|
+            <a href="#">北京师范大学珠海分校</a>|
+            <a href="#" target="_blank">帮助中心</a>|
+            <a href="#" target="_blank">合作伙伴</a>
         </div>
-
+        <div>Copyright © 2018 – <span id="year">2018</span> XXXX. All Rights Reserved. XXX 版权所有</div>
+        <div>答疑客服：0000-000000 用户QQ群：000000 &nbsp;&nbsp;&nbsp;&nbsp;数据分析之家QQ群：450547523</div>
     </div>
-</body>
-</html>
+    </div>
+<style>
+    .footer {
+    font-family: "microsoft YaHei";
+    width: 100%;
+    padding: 0 0 30px 0;
+    min-width: 1200px;
+    margin-top: 100px
+}
+
+.footer-content {
+    width: 100%;
+    float: left;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.footer-link a {
+    color:#777;
+    padding: 0 10px;
+    font-size: 14px;
+}.footer-link a:hover{
+    color:#ff5b5b;
+    cursor: pointer;
+}
+    .footer{
+        color:#777;
+    }
+</style>
