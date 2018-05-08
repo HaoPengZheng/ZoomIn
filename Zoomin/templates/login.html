@@ -1,0 +1,458 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录 </title>
+   <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script type="text/javascript" language="javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script src="../static/js/bootstrap.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,body {
+            height: 100%;
+        }
+
+        .login-img {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        .img-content {
+            height: 100%;
+            min-height: 800px;
+            background-image: url("{% static "/login/images/login-img.jpg" %}");
+            background-position: 50%;
+        }
+        .login-or-register-content{
+            margin-top:120px;
+        }
+        .register-content{
+        display: none;
+        }
+        .title-style{
+            font-size: 44px;
+            margin-bottom: 20px;
+            padding:0 20px;
+        }
+        .input-style{
+            border: 1px #aaa solid;
+            border-radius: 4px;
+            background: 0 0;
+            text-align: left;
+            font-size: 20px;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            padding: 0 20px;
+            margin-top: 30px;
+        }
+        .input-style:hover{
+            border-color: #777;
+        }
+        .input-style:focus{
+            border-color: #549df8;
+            outline: none;
+        }
+        .login-button{
+            border: 1px #00c587 solid;
+            border-radius: 4px;
+            background-color: #00c587;
+            box-shadow: 0 5px 8px 0 rgba(24,95,255,.1);
+            color: #fff;
+            text-align: center;
+            font-weight: lighter;
+            width: 100%;
+            height: 60px;
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        .login-button:hover{
+            background-color: #11b376;
+        }
+        .to-register{
+            text-align: right;
+            padding-top: 10px;
+            font-size: 16px;
+        }
+        .to-register:hover{
+            cursor: pointer;
+        }
+        .to-register a,.forget-password a{
+            text-decoration: none;
+        }
+        .to-register a:hover,.forget-password a:hover{
+            color: #ff5b5b;
+        }
+        .error-tip{
+            background: url("{% static "/login/images/error.png" %}") no-repeat;
+            height: 20px;
+            margin-top: 10px;
+            padding-left: 20px;
+            color: #ff5b5b;
+        }
+        .input-warp{
+            position: relative;
+        }
+        .tick::after{
+            position: absolute;
+            bottom: 13px;
+            right: 13px;
+            content: url("{% static "/login/images/tick.png" %}");
+        }
+        @media screen and (max-width: 768px){
+            .login-img{
+                display: none;
+            }
+        }
+        .verifycode-img{
+            cursor: pointer;
+        }
+        .verifycode-tick::after{
+            position: absolute;
+            bottom: 13px;
+            right: 180px;
+            content: url("{% static "/login/images/tick.png" %}");
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid" style="height: 100%">
+    <div class="row" style="height: 100%">
+        <div class="col-md-3 login-img ">
+             <div class="img-content"></div>
+        </div>
+
+        <div class="col-md-9 col-sm-12">
+                <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4" style="min-width: 450px">
+                    <div class="login-or-register-content">
+                        <div class="login-content">
+                            <div class="page-header" style="background-color:#fff">
+                              <h1>欢迎使用Zoom In</h1>
+                              <p style="font-size:18px ;color:#777">深入挖掘潜藏在是数据中的隐含价值</p>
+                            </div>
+                            <form action="/login/" method="post">
+                                <div class="input-warp ">
+                                    <input type="text" name="username" class="input-style" placeholder="手机">
+                                </div>
+                                <div class="input-warp">
+                                    <input type="password" name="password" class="input-style" placeholder="密码">
+                                    <div class="forget-password" style="position: absolute;top: 42px; right: 0px ;font-size: 15px" >
+                                        <a href="javascript:void(0)" id="forget-password">忘记密码？</a>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="login-button-warp">
+                                    <input type="submit" class="login-button" value="登录">
+                                </div>
+                            </form>
+                            <div class="to-register" >
+                                <a href="javascript:void(0)" id="show-register">还没有账号？注册一个吧！</a>
+                            </div>
+                        </div>
+
+                        <div class="register-content">
+                            <div class="page-header" style="background-color:#fff">
+                              <h1>欢迎注册Zoom In</h1>
+                              <p style="font-size:18px ;color:#777">深入挖掘潜藏在是数据中的隐含价值</p>
+                            </div>
+                            <form action="/register/" method="post">
+                                <div class="input-warp">
+                                    <input type="text"  name="register-username" id="register-username" class="input-style tick" placeholder="请输入手机号码">
+                                </div>
+                                <div class="input-warp">
+                                    <input type="password"  name="register-password" id="register-password" class="input-style" placeholder="请输入密码">
+                                </div>
+                                <div class="input-warp">
+                                    <input type="password"  name="register-surepassword" id="register-surepassword" class="input-style" placeholder="确认密码">
+                                </div>
+                                <div class="input-warp">
+                                    <input type="text"  name="verifycode" id="verifycode" class="input-style" placeholder="验证码" style="width: 50%">
+                                    <img class='verifycode-img' src="/getVerifycode/?1" alt="CheckCode" class="pull-right" style="position: absolute;right: 0;top: 35px;" title="看不清楚？换一张"/>
+                                </div>
+                                <div class="input-warp">
+                                    <input type="text"  name="phoneCode" id="phoneCode" class="input-style" placeholder="手机验证码" style="width: 50%">
+                                    <button type="button" class="btn btn-primary btn-lg" style="position: absolute;right: 0;top: 33px;" id="sendPhoneCode">&nbsp;&nbsp;获取验证码&nbsp;&nbsp;</button>
+                                </div>
+                                <br>
+                                <div class="login-button-warp">
+                                    <input type="submit" class="login-button" value="注册">
+                                </div>
+                            </form>
+                            <div class="to-register" >
+                                <a href="javascript:void(0)" class="show-login">已有账号？前往登录！</a>
+                            </div>
+                        </div>
+                        <div class="forget-content" style="display: none">
+                            <div class="page-header" style="background-color:#fff">
+                              <h1>找回密码</h1>
+                            </div>
+                            <form action="/register/" method="post">
+                                <div class="input-warp">
+                                    <input type="text"  name="forget-username" id="forget-phone" class="input-style tick" placeholder="请输入手机号码">
+                                </div>
+                                <div class="input-warp">
+                                    <input type="text"  name="verifycode" id="forget-verifycode" class="input-style" placeholder="验证码" style="width: 50%">
+                                    <img class='verifycode-img' src="/getVerifycode/?2" alt="CheckCode" class="pull-right" style="position: absolute;right: 0;top: 35px;" title="看不清楚？换一张"/>
+                                </div>
+                                 <div class="input-warp">
+                                    <input type="text"  name="phoneCode" id="phoneCodeByNew" class="input-style" placeholder="手机验证码" style="width: 50%">
+                                    <button type="button" class="btn btn-primary btn-lg" style="position: absolute;right: 0;top: 33px;" id="sendPhoneCode2">获取验证码</button>
+                                </div>
+                                <div class="input-warp">
+                                    <input type="password"  name="new-password" id="new-password" class="input-style" placeholder="新密码">
+                                </div>
+                                <div class="input-warp">
+                                    <input type="password"  name="new-surepassword" id="new-surepassword" class="input-style" placeholder="确认密码">
+                                </div>
+
+                                <br>
+                                <div class="login-button-warp">
+                                    <input type="submit" class="login-button" value="确定">
+                                </div>
+                            </form>
+                            <div class="to-register" >
+                                <a href="javascript:void(0)" class="show-login">已有账号？前往登录！</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+</div>
+
+</body>
+<script>
+    $(document).ready(function(){
+        if("{{ message }}"!='')
+            alert("{{ message }}");
+        $('#show-register').on('click',function(){
+            $('.login-content').hide();
+            $('.register-content').show();
+            $(".verifycode-img").click();
+        });
+        $("#forget-password").on('click',function () {
+            $('.login-content').hide();
+            $('.register-content').hide();
+            $(".forget-content").show();
+            $(".verifycode-img").click();
+        })
+        $('.show-login').on('click',function(){
+            $('.login-content').show();
+            $('.register-content').hide();
+             $(".forget-content").hide();
+        });
+        $('input[name="register-username"],input[name="forget-username"]').on('blur',function(){
+            let username = $(this).val();
+            let IsRegex = usernameValidator(username);
+            if(IsRegex){
+                addTrueStyle(this);
+            }else{
+                let message= '请输入正确的手机格式！';
+                if(username.trim()==''){
+                    message = '账号不能为空';
+                }
+                addErrorStyle(this,message);
+            }
+        });
+        $('input[name="register-password"],input[name="new-password"]').on('blur',function(){
+            let password = $(this).val();
+            let IsRegex = passwordValidator(password);
+            if(IsRegex){
+                addTrueStyle(this);
+            }else{
+                let message = '请输入6-16位数字和字母的组合的密码';
+                if(password.trim()==''){
+                    message = '密码不能为空';
+                }
+                addErrorStyle(this,message);
+            }
+        });
+        $('#register-surepassword').on('blur',function(){
+            let surepassword = $(this).val();
+            let password = $('#register-password').val();
+            if(password == surepassword&&surepassword.trim()!=''){
+                addTrueStyle(this);
+            }else{
+                let message = '两次密码不一致'
+                if(surepassword.trim()==''){
+                    message = '密码不能为空';
+                }
+                addErrorStyle(this,message);
+            }
+        });
+        $('#new-surepassword').on('blur',function(){
+            let surepassword = $(this).val();
+            let password = $('#new-password').val();
+            if(password == surepassword&&surepassword.trim()!=''){
+                addTrueStyle(this);
+            }else{
+                let message = '两次密码不一致'
+                if(surepassword.trim()==''){
+                    message = '密码不能为空';
+                }
+                addErrorStyle(this,message);
+            }
+        });
+        $('#verifycode').on('blur',function(){
+            let verifycode = $("#verifycode").val();
+            $.ajax({
+                url:'/verifycodeVaild/',
+                type:'POST',
+                data:{
+                    verifycode:verifycode
+                },
+                success:function(data){
+                    if(data=='no'){
+                        message = '验证码错误';
+                        $("#verifycode").parent().removeClass("verifycode-tick");
+                        addErrorStyle($("#verifycode"),message);
+                    }else{
+                        addTrueStyle($("#verifycode"));
+                        $("#verifycode").parent().removeClass("tick").addClass("verifycode-tick");
+                    }
+                },
+                error:function(data){
+                    alert('error');
+                }
+            })
+        })
+        $('#forget-verifycode').on('blur',function(){
+            let verifycode = $("#forget-verifycode").val();
+            $.ajax({
+                url:'/verifycodeVaild/',
+                type:'POST',
+                data:{
+                    verifycode:verifycode
+                },
+                success:function(data){
+                    if(data=='no'){
+                        message = '验证码错误';
+                        $("#forget-verifycode").parent().removeClass("verifycode-tick");
+                        addErrorStyle($("#forget-verifycode"),message);
+                    }else{
+                        addTrueStyle($("#forget-verifycode"));
+                        $("#forget-verifycode").parent().removeClass("tick").addClass("verifycode-tick");
+                    }
+                },
+                error:function(data){
+                    alert('error');
+                }
+            })
+        })
+        $(".verifycode-img").on('click',function(){
+            $(this).attr("src",$(this).attr('src')+1);
+        })
+        $("#sendPhoneCode").on('click',function () {
+            var phoneNumber = $("#register-username").val();
+            if(usernameValidator(phoneNumber)){
+                $.ajax({
+                    url:'/sendPhoneCode/',
+                    type:'POST',
+                    data:{
+                        phoneNumber:phoneNumber
+                    },
+                    success:function (data) {
+                        alert("发送成功");
+                        setTime($("#sendPhoneCode"),60);
+                    },
+                    error:function(data){
+                        alert("发送失败")
+                    }
+                })
+            }else{
+                alert("请输入正确的手机号码");
+            }
+        })
+        $("#phoneCode").on('blur',function () {
+            var phoneNumber = $("#register-username").val();
+            var code = $(this).val();
+            $.ajax({
+                url:'/phoneCodeVaild/',
+                method:'POST',
+                data:{
+                    "mobile":phoneNumber,
+                    "code":code
+                },
+                success:function(data){
+                    if(data=='yes'){
+                        alert("验证码正确");
+                         addTrueStyle($("#phoneCode"));
+                        $("#phoneCode").parent().removeClass("tick").addClass("verifycode-tick");
+                    }else if (data=='no'){
+                        var message = "验证码错误";
+                         $("#phoneCode").parent().removeClass("verifycode-tick");
+                        addErrorStyle($("#phoneCode"),message);
+                    }
+                },
+                error:function () {
+                    alert("请求失败");
+                }
+            })
+        })
+        $("#sendPhoneCode2").on('click',function () {
+            var phoneNumber = $("#register-username").val();
+            if(usernameValidator(phoneNumber)){
+                $.ajax({
+                    url:'/hello/',
+                    type:'POST',
+                    data:{
+                        phoneNumber:phoneNumber
+                    },
+                    success:function (data) {
+                        alert("发送成功");
+                        setTime($("#sendPhoneCode2"),60);
+                    },
+                    error:function(data){
+                        alert("发送失败")
+                    }
+                })
+            }else{
+                alert("请输入正确的手机号码");
+            }
+        })
+    });
+    function usernameValidator(username){
+        const regex = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/ ;
+        return(regex.test(username));
+    }
+    function passwordValidator(password){
+        const regex = /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{6,16}$/;
+        return (regex.test(password));
+    }
+    function addTrueStyle(obj){
+        $(obj).siblings(".error-tip").remove();
+        $(obj).css("border-color","#00c587");
+        $(obj).parent().addClass("tick");
+    }
+    function addErrorStyle(obj,message){
+        let errorObj = $(obj).siblings(".error-tip");
+        if(errorObj!=undefined){
+            errorObj.remove();
+        }
+        $(obj).parent().removeClass("tick");
+        $(obj).after(' <div class="error-tip">'+message+'</div>');
+        $(obj).css("border-color","#ff5b5b");
+    }
+    function setTime(obj,waitTime){
+        if(waitTime == 0){
+            waitTime=60;
+            obj.removeAttr("disabled");
+            obj.html("  获取验证码  ");
+        }else{
+            obj.attr("disabled","");
+            obj.html(waitTime+"s后重新获取");
+            waitTime--;
+            setTimeout(function () {
+                 setTime(obj,waitTime);
+            },1000);
+        }
+    }
+</script>
+</html>
