@@ -14,13 +14,14 @@ def sendCode(request):
     APP_SECRET = "0ce2e4d053be"
     NONCE = "123456"
     MOBILE = phoneNumber
+    TEMPLATEID = 3952776
     CODELEN = "6"
     localtime = time.asctime(time.localtime(time.time()))
     CurTime = str(int(time.mktime(time.strptime(localtime, "%a %b %d %H:%M:%S %Y"))))
     string = APP_SECRET + NONCE + CurTime
     sha1 = hashlib.sha1(string.encode("utf-8"))
     CheckSum = sha1.hexdigest()
-    data = {"mobile": MOBILE, "codeLen": CODELEN,"deviceId":25}
+    data = {"mobile": MOBILE, "codeLen": CODELEN,"deviceId":25,"templateid": TEMPLATEID }
     data_url_encode = urllib.parse.urlencode(data)
     header = {"AppKey": APP_KEY, "Nonce": NONCE, "CurTime": CurTime, "CheckSum": CheckSum,
               "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"}
@@ -39,6 +40,7 @@ def phoneCodeVaild(request):
     APP_SECRET = "0ce2e4d053be"
     NONCE = "123456"
     MOBILE = request.POST.get("mobile")
+
     CODE = request.POST.get('code')
     localtime = time.asctime(time.localtime(time.time()))
     CurTime = str(int(time.mktime(time.strptime(localtime, "%a %b %d %H:%M:%S %Y"))))
