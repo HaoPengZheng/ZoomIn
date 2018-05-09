@@ -40,7 +40,6 @@ def phoneCodeVaild(request):
     APP_SECRET = "0ce2e4d053be"
     NONCE = "123456"
     MOBILE = request.POST.get("mobile")
-
     CODE = request.POST.get('code')
     localtime = time.asctime(time.localtime(time.time()))
     CurTime = str(int(time.mktime(time.strptime(localtime, "%a %b %d %H:%M:%S %Y"))))
