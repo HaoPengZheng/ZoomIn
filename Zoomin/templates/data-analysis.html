@@ -1,0 +1,517 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Demo</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.5/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+
+    <script src="../static/js/echarts.js"></script>
+
+    <!-- datatable -->
+    <link href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="http://cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.css">
+    <script type="text/javascript" language="javascript" src="http://cdn.datatables.net/1.10-dev/js/jquery.dataTables.min.js"></script>
+    <script type="text
+    /javascript" language="javascript" src="http://cdn.datatables.net/plug-ins/28e7751dbec/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+    <!-- 图标cdn -->
+    <link rel="stylesheet" href="../static/font-awesome-4.7.0/css/font-awesome.min.css">
+
+</head>
+<body style="overflow:scroll;overflow-y:hidden"  ondrop="removeDrop(event)" ondragover="allowDrop(event)">
+      <div style="font-size: 16px">
+        {% include "common/nav2.html" %}
+    </div>
+<!-- 主体部分 -->
+<div class="container-fluid" style="margin-top: 55px;">
+ <div class="row">
+    <div class="col-md-2 " style="background: #E8EBED;height:0px;padding-bottom:100%;border-right: 1px;border-right-style: solid;border-color: #D0D0D0">
+
+        <div  style="border-bottom-style:solid;border-color: #D0D0D0;border-width: 1px">
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <br><label class="panel-title">&emsp;工作表</label>
+                </div>
+                <div class="panel-body">
+                    <label>&emsp;&emsp;工作表信息</label><br>&emsp;
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 这个是左边的维度拖动栏 -->
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <h3 class="panel-title">维度A</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="list-group" style="text-align: center;" id="table-col-choose"></ul>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-8" style="background: #F3F5F6;box-shadow:0px 0px 10px #999">
+
+        <!-- 这个要修改 -->
+        <div class="row" style="border-bottom-style:solid;border-color: #D0D0D0;border-width: 1px">
+         <div class="col-md-1" style="line-height:40px;margin-top:5px"><label class="btn btn-default">维度 <i class="fa fa-pencil"></i> </label></div>
+         <div id="row-content" class="param-content-cls col-md-5"  style="border-radius:5px;" ondrop="rowDrop(event)" ondragover="allowDrop(event)"></div>
+         <div class="col-md-1" style="line-height:40px;margin-top:5px"><label  class="btn btn-default">数值 <i class="fa fa-pencil"></i> </label></div>
+         <div id="col-content" class="param-content-cls col-md-5" style="border-radius:5px;" ondrop="colDrop(event)" ondragover="allowDrop(event)"></div>
+     </div>
+
+     <div class="row" style="border-bottom-style:solid;border-color: #D0D0D0;border-width: 1px">
+         <div class="col-md-1" style="line-height:40px;margin-top:5px"><label class="btn btn-default">筛选器  </label></div>
+         <div id="row-content" class="param-content-cls col-md-5"  style="border-radius:5px;" ondrop="modalDrop(event)"></div>
+         <div class="col-md-1" style="line-height:40px;margin-top:5px"><label  class="btn btn-default">预留 </div>
+             <div id="col-content" class="param-content-cls col-md-5" style="border-radius:5px;" ondrop="colDrop(event)" ondragover="allowDrop(event)"></div>
+         </div>
+
+
+
+         <div class="row">
+
+            <div  class="col-md-12" style="background: #F3F5F6;">
+                <div id="echarts-main" class="row col-md-12" style="height:600px"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-2" style="background: #E8EBED;height:0px;padding-bottom:100%;box-shadow:0px 0px 10px #999">
+
+
+        <div class="row">
+          <div>
+
+            <p class="muted">   </p>
+
+
+        </div>
+    </div>
+
+    <div class="row" style="border-bottom-style:solid;border-color: #D0D0D0;border-width: 1px">
+
+        <!-- 图表标题下拉框 -->
+        <div class="panel-group" id="accordion">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h5 class="panel-title">
+                        <p data-toggle="collapse" data-parent="#accordion"
+                        href="#collapseOne">
+
+                        <button type="button" class="btn btn-default dropdown-toggle" style="background: #E8EBED" >
+                            图表标题 <span class="caret"></span>
+                        </button>
+                    </p>
+                </h5>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <input type="text" class="form-control" id="title-input" placeholder="请输入标题" style="border-right: none;border-left: none;border-top: none;margin-bottom: 5px;background: #E8EBED;width: 100%">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row" style="border-bottom-style:solid;border-color: #D0D0D0;border-width: 1px">
+
+    <!-- 图表类型下拉框 -->
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <p data-toggle="collapse" data-parent="#accordion"
+                    href="#collapseSpan">
+
+                    <button type="button" class="btn btn-default dropdown-toggle" style="background: #E8EBED" >
+                        图表类型 <span class="caret"></span>
+                    </button>
+                </p>
+            </h5>
+        </div>
+        <div id="collapseSpan" class="panel-collapse collapse in" style="text-align:center">
+            <div class="panel-body">
+
+                <div class="panel-body">
+                    <i class="fa fa-pie-chart" href="#" id="span-1"></i>&emsp;
+                    <span class="glyphicon glyphicon-globe" href="#"></span><br>
+                    <span class="glyphicon glyphicon-indent-left" href="#"></span>&emsp;
+                    <span class="glyphicon glyphicon-signal" href="#"></span><br><br><br><br><br><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+
+<div class="row" style="border-bottom-style:solid;border-color: #D0D0D0;border-width: 1px">
+
+    <!-- 图表标题下拉框 -->
+    <div class="panel-group" id="accordion">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h5 class="panel-title">
+                    <p data-toggle="collapse" data-parent="#accordion"
+                    href="#collapseTextarea">
+
+                    <button type="button" class="btn btn-default dropdown-toggle" style="background: #E8EBED" >
+                        图表备注 <span class="caret"></span>
+                    </button>
+                </p>
+            </h5>
+        </div>
+        <div id="collapseTextarea" class="panel-collapse collapse in">
+            <div class="panel-body">
+
+             <textarea class="form-control" rows="5" style="background: #F3F5F6;width: 130%"></textarea>
+         </div>
+     </div>
+ </div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<!--字段筛选模态框-->
+<div class="modal fade bs-example-modal-sm" id="filterModal" style="display: none;">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">筛选器</h5>
+      </div>
+      <div class="modal-body">
+          <!-- <p>neirong</p> -->
+          <form class="form-inline" role = "form" >  <!-- 动态生成 -->
+            <div class="checkbox">
+              <label>
+                <input type="checkbox">价格&emsp;
+            </label>
+            <label>
+                <input type="checkbox">价格&emsp;
+            </label>
+            <label>
+                <input type="checkbox">价格&emsp;
+            </label>
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <a href="#" class="btn btn-success">确认</a>
+        <a href="#" class="btn" data-dismiss="modal">关闭</a>
+    </div>
+</div>
+</div>
+</div>
+
+
+</body>
+<script>
+      $(document).ready(function() {
+        $("#data-analysis").addClass("active");
+    });
+</script>
+<script>
+
+    var jsonObj;
+    var colData = new Array();
+    var rowData = new Array();
+    var myChart;
+
+
+    var arr=['momo','yanzi','ziwei']
+    var obj={
+        'host':'www.baidu',
+        'port':'12345',
+        'node':'selector'
+    }
+
+    Mock.mock('http://www.bai.com',[{
+        'clothes':'衬衫',
+        'price':'5',
+        'test':'1',
+        'test2':'20',
+    },
+    {
+        'clothes':'衬衫',
+        'price':'15',
+        'test':'2',
+        'test2':'20',
+    },
+    {
+        'clothes':'外套',
+        'price':'25',
+        'test':'3',
+        'test2':'21',
+    },
+    {
+        'clothes':'裤子',
+        'price':'10',
+        'test':'4',
+        'test2':'21',
+    }])
+
+    $.ajax({
+        url:'http://www.bai.com',
+        dataType:'json',
+        success:function(e){
+
+            createtable(e)
+            jsonObj = e
+        }
+    })
+
+    $("#save-btn").click(function(){
+        var newTitleName = document.getElementById("title-input").value;
+        myChart.setOption({
+            title: {
+                text: newTitleName
+            }
+        });
+    })
+
+    $("#span-1").click(function(){
+        var newTitleName = document.getElementById("title-input").value;
+        myChart.setOption({
+            series: [{
+                name: colData.name,
+                type: 'line',
+                data: colData
+            }]
+        });
+    })
+
+    function createtable(obj) {
+        objKey = Object.keys(obj[0]);
+        console.log(objKey);
+        var column = [];
+        for (j = 0, len = objKey.length; j < len; j++) {
+            $("#table-col-choose").append('<li class="list-group-item" draggable="true"  style="background: #D0D0D0;border-style: solid;border-radius: 5px; width:70%;margin-top:10px" ondragstart="drag(event)" id="' + objKey[j] + '" col="' + j + '">' + objKey[j] + '</li>');
+            column.push({
+                "data": objKey[j],
+                "title": objKey[j]
+            });
+        }
+        console.log(column);
+
+
+
+
+    }
+
+
+
+    //图表部分
+
+    function allowDrop(ev) {
+        ev.preventDefault();
+    }
+
+    function drag(ev) {
+        ev.dataTransfer.setData("Id", ev.target.id);
+    }
+
+
+
+    function rowDrop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("Id");
+        var col = document.getElementById(data).getAttribute("col");
+        //判断是否为左边的可拖拽元素
+        if (col != null) {
+            var element = document.createElement("div");
+            element.setAttribute("class", "btn btn-success");
+            element.setAttribute("id", "row-" + data);
+            element.setAttribute("draggable", true);
+            element.setAttribute("ondragstart", "drag(event)");
+            var text = document.createTextNode(data);
+            element.appendChild(text);
+            ev.target.appendChild(element);
+            for (let i = 0; i < jsonObj.length; i++) {
+                rowData.push(jsonObj[i][objKey[col]]);
+
+            }
+
+            rowData.name = objKey[col];
+            createPicture();
+        }
+    }
+
+
+
+    function colDrop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("Id");
+        var col = document.getElementById(data).getAttribute("col");
+        if (col != null) {
+            var element = document.createElement("div");
+            element.setAttribute("class", "btn btn-success");
+            element.setAttribute("id", "col-" + data);
+            element.setAttribute("draggable", true);
+            element.setAttribute("ondragstart", "drag(event)");
+            var text = document.createTextNode(data);
+            element.appendChild(text);
+            ev.target.appendChild(element);
+            for (let i = 0; i < jsonObj.length; i++) {
+                colData.push(jsonObj[i][objKey[col]]);
+            }
+            colData.name = objKey[col];
+            createPicture();
+        }
+    }
+
+    function removeDrop(ev) {
+        ev.preventDefault();
+        var data = ev.dataTransfer.getData("Id");
+        console.log(data);
+        console.log(data.indexOf("col-"));
+
+        if (data.indexOf("col-") >= 0) {
+            if (ev.target.id != "col-content") {
+                var obj = document.getElementById(data);
+                obj.remove();
+                colData.splice(0, colData.length);
+                createPicture();
+            }
+        } else if (data.indexOf("row-") >= 0) {
+            if (ev.target.id != "row-content") {
+                var obj = document.getElementById(data);
+                obj.remove();
+                rowData.splice(0, rowData.length);
+                createPicture();
+            }
+        }
+
+    }
+
+    function modalDrop(ev) {
+        ev.preventDefault();
+        $('#filterModal').modal('show');
+        var data = ev.dataTransfer.getData("Id");
+        var col = document.getElementById(data).getAttribute("col");
+        //判断是否为左边的可拖拽元素
+        if (col != null) {
+            var element = document.createElement("div");
+            element.setAttribute("class", "btn btn-success");
+            element.setAttribute("id", "row-" + data);
+            element.setAttribute("draggable", true);
+            element.setAttribute("ondragstart", "drag(event)");
+            var text = document.createTextNode(data);
+            element.appendChild(text);
+            ev.target.appendChild(element);
+            for (let i = 0; i < jsonObj.length; i++) {
+                rowData.push(jsonObj[i][objKey[col]]);
+            }
+            rowData.name = objKey[col];
+
+        }
+    }
+
+    function createPicture() {
+        if (myChart == undefined) {
+            myChart = echarts.init(document.getElementById('echarts-main'));
+            myChart.setOption({
+                title: {
+                    text: "demoTest",
+                    left: 50
+                },
+                tooltip: {},
+                toolbox: {
+                    show: true,
+                    feature: {
+                        // myChangeNameTool: {
+                        //     title: '修改表名',
+                        //     icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+                        //     onclick: function() {
+                        //         $("#changeNameModal").modal('show');
+                        //     }
+                        // },
+                        // dataZoom: {
+                        //     yAxisIndex: 'none'
+                        // },
+                        // dataView: {
+                        //     readOnly: false
+                        // },
+                        // magicType: {
+                        //     type: ['line', 'bar', 'pie', 'scatter']
+                        // },
+                        // restore: {},
+                        // saveAsImage: {}
+
+                    }
+                },
+                legend: {
+                    data: ['']
+                },
+                xAxis: {
+                    data: []
+                },
+
+                yAxis: {},
+                series: [{
+                    name: '',
+                    type: 'bar',
+                    data: []
+                }]
+            });
+        }
+        myChart.setOption({
+
+            xAxis: {
+                data: rowData
+            },
+            yAxis: {},
+            series: [{
+                name: colData.name,
+                type: 'bar',
+                data: colData
+            }]
+
+        });
+    }
+
+
+
+    //修改名字的模态框
+    // function saveChangeName() {
+    //     var newTitleName = document.getElementById("title-input").value;
+    //     myChart.setOption({
+    //         title: {
+    //             text: newTitleName
+    //         }
+    //     });
+
+    // }
+
+
+
+    $(document).ready(function() {
+
+        //打开模态框时获取焦点
+        $("#changeNameModal").on('shown.bs.modal', function(e) {
+            $('#changeName').focus(); //通过ID找到对应输入框，让其获得焦点
+        });
+        //为修改名字绑定回车键
+        $("#changeName").keydown(function(event) {
+            if (event.keyCode == 13) {
+                saveChangeName();
+            }
+        })
+
+    })
+</script>
+
+</html>

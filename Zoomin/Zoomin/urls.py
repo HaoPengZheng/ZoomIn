@@ -31,5 +31,8 @@ urlpatterns = [
     path('register/',hv.register),
     path('data-import/',hv.dataImport),
     path('task-distribution/',hv.taskDistribution),
+    path('data-analysis/',hv.dataAnalysis),
+    path('data-mining/',hv.dataMining),
+    path('data-processing/',hv.dataProcessing),
     path('api/', include('hello.urls')),
 ]

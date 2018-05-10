@@ -36,3 +36,12 @@ def dataImport(request):
 
 def taskDistribution(request):
     return render(request,'task-distribution.html')
+
+def dataAnalysis(request):
+    return render(request,'data-analysis.html')
+
+def dataMining(request):
+    return render(request,'data-mining.html')
+
+def dataProcessing(request):
+    return render(request,'data-processing.html')
