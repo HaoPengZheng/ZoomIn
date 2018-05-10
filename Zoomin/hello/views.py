@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from hello import  models
-from hello import  phoneCode
+from django.contrib import auth
+
 def hello(request):
     return render(request, 'login.html')
 
@@ -13,13 +14,14 @@ def login(request):
             user = models.User.objects.get(username=username)
         except:models.User.DoesNotExist
         if passowrd == user.password:
+
             request.session['user']= user
             request.session['hasLogin'] = True;
             return HttpResponseRedirect('/data-import/')
         else:
             return render(request,'login.html')
-def register(request):
 
+def register(request):
     if request.method == "POST":
         username = request.POST.get("register-username", None)
         passowrd = request.POST.get("register-password", None)
@@ -30,6 +32,10 @@ def register(request):
         else:
             message = '该账号已经存在'
         return render(request,'login.html',{'message':message})
+
+def logout(request):
+
+    return HttpResponseRedirect('/hello')
 
 def dataImport(request):
     return render (request,'data-import.html')

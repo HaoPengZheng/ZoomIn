@@ -107,7 +107,24 @@
             </ul>
         </div>
         <div>
-            <a href="/hello/" style="color: #ffffff">登录</a>
+            {% if request.user %}
+                <li class="nav-item dropdown" >
+                <a class=" dropdown-toggle" href="#" style="color:#fff" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  {{ request.session.user.username }}
+                </a>
+                <div class="dropdown-menu  " aria-labelledby="navbarDropdown" style="right: -5px;left: auto;">
+                  <a class="dropdown-item" href="#"><i class="fa fa-cog" aria-hidden="true"></i>&nbsp;&nbsp;个人中心&nbsp;&nbsp;</a>
+                  <a class="dropdown-item" href="#"><i class="fa fa-phone" aria-hidden="true"></i>&nbsp;&nbsp;意见反馈&nbsp;&nbsp;</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="/logout/"><i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;&nbsp;退出登录&nbsp;&nbsp;</a>
+                </div>
+            </li>
+
+            {% else %}
+                 <a href="/hello/" style="color: #ffffff">登录</a>
+            {% endif %}
+
+
         </div>
     </nav>
 
