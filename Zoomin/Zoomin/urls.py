@@ -35,5 +35,6 @@ urlpatterns = [
     path('data-mining/',hv.dataMining),
     path('data-processing/',hv.dataProcessing),
     path('api/', include('hello.urls')),
-    path('logout/',hv.logout)
+    path('logout/',hv.logout),
+    path('data-import/newApplication',hv.newApplication)
 ]

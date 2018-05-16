@@ -69,41 +69,22 @@
             {% include "common/left3.html" %}
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4" style="min-height:100%;margin-top:56px;">
                 <div class=" main-content" style="min-height: 600px;padding-left: 100px;    min-width: 1000px">
-                    <div class="application-box col-md-8 offset-md-1">
-                        <div class="application-header-box">
-                            <span class="application-header">我的应用</span>
-                        </div>
-                        <div class="row" style="padding-left: 45px;">
-                            <div class="col-md-3 col-xs-6" style="border: 1px solid #c5c5c5; min-height: 180px; min-width: 180px;max-width: 230px" >
-                                <div style="text-align: center;margin-top: 10px;">
-                                    <img src="../static/data-import/images/application.png" width="150px" height="100px" >
-                                    <p style="color: #666; margin-top: 10px;">xxxx文件</p>
-                                    <p style="font-size: 12px;color: #999;">创建时间:2017/4/21</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="application-box col-md-8 offset-md-1">
-                        <div class="application-header-box">
-                            <span class="application-header">新建任务</span>
-                        </div>
-                        <div class="row " style="padding-left: 45px;">
-                            <div class="input-box col-md-4 col-sm-6">
-                                <img src="../static/data-import/images/excel.png" onclick="excelInputClick()" class="excel-input-img" ondragstart="return false;">
-                                <form method="post" enctype="multipart/form-data" action="import-excel">
-                                    <input type= "file" onchange="importf(this)" id="excel-input" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
-                                </form>
-                               <input type= "file" onchange="importf(this)" id="excel-input" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel" />
-                                <a href="/data-import/newApplication" >新建</a>
-                            </div>
-                            <div class="input-box col-md-4 col-sm-6">
-                                <img src="../static/data-import/images/csv-logo.png" onclick="excelInputClick()" class="excel-input-img" ondragstart="return false;">
-                                <input type="file" onchange="importf(this)" id="excel-input" accept=".csv" />
-                            </div>
-
-                        </div>
-
-                    </div>
+                    <form>
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">Email address</label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                      </div>
+                      <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                      </div>
+                      <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
                 </div>
                 <div>
                  {% include "common/footer.html" %}
@@ -123,13 +104,3 @@
     <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
     <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-<script>
-    $(document).ready(function() {
-        $("#data-import").addClass("active");
-    });
-
-    function excelInputClick() {
-        $("#excel-input").click();
-    }
-
-</script>

@@ -51,3 +51,6 @@ def dataMining(request):
 
 def dataProcessing(request):
     return render(request,'data-processing.html')
+
+def newApplication(request):
+    return render(request,'newApplication.html')
