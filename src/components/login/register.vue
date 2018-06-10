@@ -55,6 +55,7 @@ export default {
                     .then((response)=>{
                          alert(response);
                         console.log(response)
+                        this.$router.push({path:'/'})
                     })
                     .catch((response)=>{
                         alert(response.data);

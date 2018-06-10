@@ -1,7 +1,9 @@
 <template>
     <el-container>
-        <el-container>
-          <el-main>
+        
+        <Left></Left>  
+        <el-container>  
+            <el-main>
                 <el-carousel indicator-position="outside">
                     <el-carousel-item v-for="(task,index) in tasks" :key="index">
                     <h3>{{ task.name }}</h3>
@@ -11,21 +13,22 @@
                 <div>
                     <NewTask></NewTask> 
                 </div>
-          </el-main>
-          <el-footer>
-              <Myfooter></Myfooter>
-          </el-footer>
-          </el-container>
+            </el-main>
+  
+            <el-footer>
+                <Myfooter></Myfooter>
+            </el-footer>
+            </el-container>
     </el-container>    
 </template>
 <script>
 import Myfooter from '../common/footer.vue'
 import NewTask from './newTask.vue'
-
+import Left from '../common/left.vue'
 
 export default {
     components:{
-        Myfooter,NewTask
+        Myfooter,NewTask,Left
     },
     data(){
         return {

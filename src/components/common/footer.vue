@@ -17,15 +17,10 @@ export default {
 }
 </script>
 <style>
-.footer {
-    font-family: "microsoft YaHei";
-    width: 100%;
-    padding: 0 0 30px 0;
-    min-width: 1200px;
-    margin-top: 100px
-}
-
 .footer-content {
+    min-width: 650px;
+    font-family: "microsoft YaHei";
+    color: #777;
     width: 100%;
     float: left;
     font-size: 12px;
@@ -36,11 +31,13 @@ export default {
     color:#777;
     padding: 0 10px;
     font-size: 14px;
-}.footer-link a:hover{
+    text-decoration: none;
+}
+.footer-link a:hover{
     color:#ff5b5b;
     cursor: pointer;
 }
-    .footer{
-        color:#777;
-    }
+.footer{
+    color:#777;
+}
 </style>

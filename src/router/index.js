@@ -10,7 +10,7 @@ import childrenLogin from '@/components/login/toLogin'
 Vue.use(Router)
 const router = new Router({
     routes: [{
-            path: '/',
+            path: '/home',
             name: 'home',
             component: home,
             children: [{
@@ -20,10 +20,13 @@ const router = new Router({
                 meta: {
                     requireAuth: true
                 }
-            }]
+            }],
+            meta: {
+                requireAuth: true
+            }
         },
         {
-            path: '/login',
+            path: '/',
             name: 'login',
             component: login,
             children: [{
@@ -43,7 +46,7 @@ router.beforeEach((to, from, next) => {
             next();
         } else {
             next({
-                path: '/login'
+                path: '/'
             })
         }
     } else {

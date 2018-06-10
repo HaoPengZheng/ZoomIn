@@ -6,23 +6,28 @@
                 {{titleIndex+2}} 
             </span>    
             行,表头前的数据，将不会保留
-           
         </p>
         <div class="preview-table-warp ">
             <table class="preview-table">
-            <tbody>
-                <tr @click="changeTitleIndex(-1)" :class="{'setTitle':titleIndex==-1,'disabled':titleIndex>-1}">
-                    {{setTitle}}
-                    <td v-for="(key,index) in tableTitle" :key="index">
-                        {{key}}
-                    </td>
-                </tr>
-                <tr v-for="(tr,index) in json" :key="index" @click="changeTitleIndex(index)" :class="{'setTitle':titleIndex==index,'disabled':titleIndex>index}">
-                <td v-for="(value,index) in tr" :key="index">
-                    {{value}}
-                </td>
-                </tr>
-            </tbody>
+                <tbody>
+                    <tr @click="changeTitleIndex(-1)" :class="{'setTitle':titleIndex==-1,'disabled':titleIndex>-1,'hov':hoverIndex==-1}">
+                        {{setTitle}}
+                        <td>{{0}}<span class='set-thread'>表头<span class='triangle_right'></span></span></td>
+                        <td v-for="(key,index) in tableTitle" :key="index">
+                            {{key}}
+                        </td>
+                    </tr>
+                    <tr v-for="(tr,index) in json" :key="index" 
+                        @mouseenter="enter(index)"
+                        @click="changeTitleIndex(index)" 
+                    
+                        :class="{'setTitle':titleIndex==index,'disabled':titleIndex>index}">
+                        <td>{{index+1}} <span class='set-thread'>表头<span class='triangle_right'></span></span></td>
+                        <td v-for="(value,index) in tr" :key="index">
+                            {{value}}
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
     </div>
@@ -36,13 +41,17 @@ export default {
     data(){
         return{
             tableTitle:"",
-            titleIndex:-1
+            titleIndex:-1,
+            hoverIndex:3,
         }
     },
     methods:{
         changeTitleIndex:function(index){
             this.titleIndex = index
             this.$emit('setTitleIndex',this.titleIndex+2)
+        },
+        enter:function(index){
+            this.hoverIndex = index
         }
     },
     computed:{
@@ -158,5 +167,17 @@ td + td {
 
 .preview-table tbody tr.hov .triangle_right {
     border-left: 9px solid #fff;
+}
+.triangle_right {
+    height: 0px;
+    width: 0px;
+    border-left: 9px solid rgb(81, 228, 175);
+    border-top: 12px solid transparent;
+    border-bottom: 13px solid transparent;
+    /* float: left; */
+    position: absolute;
+    top: 0px;
+    /* left: 40px; */
+    right: -9px;
 }
 </style>

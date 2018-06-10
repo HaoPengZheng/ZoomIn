@@ -52,10 +52,13 @@ export default {
                         this.$qs.stringify(this.loginForm)
                      )
                     .then((response)=>{
-                        alert("登录成功");
+                          this.$message({
+                                message:'登录成功！',
+                                type:"success"
+                            })
                         let token = response.data.token
                         localStorage.setItem("token",token)
-                        this.$router.push({path:'/data-import'})
+                        this.$router.push({path:'/home/data-import'})
                     })
                     .catch(()=>{
                         alert("error");

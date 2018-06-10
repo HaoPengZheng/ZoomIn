@@ -3,12 +3,15 @@
     <el-container style="height:100%">
       <el-header>
         <div class="warp">
-            <div class="left">Zoomin</div>
+            <div class="left">
+              <span class="logo">
+                Zoomin
+              </span>    
+            </div>
              <div class="nav center" >
               <el-menu
-                  class="el-menu-demo" 
                   mode="horizontal"           
-                  background-color="#545c64"
+                  background-color="#00c587"
                   text-color="#fff"
                   active-text-color="#ffd04b"
                   v-bind:router="true"
@@ -16,16 +19,16 @@
                   <el-menu-item index="/data-import">
                     数据导入
                   </el-menu-item>
-                  <el-menu-item index="/login">
+                  <el-menu-item index="/">
                     数据处理
                   </el-menu-item>
-                  <el-menu-item index="/login">
+                  <el-menu-item index="/">
                     数据分析
                   </el-menu-item>
-                  <el-menu-item index="/login">
+                  <el-menu-item index="/">
                     数据挖掘
                   </el-menu-item>
-                  <el-menu-item index="/login">
+                  <el-menu-item index="/">
                     任务发布
                   </el-menu-item>
               </el-menu>
@@ -49,17 +52,20 @@ export default {
 
 </script>
 <style>
+.nav{
+  min-width: 600px;
+}
   .warp{
     width:100%;
     margin:0 auto;
     display: flex;
-    background-color: #545c64;
+    background-color: #00c587;
   }
   .left{
-    flex: 0 1 300px;
+    flex: 0 1 200px;
   }
   .right{
-     flex: 0 1 300px;
+     flex: 0 1 200px;
     display: flex;
     justify-content: flex-end;
   }
@@ -79,21 +85,23 @@ export default {
   .el-header{
     padding: 0px;
   }
-  .el-aside {
-    background-color: #D3DCE6;
-    color: #333;
-    text-align: center;
-    line-height: 200px;
-  }
+ 
   .el-main {
     background-color: #fff;
     color: #333;
     text-align: center;
     line-height: 160px;
+    min-width: 650px;
   }
   
   body > .el-container {
     margin-bottom: 40px;
+  }
+  .logo{
+    line-height: 60px;
+    padding-left: 20px;
+    font-weight: 500;
+    color: #fff;
   }
   
 </style>

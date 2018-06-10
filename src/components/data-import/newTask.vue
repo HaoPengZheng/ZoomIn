@@ -4,6 +4,8 @@
             <div class="application-header ">新建任务</div>
         </div>
         <el-button type="text" @click="newTaskDialogVisable = true">点击新建任务</el-button> 
+
+        <!-- 新建任务的模态框 -->
         <el-dialog
             :visible.sync="newTaskDialogVisable"
             width="30%"
@@ -13,9 +15,18 @@
                 <el-form-item label="任务名称">
                     <el-input type="text" v-model="newTaskModel.name"></el-input>
                 </el-form-item>
-                <el-form-item label="任务描述">
+             
+                <el-form-item label="数据源">
                     <input type="file" ref="obj" @change="importf()" id="excel-input"
-                                   accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
+                </el-form-item>
+                <el-form-item label="任务描述">
+                    <el-input
+                        type="textarea"
+                        :rows="4"
+                        placeholder="请输入内容"
+                        v-model="newTaskModel.describe">
+                    </el-input>
                 </el-form-item>
             </el-form>
             <span slot="footer" class="dialog-footer">
@@ -63,14 +74,19 @@ export default {
     },
     methods:{
         newTask:function(){
-            this.tablePreviewVisable = true;
-            this.newTaskDialogVisable = false;
-            
+            if(this.$refs.obj.value == ""){
+                this.$message({
+                    message:'请选择数据源！',
+                    type:"warning"
+                })
+            }else{
+                this.tablePreviewVisable = true;
+                this.newTaskDialogVisable = false;
+            } 
         },
 
         importf() { //导入
             let obj  = this.$refs.obj
-            filename = obj.value.substring(obj.value.lastIndexOf("\\") + 1, obj.value.lastIndexOf("."));
             if (!obj.files) {
                 return;
             }
