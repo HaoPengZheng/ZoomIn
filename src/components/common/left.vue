@@ -1,8 +1,8 @@
 <template>
   <el-aside :style="{width:width+'px'}" >
     <div class="aside-warp">   
-        <div style="overflow:scroll;width:100%;height:100%;">
-           <el-menu default-active="1"  :collapse="isShrink">
+      <div style="overflow:scroll;width:100%;height:100%;">
+        <el-menu default-active="1"  :collapse="isShrink">
           <el-submenu index="1">
             <template slot="title">
               <i class="el-icon-document"></i>
@@ -43,16 +43,16 @@
               <el-menu-item index="4-2">任务二分析</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
-          </el-menu>  
-        </div>    
-         <a  @click="shrink" :title="toggleTitle">
-          <template v-if="isShrink === false">
-            <icon name="angle-left"  class="shrink"></icon>
-          </template>
-            <template v-else>
-            <icon name="angle-right"  class="shrink"></icon>     
-          </template>  
-        </a>    
+        </el-menu>  
+      </div>   
+      <a  @click="shrink" :title="toggleTitle">
+        <template v-if="isShrink === false">
+          <icon name="angle-left"  class="shrink"></icon>
+        </template>
+          <template v-else>
+          <icon name="angle-right"  class="shrink"></icon>     
+        </template>  
+      </a>    
     </div>
    
   </el-aside>
@@ -87,7 +87,7 @@ export default {
   position: relative;
   height: 100%;
   background-color: #fff;
-  overflow: sc;
+  overflow: hidden;
 }
 .shrink{
   position: absolute;

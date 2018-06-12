@@ -1,7 +1,8 @@
 <template>
     <el-container>
         
-        <Left></Left>  
+        <Left >  
+        </Left>  
         <el-container>  
             <el-main>
                 <el-carousel indicator-position="outside">
@@ -43,7 +44,8 @@ export default {
                 time:"2018年6月2日17:22:23"
             }]
         }
-    }
+    },
+    
 }
 </script>
 <style>

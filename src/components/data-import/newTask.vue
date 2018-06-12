@@ -132,7 +132,9 @@ export default {
         createTask:function(){
             this.tablePreviewVisable = false;
             alert("{'title':'"+this.titleIndex+",'name:'"+this.newTaskModel.name+",'json:'"+JSON.stringify(this.tablejsons)+"}");
-        }
+            this.$router.push({name:'data-processing',params:{taskId:'123456'}});
+
+       }
     }
 }
 </script>

@@ -16,10 +16,10 @@
                   active-text-color="#ffd04b"
                   v-bind:router="true"
                   >
-                  <el-menu-item index="/data-import">
+                  <el-menu-item index="/home/data-import">
                     数据导入
                   </el-menu-item>
-                  <el-menu-item index="/">
+                  <el-menu-item index="/home/data-processing">
                     数据处理
                   </el-menu-item>
                   <el-menu-item index="/">

@@ -6,6 +6,7 @@ import login from '@/components/login'
 import dataImport from '@/components/data-import/dataImport'
 import childrenRegister from '@/components/login/register'
 import childrenLogin from '@/components/login/toLogin'
+import dataProcessing from '@/components/data-processing/dataProcessing'
 
 Vue.use(Router)
 const router = new Router({
@@ -14,13 +15,22 @@ const router = new Router({
             name: 'home',
             component: home,
             children: [{
-                path: 'data-import',
-                name: 'data-import',
-                component: dataImport,
-                meta: {
-                    requireAuth: true
+                    path: 'data-import',
+                    name: 'data-import',
+                    component: dataImport,
+                    meta: {
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: 'data-processing',
+                    name: 'data-processing',
+                    component: dataProcessing,
+                    meta: {
+                        requireAuth: true
+                    }
                 }
-            }],
+            ],
             meta: {
                 requireAuth: true
             }
