@@ -3,8 +3,17 @@
         <div class="application-header-box">
             <div class="application-header ">新建任务</div>
         </div>
-        <el-button type="text" @click="newTaskDialogVisable = true">点击新建任务</el-button> 
-
+        <el-row :gutter="30">
+            <el-col :xs="8" :sm="8" :md="8" :lg="5" :offset="2">           
+                <img src="../../assets/data-import/excel.png" @click="showNewTaskDialog('excel')"
+                class="input-img" ondragstart="return false;">
+            </el-col>
+            <el-col :xs="8" :sm="8" :md="8" :lg="5">
+                 <img src="../../assets/data-import/csv.png" @click="showNewTaskDialog('csv')"
+                class="input-img" ondragstart="return false;">
+            </el-col>
+  
+        </el-row>
         <!-- 新建任务的模态框 -->
         <el-dialog
             :visible.sync="newTaskDialogVisable"
@@ -18,7 +27,7 @@
              
                 <el-form-item label="数据源">
                     <input type="file" ref="obj" @change="importf()" id="excel-input"
-                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"/>
+                    :accept="accept"/>
                 </el-form-item>
                 <el-form-item label="任务描述">
                     <el-input
@@ -34,6 +43,7 @@
                 <el-button type="primary" @click="newTask">下一步</el-button>
             </span>
         </el-dialog>   
+        <!-- 数据预览模态框 -->
         <el-dialog
             :visible.sync="tablePreviewVisable"
             width="50%"
@@ -69,10 +79,19 @@ export default {
                 file:""
             },
             tablejsons:null,
-            titleIndex:1
+            titleIndex:1,
+            accept:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
         }
     },
     methods:{
+        showNewTaskDialog(fileType){
+            if(fileType=="csv"){
+                this.accept = ".csv"
+            }else{
+                this.accept = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
+            }
+            this.newTaskDialogVisable = true
+        },
         newTask:function(){
             if(this.$refs.obj.value == ""){
                 this.$message({
@@ -80,11 +99,26 @@ export default {
                     type:"warning"
                 })
             }else{
+                alert(localStorage.getItem("token"));
+                this.$axios.post('http://120.79.146.91:8000/taskinfo/',{
+                    
+                        "task_name":this.newTaskModel.name,
+
+                        "task_desc":this.newTaskModel.describe
+                    
+                },{
+                    headers:{
+                        'Authorization':"JWT "+localStorage.getItem("token")
+                    }
+                }).then((response)=>{
+                    console.log(response)
+                }).catch((response)=>{
+                    alert("出错了")
+                })
                 this.tablePreviewVisable = true;
                 this.newTaskDialogVisable = false;
             } 
         },
-
         importf() { //导入
             let obj  = this.$refs.obj
             if (!obj.files) {
@@ -158,6 +192,11 @@ export default {
     margin-left: 60px;
     text-align: left;
     float: left;
+}
+.input-img:hover{
+    cursor: pointer;
+    opacity: 0.8;
+    border: 1px solid #eee;
 }
 </style>
 

@@ -43,6 +43,14 @@
               <el-menu-item index="4-2">任务二分析</el-menu-item>
             </el-menu-item-group>
           </el-submenu>
+          <template v-for="(item,index) in task">
+            <el-submenu :index="index.toString()" :key="index">
+              <template slot="title">
+                <i class="el-icon-document"></i>
+                <span slot="title">{{item.task_name}}</span>
+              </template>
+            </el-submenu>
+          </template>
         </el-menu>  
       </div>   
       <a  @click="shrink" :title="toggleTitle">
@@ -59,6 +67,9 @@
 </template>
 <script>
 export default {
+  props:{
+    task:Array
+  },
   data(){
     return {
       width:275,

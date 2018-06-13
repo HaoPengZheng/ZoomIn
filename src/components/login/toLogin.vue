@@ -58,6 +58,7 @@ export default {
                             })
                         let token = response.data.token
                         localStorage.setItem("token",token)
+                        localStorage.setItem("username",this.loginForm.username)
                         this.$router.push({path:'/home/data-import'})
                     })
                     .catch(()=>{

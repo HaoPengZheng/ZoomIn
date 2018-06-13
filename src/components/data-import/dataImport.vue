@@ -1,7 +1,7 @@
 <template>
     <el-container>
         
-        <Left >  
+        <Left :task="allTaskList">  
         </Left>  
         <el-container>  
             <el-main>
@@ -42,9 +42,22 @@ export default {
             },{
                 name:"任务1",
                 time:"2018年6月2日17:22:23"
-            }]
+            }],
+            allTaskList:[]
         }
     },
+    created:function(){
+
+          this.$axios.get('http://120.79.146.91:8000/taskinfo/',{
+                    headers:{
+                        'Authorization':"JWT "+localStorage.getItem("token")
+                    }
+                }).then((response)=>{
+                    this.allTaskList = response.data
+                }).catch((response)=>{
+                    alert("出错了")
+                })
+    }
     
 }
 </script>

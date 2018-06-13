@@ -90,7 +90,6 @@ export default {
     background-color: #fff;
     color: #333;
     text-align: center;
-    line-height: 160px;
     min-width: 650px;
   }
   
