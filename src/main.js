@@ -11,6 +11,8 @@ import 'vue-awesome/icons/index.js'
 import qs from 'qs'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
+import echarts from 'echarts'
+
 
 Vue.component('icon', Icon)
 Vue.config.productionTip = false
@@ -23,7 +25,7 @@ document.body.appendChild(root)
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 
-
+Vue.prototype.$echarts = echarts 
 Vue.prototype.$axios = axios
 Vue.prototype.$qs = qs
 

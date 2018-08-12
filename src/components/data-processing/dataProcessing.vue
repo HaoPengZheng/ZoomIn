@@ -1,139 +1,294 @@
 <template>
-   <el-container>     
-      <Left >  
-      </Left>
-      <el-container>  
-        <el-main>
-           <el-tabs v-model="activeName" @tab-click="handleClick" style="padding:0 50px">
-            <el-tab-pane label="数据预览" name="first">
-                <div>
-                  <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
-                  
-                      <el-button type="text" @click="showFiltrate">
-                        数据筛选
-                        <i class="el-icon-arrow-down"></i>
-                      </el-button>
-                      <el-button type="text" >
-                        空值处理
-                      </el-button>
-              
-                  </el-row>
-                  <el-row  style="text-align:left;padding-left:10px">     
-                    <div v-if="filtrateVisable" >
-                      <span style="font-size:14px">筛选方式：</span>
-                      <el-radio v-model="filtrateType" label="1">条件筛选</el-radio>
-                      <el-radio v-model="filtrateType" label="2">语句筛选</el-radio>
-                    </div>
-                    <el-row>
-                      <div v-if="filtrateType=='1'&&filtrateVisable">
-                        <ConditionFilter :keys="tableKeys"></ConditionFilter>
-                      </div>
-                      <div v-if="filtrateType=='2'&&filtrateVisable">
-                        语句筛选内容
-                      </div>
-                    </el-row>
-                  </el-row>
-                </div>     
-            </el-tab-pane>
-            <el-tab-pane label="字段设置" name="second">字段管理</el-tab-pane>
-            <el-tab-pane label="xxxx" name="third">xxx</el-tab-pane>
-          
-          </el-tabs>
-          <div style="padding-top:30px;width:80%;margin:0 auto">
-              <el-table
-            :data="tableData"
-            border
-            style="width: 100%"
-            v-loading="loading"
-            >
-               <el-table-column
-                  :prop="item"
-                  :label="item"
-                   v-for="(item,index) in tableKeys" :key="index">
-                </el-table-column>
-            </el-table>   
-          </div>  
-        </el-main>
-        </el-container>       
-    </el-container> 
+  <el-container>
+    <Left>
+    </Left>
+    <el-container>
+      <el-main>
+        <el-tabs v-model="activeName" @tab-click="handleClick" style="padding:0 50px">
+          <el-tab-pane label="数据预览" name="first">
+            <div>
+              <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
+
+                <el-button type="text" @click="showFiltrate">
+                  数据筛选
+                  <i class="el-icon-arrow-down"></i>
+                </el-button>
+                <el-button type="text">
+                  空值处理
+                </el-button>
+
+              </el-row>
+              <el-row style="text-align:left;padding-left:10px">
+                <div v-if="filtrateVisable">
+                  <span style="font-size:14px">筛选方式：</span>
+                  <el-radio v-model="filtrateType" label="1">条件筛选</el-radio>
+                  <el-radio v-model="filtrateType" label="2">语句筛选</el-radio>
+                </div>
+                <el-row>
+                  <div v-if="filtrateType=='1'&&filtrateVisable">
+                    <ConditionFilter :keys="tableKeys" :keyTypes="tableKeysType"></ConditionFilter>
+                  </div>
+                  <div v-if="filtrateType=='2'&&filtrateVisable">
+                    语句筛选内容
+                  </div>
+                </el-row>
+              </el-row>
+            </div>
+          </el-tab-pane>
+          <el-tab-pane label="字段设置" name="second">字段管理</el-tab-pane>
+        </el-tabs>
+        <div style="padding-top:30px;width:90%;margin:0 auto">
+          <wTable :data="tableData" :header="tableKeys" :option="tableOption" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+            <el-table-column slot="fixed" fixed type="index" width="50">
+            </el-table-column>
+          </wTable>
+        </div>
+
+      </el-main>
+    </el-container>
+
+    <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" >
+      <el-form ref="form" label-width="80px">
+        <el-form-item label="字段类型">
+          <el-select v-model="newColumnType" placeholder="请选择">
+            <el-option v-for="item in dataTypeOption" :key="item.value" :label="item.label" :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="字段名称">
+          <el-input v-model="newColumnName" placeholder="请输入内容"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="renewColumnName(e)">确 定</el-button>
+      </span>
+    </el-dialog>
+  </el-container>
 </template>
 <script>
-import Left from '../common/left.vue'
-import ConditionFilter from './conditionFilter.vue'
+// 列拖拽尚未完成
+// 样式需优化
+// 改列名需要时间加载,有bug
+// 拉取数据需判断有没有类型,否则自行判断
+// 改列名,条件筛选中已选择的未自动改正
+
+import Left from "../common/data_set_list.vue";
+import ConditionFilter from "./conditionFilter.vue";
+import wTable from "../common/mytable.vue";
+
 export default {
-  components:{
-    Left,ConditionFilter
+  components: {
+    Left,
+    ConditionFilter,
+    wTable
   },
-  data(){
-    return{
-      taskId:1,
-      loading:true,
-      tableData:[],
-      tableKeys:[],
-      show:true,
-      filtrateType:'1',
-      filtrateVisable:false,
-      activeName:'first'
-    }
+  data() {
+    return {
+      taskId: 1,
+      dataSetId: Number,
+      loading: true,
+      tableData: [],
+      tableKeys: [],
+      show: true,
+      filtrateType: "1",
+      filtrateVisable: false,
+      activeName: "first",
+      dialogVisible: false,
+      changeColumnIndex: 0,
+      tableKeysType: ["#", "T", "d", "#", "T", "d", "#", "#"],
+      newColumnName: "",
+      newColumnType: "",
+      dataTypeOption: [
+        { value: "#", label: "#数值类型" },
+        { value: "T", label: "T文本类型" },
+        { value: "d", label: "d时间类型" }
+      ],
+      tableOption: {
+        border: true,
+        maxHeight: 500
+      }
+    };
   },
-  created:function(){
-    this.fetchData();
+  // 接收创建人物以后返回的data_set_id
+  created: function() {
+    //this.$route.params.id接受参数
+    this.dataSetId = this.$route.params.dataSetId;
+    this.fetch();
+    // this.fetchData();
   },
-  methods:{
-    fetchData:function(){
-      this.$axios.get("http://120.79.146.91:8000/task/scoreAnalysis")
-        .then((response)=>{
-          this.tableData = response.data.data.slice(0,100);
+  methods: {
+    // 初始化数据，拉取表格数据，
+    // 参数，data_set_id
+    // 返回json
+    fetch: function() {
+      this.$axios
+        .post(
+          "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
+          {
+            data_set_id: this.dataSetId
+          },
+          {
+            headers: {
+              Authorization: "JWT " + localStorage.getItem("token")
+            }
+          }
+        )
+        .then(response => {
+          this.tableData = response.data.data.slice(0, 100);
           console.log(this.tableData);
           this.tableKeys = Object.keys(this.tableData[0]);
-          console.log(this.tableKeys)
-          this.loading =false
-          console.log(this.$refs.th)
+          console.log(this.tableKeys);
+          this.loading = false;
         })
-        .catch((response)=>{
-          alert("error");
-        })
-        
+        .catch(response => {
+          alert("获取数据失败");
+        });
     },
+    // 拉取固定的那张学生表的数据
+    // fetchData: function() {
+    //   this.$axios
+    //     .get("http://120.79.146.91:8000/task/scoreAnalysis")
+    //     .then(response => {
+    //       this.tableData = response.data.data.slice(0, 100);
+    //       console.log(this.tableData);
+    //       this.tableKeys = Object.keys(this.tableData[0]);
+    //       console.log(this.tableKeys);
+    //       this.loading = false;
+    //       document
+    //         .querySelector(".el-table__header-wrapper th")
+    //         .on("dragover", function(e) {
+    //           e.originalEvent.preventDefault();
+    //         });
+    //     })
+    //     .catch(response => {
+    //       alert(document.querySelector("table tr>th"));
+    //       alert("error");
+    //     });
+    // },
     handleClick(tab, event) {
       console.log(tab, event);
     },
-    showFiltrate:function(){
-      if(this.filtrateVisable === false){
+    showFiltrate: function() {
+      if (this.filtrateVisable === false) {
         this.filtrateVisable = true;
-      }else{
+      } else {
         this.filtrateVisable = false;
       }
+    },
+    // 自定义表头
+    // renderTableTitle(h, { column, $index }) {
+    //   return h("span", [
+    //     h(
+    //       "span",
+    //       {
+    //         style: "color:blue;margin-right:5px"
+    //       },
+    //       this.tableKeysType[$index - 1]
+    //     ),
+    //     h("span", column.label),
+    //     h(
+    //       "a",
+    //       {
+    //         style: "color:red;float:right; ",
+    //         on: {
+    //           click: this.changeHeaderName
+    //         }
+    //       },
+    //       [
+    //         h("i", {
+    //           attrs: {
+    //             id: $index - 1
+    //           },
+    //           class: "el-icon-edit"
+    //         })
+    //       ]
+    //     )
+    //   ]);
+    // },
+    changeHeaderName: function(e) {
+      this.changeColumnIndex = e.target.id;
+      this.newColumnName = this.tableKeys[this.changeColumnIndex];
+      this.newColumnType = this.tableKeysType[this.changeColumnIndex];
+
+      this.dialogVisible = true;
+    },
+    //更新列名的方法
+    renewColumnName: function() {
+      if (
+        this.tableKeysType[this.changeColumnIndex] == this.newColumnType &&
+        this.tableKeys[this.changeColumnIndex] == this.newColumnName
+      ) {
+        alert("什么都没有改");
+        return;
+      }
+      if (
+        this.tableKeys.indexOf(this.newColumnName) >= 0 &&
+        this.tableKeysType[this.changeColumnIndex] == this.newColumnType
+      ) {
+        alert("已存在名为:" + this.newColumnName + "的列名");
+        return;
+      }
+      let oldKey = this.tableKeys[this.changeColumnIndex]; //旧的键值
+      this.$set(this.tableKeys, this.changeColumnIndex, this.newColumnName);
+      //set方法。数组更新，但是试图不更新的问题，遇到类似的可以使用vue.set为解决方案
+      this.$set(this.tableKeysType, this.changeColumnIndex, this.newColumnType);
+
+      // 为data重新赋值
+      let newData = [];
+      for (var i = 0; i < this.tableData.length; i++) {
+        let objs = this.tableData[i];
+        var o = new Object();
+        for (var obj in objs) {
+          if (obj == oldKey) {
+            o[this.newColumnName] = objs[obj];
+          } else {
+            o[obj] = objs[obj];
+          }
+        }
+        console.log(o);
+        newData.push(o);
+      }
+      this.tableData = newData;
+      this.tableKeys = Object.keys(this.tableData[0]);
+      this.newColumnName = "";
+      this.dialogVisible = false;
+    },
+    updateTableKeys: function(newKeys) {
+      this.tableKeys = newKeys;
+    },
+    updateTableTypes: function(newTypes) {
+      this.tableKeysType = newTypes;
     }
-  } 
-}
+  }
+};
 </script>
 <style>
-thead{
+thead {
   line-height: 40px;
 }
 .el-row {
-    margin-bottom: 20px;
-
-  }
-  .el-col {
-    border-radius: 4px;
-  }
-  .bg-purple-dark {
-    background: #99a9bf;
-  }
-  .bg-purple {
-    background: #d3dce6;
-  }
-  .bg-purple-light {
-    background: #e5e9f2;
-  }
-  .grid-content {
-    border-radius: 4px;
-    min-height: 36px;
-  }
-  .row-bg {
-    padding: 10px 0;
-    background-color: #f9fafc;
-  }
+  margin-bottom: 20px;
+}
+.el-col {
+  border-radius: 4px;
+}
+.bg-purple-dark {
+  background: #99a9bf;
+}
+.bg-purple {
+  background: #d3dce6;
+}
+.bg-purple-light {
+  background: #e5e9f2;
+}
+.grid-content {
+  border-radius: 4px;
+  min-height: 36px;
+}
+.row-bg {
+  padding: 10px 0;
+  background-color: #f9fafc;
+}
 </style>
+

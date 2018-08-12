@@ -8,6 +8,7 @@ import childrenRegister from '@/components/login/register'
 import childrenLogin from '@/components/login/toLogin'
 import dataProcessing from '@/components/data-processing/dataProcessing'
 import TaskDetail from '@/components/data-import/taskDetail'
+import TaskRelease from '@/components/task-release/taskRelease.vue'
 
 Vue.use(Router)
 const router = new Router({
@@ -35,6 +36,14 @@ const router = new Router({
                     path: 'task-detail',
                     name: 'task-detail',
                     component: TaskDetail,
+                    meta: {
+                        requireAuth: true
+                    }
+                },
+                {
+                    path: 'task-release',
+                    name: 'task-release',
+                    component: TaskRelease,
                     meta: {
                         requireAuth: true
                     }
