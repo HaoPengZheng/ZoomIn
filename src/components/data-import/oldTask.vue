@@ -6,10 +6,8 @@
       <div style="position: absolute; left: 250px;bottom: 5px;">
         <!-- element的远程搜索示例 -->
         <!-- remote-method="remoteMethod" :loading="loading" -->
-        <el-select v-model="value9" multiple filterable  reserve-keyword placeholder="请输入关键词">
-          <el-option v-for="item in options4" :key="item.value" :label="item.label" :value="item.value">
-          </el-option>
-        </el-select>
+        <el-input v-model="queryName" @change="filterTask" placeholder="请输入关键词">
+        </el-input>
       </div>
     </div>
     <div style="padding:0 40px;">
@@ -59,6 +57,7 @@ export default {
   data() {
     return {
       newTaskList: [],
+      originList:[],
       taskList: [],
       editDialogVisible: false,
       shareDialogVisible: false,
@@ -67,64 +66,7 @@ export default {
         describe: ""
       },
       editTaskId: "", //
-
-
-      options4: [],
-      value9: [],
-      list: [],
-      loading: false,
-      states: [
-        "Alabama",
-        "Alaska",
-        "Arizona",
-        "Arkansas",
-        "California",
-        "Colorado",
-        "Connecticut",
-        "Delaware",
-        "Florida",
-        "Georgia",
-        "Hawaii",
-        "Idaho",
-        "Illinois",
-        "Indiana",
-        "Iowa",
-        "Kansas",
-        "Kentucky",
-        "Louisiana",
-        "Maine",
-        "Maryland",
-        "Massachusetts",
-        "Michigan",
-        "Minnesota",
-        "Mississippi",
-        "Missouri",
-        "Montana",
-        "Nebraska",
-        "Nevada",
-        "New Hampshire",
-        "New Jersey",
-        "New Mexico",
-        "New York",
-        "North Carolina",
-        "North Dakota",
-        "Ohio",
-        "Oklahoma",
-        "Oregon",
-        "Pennsylvania",
-        "Rhode Island",
-        "South Carolina",
-        "South Dakota",
-        "Tennessee",
-        "Texas",
-        "Utah",
-        "Vermont",
-        "Virginia",
-        "Washington",
-        "West Virginia",
-        "Wisconsin",
-        "Wyoming"
-      ]
+      queryName: ""
     };
   },
   created: function() {
@@ -144,6 +86,7 @@ export default {
           }
         })
         .then(response => {
+          this.originList = response.data;
           this.taskList = response.data;
           this.dealTask();
           console.log(response);
@@ -167,6 +110,7 @@ export default {
     },
     dealTask: function() {
       var tasks = [];
+      this.newTaskList = [];
       for (var i = 0; i < this.taskList.length; i++) {
         tasks.push(this.taskList[i]);
         if ((i + 1) % 4 == 0) {
@@ -245,6 +189,26 @@ export default {
           });
           console.log(err.response);
         });
+    },
+    filterTask: function() {
+      let query = this.queryName;
+      let taskList = [];
+      this.taskList = this.originList;
+      for (var i = 0; i < this.taskList.length; i++) {
+        if (this.taskList[i].task_name.indexOf(query) != -1) {
+          taskList.push(this.taskList[i]);
+        }
+      }
+      this.taskList = taskList;
+      this.$set(this.taskList, taskList);
+      this.dealTask();
+    }
+  },
+  watch:{
+    queryName:{
+      handler:function(value,oldValue){
+        this.filterTask();
+      }
     }
   }
 };
