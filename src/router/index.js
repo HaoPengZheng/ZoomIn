@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HelloWorld from '@/components/HelloWorld'
 import home from '@/components/home'
 import login from '@/components/login'
 import dataImport from '@/components/data-import/dataImport'
@@ -13,58 +12,66 @@ import TaskRelease from '@/components/task-release/taskRelease.vue'
 Vue.use(Router)
 const router = new Router({
     routes: [{
-            path: '/home',
-            name: 'home',
-            component: home,
-            children: [{
-                    path: 'data-import',
-                    name: 'data-import',
-                    component: dataImport,
-                    meta: {
-                        requireAuth: true
-                    },
-                },
-                {
-                    path: 'data-processing',
-                    name: 'data-processing',
-                    component: dataProcessing,
-                    meta: {
-                        requireAuth: true
-                    }
-                },
-                {
-                    path: 'task-detail',
-                    name: 'task-detail',
-                    component: TaskDetail,
-                    meta: {
-                        requireAuth: true
-                    }
-                },
-                {
-                    path: 'task-release',
-                    name: 'task-release',
-                    component: TaskRelease,
-                    meta: {
-                        requireAuth: true
-                    }
-                }
-            ],
+        path: '/home',
+        name: 'home',
+        component: home,
+        children: [{
+            path: 'data-import',
+            name: 'data-import',
+            component: dataImport,
+            meta: {
+                requireAuth: true
+            },
+        },
+        {
+            path: 'data-processing',
+            name: 'data-processing',
+            component: dataProcessing,
             meta: {
                 requireAuth: true
             }
         },
         {
-            path: '/',
-            name: 'login',
-            component: login,
-            children: [{
-                path: '/',
-                component: childrenLogin
-            }, {
-                path: '/register',
-                component: childrenRegister
-            }]
+            path: 'task-detail',
+            name: 'task-detail',
+            component: TaskDetail,
+            meta: {
+                requireAuth: true
+            }
+        },
+        {
+            path: 'task-release',
+            name: 'task-release',
+            component: TaskRelease,
+            meta: {
+                requireAuth: true
+            }
+        }, {
+            path: 'data-analysis',
+            name: 'data-analysis',
+            component: dataAnalysis,
+            meta: {
+                requireAuth: true
+            },
         }
+
+        ],
+        meta: {
+            requireAuth: true
+        }
+    },
+    {
+        path: '/',
+        name: 'login',
+        component: login,
+        children: [{
+            path: '/',
+            component: childrenLogin
+        }, {
+            path: '/register',
+            component: childrenRegister
+        }]
+    }
     ]
 })
 
