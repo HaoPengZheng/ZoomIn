@@ -16,7 +16,7 @@
               <el-menu-item index="/home/data-processing">
                 数据处理
               </el-menu-item>
-              <el-menu-item index="/">
+              <el-menu-item index="/home/data-analysis">
                 数据分析
               </el-menu-item>
               <el-menu-item index="/">
