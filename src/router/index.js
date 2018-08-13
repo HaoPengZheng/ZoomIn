@@ -8,6 +8,7 @@ import childrenLogin from '@/components/login/toLogin'
 import dataProcessing from '@/components/data-processing/dataProcessing'
 import TaskDetail from '@/components/data-import/taskDetail'
 import TaskRelease from '@/components/task-release/taskRelease.vue'
+import dataAnalysis from '@/components/data-analysis/dataAnalysis'
 
 Vue.use(Router)
 const router = new Router({
