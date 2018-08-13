@@ -14,21 +14,20 @@
         </el-button>
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
         <el-menu default-active="1" :collapse="isShrink">
-          <el-menu-item index="1">
-            <i class="el-icon-document"></i>
-            <span slot="title">数据集1</span>
-          </el-menu-item>
-          <el-menu-item index="2">
-            <i class="el-icon-document"></i>
-            <span slot="title">数据集2</span>
-          </el-menu-item>
-          <el-menu-item index="3" disabled>
-            <i class="el-icon-document"></i>
-            <span slot="title">数据集3</span>
-          </el-menu-item>
-          <el-menu-item index="4">
-            <i class="el-icon-document"></i>
-            <span slot="title">数据集4</span>
+          <el-menu-item :index="index" v-for="(dataSet,index) in dataSetList" :key="index">
+            <a >
+              <i class="el-icon-document" style=""></i>
+              <span slot="title" style="padding-right:80px">{{dataSet.id}}</span>
+            </a>
+            <el-dropdown style="position: absolute;right:20px;">
+              <span class="el-dropdown-link">
+                <i class="el-icon-more pointer"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown" style="margin:-10px 0!important">
+                <el-dropdown-item>编辑</el-dropdown-item>
+                <el-dropdown-item @click.native="deleteTask(task.id)">删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-menu-item>
         </el-menu>
       </div>
@@ -61,7 +60,7 @@
 <script>
 export default {
   props: {
-    task: Array
+    dataSetList: Array
   },
   data() {
     return {
@@ -72,19 +71,6 @@ export default {
     };
   },
   created: function() {
-    this.$axios
-      .get("http://120.79.146.91:8000/dataSet/", {
-        headers: {
-          Authorization: "JWT " + localStorage.getItem("token")
-        }
-      })
-      .then(response => {
-        alert("成功");
-        console.log(response);
-      })
-      .catch(response => {
-        alert("error");
-      });
   },
   methods: {
     shrink: function() {

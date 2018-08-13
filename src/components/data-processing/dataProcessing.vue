@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <Left>
+    <Left :dataSetList="dataSetList">
     </Left>
     <el-container>
       <el-main>
@@ -47,7 +47,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog title="修改" :visible.sync="dialogVisible" width="30%" >
+    <el-dialog title="修改" :visible.sync="dialogVisible" width="30%">
       <el-form ref="form" label-width="80px">
         <el-form-item label="字段类型">
           <el-select v-model="newColumnType" placeholder="请选择">
@@ -87,6 +87,7 @@ export default {
     return {
       taskId: 1,
       dataSetId: Number,
+      dataSetList:[],
       loading: true,
       tableData: [],
       tableKeys: [],
@@ -116,6 +117,7 @@ export default {
     this.dataSetId = this.$route.params.dataSetId;
     this.fetch();
     // this.fetchData();
+    this.fetchAllDataSet();
   },
   methods: {
     // 初始化数据，拉取表格数据，
@@ -259,6 +261,23 @@ export default {
     },
     updateTableTypes: function(newTypes) {
       this.tableKeysType = newTypes;
+    },
+    fetchAllDataSet: function() {
+      this.$axios
+        .get("http://120.79.146.91:8000/dataSet/", {
+          headers: {
+            Authorization: "JWT " + localStorage.getItem("token")
+          }
+        })
+        .then(response => {
+          this.dataSetList = response.data;
+          console.log("!!!!!!")
+          console.log(this.dataSetList)
+          console.log(response);
+        })
+        .catch(response => {
+          alert("error");
+        });
     }
   }
 };

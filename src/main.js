@@ -12,6 +12,8 @@ import qs from 'qs'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
 import echarts from 'echarts'
+import './icon/iconfont.js'
+import './icon/icon.css'
 
 
 Vue.component('icon', Icon)
