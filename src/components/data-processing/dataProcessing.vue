@@ -270,7 +270,7 @@ export default {
           }
         })
         .then(response => {
-          this.dataSetList = response.dataget;
+          this.dataSetList = response.data;
           console.log("!!!!!!")
           console.log(this.dataSetList)
           console.log(response);
@@ -282,7 +282,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style >
 thead {
   line-height: 40px;
 }
@@ -292,15 +292,7 @@ thead {
 .el-col {
   border-radius: 4px;
 }
-.bg-purple-dark {
-  background: #99a9bf;
-}
-.bg-purple {
-  background: #d3dce6;
-}
-.bg-purple-light {
-  background: #e5e9f2;
-}
+
 .grid-content {
   border-radius: 4px;
   min-height: 36px;
@@ -310,4 +302,16 @@ thead {
   background-color: #f9fafc;
 }
 </style>
+<style scoped>
+.bg-purple-dark {
+  background: #99a9bf;
+}
+.bg-purple {
+  background: #d3dce6;
+}
+.bg-purple-light {
+  background: #e5e9f2;
+}
+</style>
+
 
