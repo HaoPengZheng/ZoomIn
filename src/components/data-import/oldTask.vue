@@ -177,7 +177,7 @@ export default {
           this.$message.success({
             message: "保存成功",
             showClose: true,
-            duration: 1000
+            duration: 2000
           });
           this.fetchTask();
         })
