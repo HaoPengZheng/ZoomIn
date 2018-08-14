@@ -13,8 +13,9 @@
                   数据筛选
                   <i class="el-icon-arrow-down"></i>
                 </el-button>
-                <el-button type="text">
-                  空值处理
+                <el-button type="text" @click="showFiltrate">
+                  设置显示字段
+                  <i class="el-icon-arrow-down"></i>
                 </el-button>
 
               </el-row>
@@ -35,7 +36,19 @@
               </el-row>
             </div>
           </el-tab-pane>
-          <el-tab-pane label="字段设置" name="second">字段管理</el-tab-pane>
+          <el-tab-pane label="字段设置" name="second">
+            <div>
+              <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
+                <el-button type="text" @click="showFiltrate">
+                  批量修改
+                  <i class="el-icon-arrow-down"></i>
+                </el-button>
+                <el-button type="text" >
+                  空值处理
+                </el-button>
+              </el-row>
+            </div>
+          </el-tab-pane>
         </el-tabs>
         <div style="padding-top:30px;width:90%;margin:0 auto">
           <wTable :data="tableData" :header="tableKeys" :option="tableOption" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
@@ -43,7 +56,6 @@
             </el-table-column>
           </wTable>
         </div>
-
       </el-main>
     </el-container>
 
@@ -85,9 +97,10 @@ export default {
   },
   data() {
     return {
+      // @Autor 郑浩鹏
       taskId: 1,
       dataSetId: Number,
-      dataSetList:[],
+      dataSetList: [],
       loading: true,
       tableData: [],
       tableKeys: [],
@@ -109,17 +122,33 @@ export default {
         border: true,
         maxHeight: 500
       }
+
+      // @Autor End 郑浩鹏
+
+      // @Autor 郭正浩
+
+      // @Autor End 郭正浩
     };
   },
-  // 接收创建人物以后返回的data_set_id
+
   created: function() {
+    // @Autor  郑浩鹏
+    // 接收创建人物以后返回的data_set_id
     //this.$route.params.id接受参数
     this.dataSetId = this.$route.params.dataSetId;
     this.fetch();
     // this.fetchData();
     this.fetchAllDataSet();
+
+    // @Autor End 郑浩鹏
+
+    // @Autor 郭正浩
+
+    // @Autor End 郭正浩
   },
   methods: {
+    // @Autor 郑浩鹏
+
     // 初始化数据，拉取表格数据，
     // 参数，data_set_id
     // 返回json
@@ -271,14 +300,19 @@ export default {
         })
         .then(response => {
           this.dataSetList = response.data;
-          console.log("!!!!!!")
-          console.log(this.dataSetList)
+          console.log("!!!!!!");
+          console.log(this.dataSetList);
           console.log(response);
         })
         .catch(response => {
           alert("error");
         });
     }
+    // @Autor End 郑浩鹏
+
+    // @Autor 郭正浩
+
+    // @Autor End 郭正浩
   }
 };
 </script>
