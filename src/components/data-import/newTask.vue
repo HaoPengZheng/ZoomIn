@@ -83,10 +83,11 @@ export default {
       if (this.$refs.obj.value == "") {
         this.$message({
           message: "请选择数据源！",
-          type: "warning"
+          type: "warning",
+          duration: 1500
         });
       } else {
-        alert(localStorage.getItem("token"));
+        // alert(localStorage.getItem("token"));
         this.$axios
           .post(
             "http://120.79.146.91:8000/taskinfo/",
@@ -166,15 +167,16 @@ export default {
     },
     createTask: function() {
       this.tablePreviewVisable = false;
-      alert(
-        "{'title':'" +
-          (this.titleIndex - 1) +
-          ",'name:'" +
-          this.newTaskModel.name +
-          ",'json:'" +
-          JSON.stringify(this.tablejsons) +
-          "}"
-      );
+      //显示json 信息
+      // alert(
+      //   "{'title':'" +
+      //     (this.titleIndex - 1) +
+      //     ",'name:'" +
+      //     this.newTaskModel.name +
+      //     ",'json:'" +
+      //     JSON.stringify(this.tablejsons) +
+      //     "}"
+      // );
 
       this.$axios
         .post(
@@ -203,9 +205,7 @@ export default {
             params: { taskId: this.taskid, dataSetId: dataSetId }
           });
         })
-        .catch(response => {
-          alert("出错了");
-        });
+        .catch(response => {});
     }
   }
 };

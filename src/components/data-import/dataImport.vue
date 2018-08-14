@@ -1,33 +1,33 @@
 <template>
+  <el-container>
     <el-container>
-        <el-container>
-            <el-main>
-                <!-- 新建任务部分 -->
-                <div>
-                    <NewTask></NewTask>
-                </div>
-                <!-- 历史任务部分 -->
-                <div>
-                    <OldTask></OldTask>
-                </div>
-                <!-- 分享任务部分 -->
-                <div>
-                    <ShareTask></ShareTask>
-                </div>
-                <!-- <el-carousel indicator-position="outside">
+      <el-main>
+        <!-- 新建任务部分 -->
+        <div>
+          <NewTask></NewTask>
+        </div>
+        <!-- 历史任务部分 -->
+        <div>
+          <OldTask></OldTask>
+        </div>
+        <!-- 分享任务部分 -->
+        <div>
+          <ShareTask></ShareTask>
+        </div>
+        <!-- <el-carousel indicator-position="outside">
                     <el-carousel-item v-for="(task,index) in tasks" :key="index">
                     <h3>{{ task.name }}</h3>
                     <h4>{{task.time}}</h4>
                     </el-carousel-item>
                 </el-carousel> -->
-                <Myfooter></Myfooter>
-            </el-main>
+        <Myfooter></Myfooter>
+      </el-main>
 
-            <!-- <el-footer>
+      <!-- <el-footer>
                
             </el-footer> -->
-        </el-container>
     </el-container>
+  </el-container>
 </template>
 <script>
 import Myfooter from "../common/footer.vue";
@@ -73,7 +73,11 @@ export default {
         this.allTaskList = response.data;
       })
       .catch(response => {
-        alert("出错了");
+        this.$message({
+          message: "出错了",
+          type: "warning",
+          duration: 1500
+        });
       });
   }
 };
@@ -86,7 +90,7 @@ export default {
   height: 80px !important;
 }
 .el-main {
-  padding: 0 10%!important;
+  padding: 0 10% !important;
   /* 页面左右空白    */
 }
 .el-carousel__item h3 {

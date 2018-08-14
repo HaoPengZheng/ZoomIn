@@ -193,7 +193,7 @@ export default {
     },
     showTaskDetail: function(id) {
       this.active = id;
-      this.taskQueryName= "";
+      this.taskQueryName = "";
       this.$emit("updateDetail", id);
     },
     showNewTaskDialog(fileType) {
@@ -334,7 +334,6 @@ export default {
         });
     },
     deleteTask: function(id) {
-      alert("id===" + id);
       this.$axios
         .delete("http://120.79.146.91:8000/taskinfo/" + id + "/", {
           headers: {
@@ -351,6 +350,10 @@ export default {
         })
         .catch(response => {
           alert("删除失败");
+          this.$message({
+            message: "删除失败",
+            type: "warning"
+          });
         });
     }
   },

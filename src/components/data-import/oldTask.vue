@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       newTaskList: [],
-      originList:[],
+      originList: [],
       taskList: [],
       editDialogVisible: false,
       shareDialogVisible: false,
@@ -130,11 +130,21 @@ export default {
           }
         })
         .then(response => {
-          alert("删除成功");
+          this.$message({
+            message: "删除成功",
+            type: "success",
+            showClose:true,
+            duration: 1500
+          });
           this.featchTask();
         })
         .catch(response => {
-          alert("删除失败");
+          this.$message({
+            message: "删除失败",
+            type: "warning",
+            showClose:true,
+            duration: 1500
+          });
         });
     },
     editTask: function(taskid) {
@@ -204,9 +214,9 @@ export default {
       this.dealTask();
     }
   },
-  watch:{
-    queryName:{
-      handler:function(value,oldValue){
+  watch: {
+    queryName: {
+      handler: function(value, oldValue) {
         this.filterTask();
       }
     }
