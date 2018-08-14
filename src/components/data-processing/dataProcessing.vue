@@ -270,7 +270,7 @@ export default {
           }
         })
         .then(response => {
-          this.dataSetList = response.data;
+          this.dataSetList = response.dataget;
           console.log("!!!!!!")
           console.log(this.dataSetList)
           console.log(response);
