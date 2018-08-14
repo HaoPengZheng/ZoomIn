@@ -282,7 +282,7 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 thead {
   line-height: 40px;
 }
