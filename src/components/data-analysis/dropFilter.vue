@@ -5,7 +5,7 @@
         <el-row>
             <el-col :span="24">
                 <!-- 字段框 -->
-                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='filterDrop($event)' @dragover='allowDrop($event)' @ondragstart="drag(event)">&nbsp;<img src="@/assets/筛选器.png"><!-- 框 -->
+                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='filterDrop($event)' @dragover='allowDrop($event)' @ondragstart="drag(event)">&nbsp;<p class="dropFont">筛选器</p><!-- 框 -->
                     <div class='select-project-item'>
                         <label class='drag-people-label'></label>
                     </div>

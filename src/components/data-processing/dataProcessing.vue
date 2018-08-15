@@ -320,12 +320,7 @@ export default {
 thead {
   line-height: 40px;
 }
-.el-row {
-  margin-bottom: 20px;
-}
-.el-col {
-  border-radius: 4px;
-}
+
 
 .grid-content {
   border-radius: 4px;

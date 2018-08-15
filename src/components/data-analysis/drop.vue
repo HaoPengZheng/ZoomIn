@@ -4,7 +4,15 @@
         <el-row>
             <el-col :span="12">
                 <!-- 字段框 -->
-                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='rowDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">&nbsp;<img src="@/assets/维度.png"><!-- 框 -->
+                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='rowDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                    
+                    维度<!-- <p class="dropFont">维度</p> -->
+                    <el-tag v-for="(item,index) in dropRow" :key="index" 
+                        closable
+                        :disable-transitions="false"
+                        @close="rowRemove(index)"
+                        style="margin-left:5px">{{item}}
+                    </el-tag>
                     <div class='select-project-item'>
                         <label class='drag-people-label'></label>
                     </div>
@@ -12,7 +20,14 @@
             </el-col>
             <el-col :span="12">
                 <!-- 数值框 -->
-                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)"><img src="@/assets/数值.png"><!-- 框 -->
+                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                    数值<!-- <p class="dropFont">数值</p> -->
+                    <el-tag v-for="(item,index) in dropCol" :key="index" 
+                        closable
+                        :disable-transitions="false"
+                        @close="colRemove(index)"
+                        style="margin-left:5px">{{item}}
+                    </el-tag>
                     <div class='select-project-item'>
                         <label class='drag-people-label'></label>
                     </div>
@@ -36,10 +51,10 @@ import dropItem from './dropItem'
     },
     data () {
         return {
-
+            dropRow:[],
+            dropCol:[]
         }
     },
-
     methods:{
             drag:function(ev){
                 ev.dataTransfer.setData("ID", ev.target.innerText);//拖动元素的ID
@@ -47,43 +62,44 @@ import dropItem from './dropItem'
 
             },
             rowDrop:function(ev){
-              ev.preventDefault();
+              ev.preventDefault();  
 			        var data = ev.dataTransfer.getData("ID");//拖动的元素的ID
-              
-			            var element = document.createElement("div");
-			            element.setAttribute("id", "row-" + data);
-                        element.setAttribute("class","select-item-drop");
-                        element.setAttribute("draggable", true);
-                        //element.setAttribute("ondragstart", "drag(event)");
-                        //element.setAttribute("onclick","liClick")
-			            var text = document.createTextNode(data);
-                        // alert(data);
-			            element.appendChild(text);
-			            ev.target.appendChild(element);                                                                
+                        this.dropRow.push(data)
+                        console.log(this.dropRow.length)
+                        //判定是否超过要求的范围
+                        if(this.dropRow.length > 1){
+                            this.$message({
+                                message: '只允许有一个维度噢',
+                                showClose: true,
+                                type: 'warning',
+                                duration:1000
+                            });
+                            this.dropRow.pop()
+                            return;
+                        }
+			            // var element = document.createElement("div");
+			            // element.setAttribute("id", "row-" + data);
+                        // element.setAttribute("class","drop-tag");
+                        // element.setAttribute("draggable", true);
+                        // //element.setAttribute("ondragstart", "drag(event)");
+                        // //element.setAttribute("onclick","liClick")
+			            // var text = document.createTextNode(data);
+                        // // alert(data);
+			            // element.appendChild(text);
+			            // ev.target.appendChild(element);                                                                
                         //给echarts组件发名字
                         Bus.$emit('rowdata', data)
+                        if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
 
 			        
             },
             colDrop:function(ev){
               ev.preventDefault();
 			        var data = ev.dataTransfer.getData("ID");//拖动的元素的ID
-              
-			            var element = document.createElement("div");
-			            element.setAttribute("id", "row-" + data);
-                        element.setAttribute("class","select-item-drop");
-                        element.setAttribute("draggable", true);
-                        //element.setAttribute("ondragstart", "drag(event)");
-                        //element.setAttribute("onclick","liClick")
-			            var text = document.createTextNode(data);
-                        // alert(data); 
-			            element.appendChild(text);
-			            ev.target.appendChild(element);                                                                
-                        //给echarts组件发名字
-                        Bus.$emit('coldata', data)
-
-                        //给功能配置发送消息
-                        Bus.$emit('featureConfiguration',data)
+                        this.dropCol.push(data)
+                        Bus.$emit('coldata', data)//给echarts组件发名字
+                        Bus.$emit('featureConfiguration',data)//给功能配置发送消息
+                        if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
 			        
             },
             liClick:function(event){
@@ -106,7 +122,15 @@ import dropItem from './dropItem'
 
 			        var obj = document.getElementById(data);
 			        obj.remove();
-		    }
+            },
+            rowRemove(tag) {
+                Bus.$emit('rowdataRemove', tag);
+                this.dropRow.splice(this.dropRow.indexOf(tag), 1);
+            },
+            colRemove(tag) {
+                Bus.$emit('coldataRemove', tag)
+                this.dropCol.splice(this.dropCol.indexOf(tag), 1);
+            },
 		    
     }
     }
@@ -148,6 +172,22 @@ import dropItem from './dropItem'
 .drag-people-label{
   margin-bottom:0;
   padding-right:10px;
+}
+.drop-tag {
+    background-color: rgba(64,158,255,.1);
+    display: inline-block;
+    padding: 0 10px;
+    height: 32px;
+    line-height: 30px;
+    font-size: 12px;
+    color: #409eff;
+    border-radius: 4px;
+    box-sizing: border-box;
+    border: 1px solid rgba(64,158,255,.2);
+    white-space: nowrap;
+}
+.el-tag {
+    font-size: 13px
 }
 [v-cloak]{
     display:none;

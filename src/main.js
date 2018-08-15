@@ -14,9 +14,13 @@ import Icon from 'vue-awesome/components/Icon'
 import echarts from 'echarts'
 import './icon/iconfont.js'
 import './icon/icon.css'
+import GeminiScrollbar from 'vue-gemini-scrollbar'
+
+
 
 
 Vue.component('icon', Icon)
+Vue.use(GeminiScrollbar)
 Vue.config.productionTip = false
 axios.defaults.timeout = 5000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'

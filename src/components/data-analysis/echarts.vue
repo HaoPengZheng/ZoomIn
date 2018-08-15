@@ -1,10 +1,26 @@
 <template>
-    <div id="myChart" :style="{width: '800px', height: '500px'}" ref="myChart"></div>
+	<div>
+		<div></div>
+		<el-row>
+			<el-col :span="1"></el-col>
+			<el-col :span="22">
+				<el-card class="box-card cardStyle" id="echartsCard">
+			    	<div id="myChart" :style="{width: '800px', height: '500px'}" ref="myChart"><p class="echarts-font" id="font-position">当前图表无数据</p></div>
+				</el-card>
+			</el-col>
+			<el-col :span="1"></el-col>
+		</el-row>
+	</div>
 </template>
 
 <script>
 import Bus from './Bus.js'
 import  'echarts/theme/macarons.js'
+import  'echarts/theme/vintage.js'
+import  'echarts/theme/dark.js'
+import  'echarts/theme/infographic.js'
+import  'echarts/theme/shine.js'
+import  'echarts/theme/roma.js'
 export default {
   name: 'echarts',
   data () {
@@ -17,7 +33,9 @@ export default {
 	  seriesData:[],
 	  seriesDataItem:[],
 	  myChart:{},
-	  option:{}
+	  option:{},
+	  chartStyle:'macarons',
+	  chartTitle:'图表标题'
     }
   },
   mounted(){
@@ -55,7 +73,18 @@ export default {
             this.drawLine();
 
 			
-       })
+	   })
+	   
+	   //监听移除事件
+       Bus.$on('rowdataRemove', (e) => {
+			this.Xdata = [];
+			this.drawLine();
+	   })
+		//监听移除事件
+       Bus.$on('coldataRemove', (e) => {
+			this.seriesData.splice(e, 1);
+			this.drawLine();
+	   })
 		
 		//监听图表类型改变
 		Bus.$on('typeChange',(e)=>{
@@ -64,6 +93,20 @@ export default {
 				if(e === 'scatter')this.option.series[i].symbolSize = 20
 			}
 			
+			this.drawLine();
+		})
+
+		//监听图表风格
+		Bus.$on('chartStyleType',(e)=>{
+			this.chartStyle = e;
+			this.myChart.dispose()
+			this.drawLine();
+		})
+
+		//监听标题改变
+		Bus.$on('titleChange',(e)=>{
+			this.chartTitle = e;
+			this.myChart.dispose()
 			this.drawLine();
 		})
 
@@ -117,13 +160,13 @@ export default {
   methods: {
     drawLine(){
 		let dom = this.$refs.myChart;
-      	this.myChart = this.$echarts.init(dom,'macarons');
+      	this.myChart = this.$echarts.init(dom,this.chartStyle);
         // 基于准备好的dom，初始化echarts实例
         //let myChart = this.$echarts.init(document.getElementById('myChart'),'macarons')
         // 绘制图表
         this.option = {
 		    title : {
-		        text: '成绩测试',
+		        text: this.chartTitle,
 		        subtext: '副标题'
 		    },
 		    tooltip : {
@@ -154,9 +197,9 @@ export default {
 		        }
 		    ],
 		    series : this.seriesData	
-        };
-        this.myChart.setOption(this.option);
-		
+		};
+
+        this.myChart.setOption(this.option,true);
 
 	},
 
@@ -178,8 +221,12 @@ export default {
             this.winWidth = document.documentElement.clientWidth;
 
         //DIV高度为浏览器窗口的高度
-		document.getElementById("myChart").style.height= this.winHeight*0.8	 + "px";
-		document.getElementById("myChart").style.width= this.winWidth*0.7 + "px";
+		document.getElementById("myChart").style.height= this.winHeight*0.7	 + "px";
+		document.getElementById("myChart").style.width= this.winWidth*0.65 + "px";
+		document.getElementById("echartsCard").style.height= this.winHeight*0.75 + "px";
+		document.getElementById("echartsCard").style.width= this.winWidth*0.65 + "px";
+		document.getElementById("font-position").style.marginTop= this.winHeight*0.30 + "px";
+		
 	},
     //Aiox模拟
     myAiox(){
@@ -188,3 +235,16 @@ export default {
   }
 }
 </script>
+<style>
+.cardStyle{
+	
+	margin: 10px;
+	margin-top: 20px;
+	
+}
+.echarts-font {
+	font-family: '新宋体';
+	margin:auto;
+
+}
+</style>
