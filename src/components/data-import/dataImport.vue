@@ -45,20 +45,6 @@ export default {
   },
   data() {
     return {
-      tasks: [
-        {
-          name: "任务1",
-          time: "2018年6月2日17:22:23"
-        },
-        {
-          name: "任务1",
-          time: "2018年6月2日17:22:23"
-        },
-        {
-          name: "任务1",
-          time: "2018年6月2日17:22:23"
-        }
-      ],
       allTaskList: []
     };
   },

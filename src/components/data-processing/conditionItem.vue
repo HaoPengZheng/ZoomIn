@@ -1,5 +1,5 @@
 <template>
-  <el-row :gutter="10">
+  <el-row :gutter="10" class="margin-20">
     <el-col :span="3">
       <el-select v-model="conditionKey" @change="keychange" placeholder="请选择" size="mini">
         <el-option v-for="item in keys" :key="item" :label="item" :value="item">
@@ -145,5 +145,8 @@ export default {
 <style>
 .noEndItem {
   margin-left: 33px !important;
+}
+.margin-20{
+  margin: 20px;
 }
 </style>

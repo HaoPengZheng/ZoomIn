@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <Left :dataSetList="dataSetList">
+    <Left :dataSetList="dataSetList" v-on:showDataSet="showDataSet">
     </Left>
     <el-container>
       <el-main>
@@ -33,29 +33,33 @@
                     语句筛选内容
                   </div>
                 </el-row>
+                <div style="padding-top:30px;width:100%;margin:0 auto">
+                  <wTable :data="tableData" :header="tableKeys" :option="tableOption" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                    <el-table-column slot="fixed" fixed type="index" width="50">
+                    </el-table-column>
+                  </wTable>
+                </div>
               </el-row>
             </div>
           </el-tab-pane>
           <el-tab-pane label="字段设置" name="second">
             <div>
               <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
-                <el-button type="text" @click="showFiltrate">
+                <el-button type="text" @click="showBatchOperation">
                   批量修改
-                  <i class="el-icon-arrow-down"></i>
+                  <!-- <i class="el-icon-arrow-down"></i> -->
                 </el-button>
-                <el-button type="text" >
+                <el-button type="text" @click="dealwithNull">
                   空值处理
                 </el-button>
+              </el-row>
+              <el-row>
+                <BatchOperation :tableKeys="tableKeys" :tableKeysTypes="tableKeysType" :keyVisibilitys="keyVisibilitys"></BatchOperation>
               </el-row>
             </div>
           </el-tab-pane>
         </el-tabs>
-        <div style="padding-top:30px;width:90%;margin:0 auto">
-          <wTable :data="tableData" :header="tableKeys" :option="tableOption" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
-            <el-table-column slot="fixed" fixed type="index" width="50">
-            </el-table-column>
-          </wTable>
-        </div>
+
       </el-main>
     </el-container>
 
@@ -88,12 +92,14 @@
 import Left from "../common/data_set_list.vue";
 import ConditionFilter from "./conditionFilter.vue";
 import wTable from "../common/mytable.vue";
+import BatchOperation from "./batchOperation.vue";
 
 export default {
   components: {
     Left,
     ConditionFilter,
-    wTable
+    wTable,
+    BatchOperation
   },
   data() {
     return {
@@ -111,6 +117,7 @@ export default {
       dialogVisible: false,
       changeColumnIndex: 0,
       tableKeysType: ["#", "T", "d", "#", "T", "d", "#", "#"],
+      keyVisibilitys:[true,false,true,true,true,true],
       newColumnName: "",
       newColumnType: "",
       dataTypeOption: [
@@ -153,6 +160,34 @@ export default {
     // 参数，data_set_id
     // 返回json
     fetch: function() {
+      this.$axios
+        .post(
+          "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
+          {
+            data_set_id: this.dataSetId
+          },
+          {
+            headers: {
+              Authorization: "JWT " + localStorage.getItem("token")
+            }
+          }
+        )
+        .then(response => {
+          this.tableData = response.data.data.slice(0, 100);
+          console.log(this.tableData);
+          this.tableKeys = Object.keys(this.tableData[0]);
+          console.log(this.tableKeys);
+          this.loading = false;
+        })
+        .catch(response => {
+          alert("获取数据失败");
+        });
+    },
+    fetch: function() {
+      if (typeof this.dataSetId == "undefined") {
+        alert("undefind");
+        this.dataSetId = 64;
+      }
       this.$axios
         .post(
           "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
@@ -307,7 +342,21 @@ export default {
         .catch(response => {
           alert("error");
         });
-    }
+    },
+    showDataSet: function(dataSetId) {
+      // TODO 是否保存？
+      this.dataSetId = dataSetId;
+      this.fetch();
+    },
+    dealwithNull: function() {
+      var c = confirm("是否删除所有空值的行？");
+      if (c) {
+        alert("删除成功");
+      } else {
+        alert("取消失败");
+      }
+    },
+    showBatchOperation: function() {}
     // @Autor End 郑浩鹏
 
     // @Autor 郭正浩
@@ -320,8 +369,6 @@ export default {
 thead {
   line-height: 40px;
 }
-
-
 .grid-content {
   border-radius: 4px;
   min-height: 36px;
@@ -330,8 +377,6 @@ thead {
   padding: 10px 0;
   background-color: #f9fafc;
 }
-</style>
-<style scoped>
 .bg-purple-dark {
   background: #99a9bf;
 }

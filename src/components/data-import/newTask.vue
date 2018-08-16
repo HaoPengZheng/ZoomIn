@@ -18,7 +18,6 @@
         <el-form-item label="任务名称">
           <el-input type="text" v-model="newTaskModel.name"></el-input>
         </el-form-item>
-
         <el-form-item label="数据源">
           <input type="file" ref="obj" @change="importf()" id="excel-input" :accept="accept" />
         </el-form-item>
@@ -116,6 +115,9 @@ export default {
     importf() {
       //导入
       let obj = this.$refs.obj;
+
+      this.filename = obj.value.substring(obj.value.lastIndexOf("\\") + 1, obj.value.lastIndexOf("."));
+
       if (!obj.files) {
         return;
       }
@@ -187,6 +189,7 @@ export default {
             step1: "1",
             step2: "2",
             step3: "3",
+            title:this.filename,
             row_num: (this.titleIndex - 2).toString(),
             data_set: this.tablejsons
           },
