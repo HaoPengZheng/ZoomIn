@@ -1,37 +1,45 @@
 <template>
     <div  id="dragCon" >
     <div class='people-content'>
-        <el-row>
-            <el-col :span="12">
+        <el-row> 
+
+            <el-col :span="12" >
                 <!-- 字段框 -->
-                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='rowDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
-                    
-                    维度<!-- <p class="dropFont">维度</p> -->
-                    <el-tag v-for="(item,index) in dropRow" :key="index" 
-                        closable
-                        :disable-transitions="false"
-                        @close="rowRemove(index)"
-                        style="margin-left:5px">{{item}}
-                    </el-tag>
-                    <div class='select-project-item'>
-                        <label class='drag-people-label'></label>
+                <div class="el-input el-input-group el-input-group--prepend"><div class="el-input-group__prepend">维度<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wenzi"></use></svg></div>
+                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='rowDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                        <el-tag v-for="(item,index) in dropRow" :key="index" 
+                            closable
+                            :disable-transitions="false"
+                            @close="rowRemove(index)"
+                            style="margin:3px">{{item}}
+                        </el-tag>
+                        <div>
+                            <div class="insert-tag">&nbsp;</div>
+                        </div>
                     </div>
                 </div>
+
             </el-col>
+
             <el-col :span="12">
+
                 <!-- 数值框 -->
-                <div  style="margin-top:5px;border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
-                    数值<!-- <p class="dropFont">数值</p> -->
-                    <el-tag v-for="(item,index) in dropCol" :key="index" 
-                        closable
-                        :disable-transitions="false"
-                        @close="colRemove(index)"
-                        style="margin-left:5px">{{item}}
-                    </el-tag>
-                    <div class='select-project-item'>
-                        <label class='drag-people-label'></label>
+                <div class="el-input el-input-group el-input-group--prepend">
+                    <div class="el-input-group__prepend" style="border-left: 1px solid #dcdfe6">数值<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wellnum"></use></svg></div>
+                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                        <el-tag v-for="(item,index) in dropCol" :key="index" 
+                            closable
+                            :disable-transitions="false"
+                            @close="colRemove(index)"
+                            style="margin:3px">{{item}}
+                        </el-tag>
+                        <div>
+                            <div class="insert-tag">&nbsp;</div>
+                        </div>
                     </div>
                 </div>
+
+
             </el-col>
         </el-row>
     </div>
@@ -65,11 +73,11 @@ import dropItem from './dropItem'
               ev.preventDefault();  
 			        var data = ev.dataTransfer.getData("ID");//拖动的元素的ID
                         this.dropRow.push(data)
-                        console.log(this.dropRow.length)
+                        //console.log(this.dropRow.length)
                         //判定是否超过要求的范围
                         if(this.dropRow.length > 1){
                             this.$message({
-                                message: '只允许有一个维度噢',
+                                message: '只允许有一个维度',
                                 showClose: true,
                                 type: 'warning',
                                 duration:1000
@@ -136,7 +144,7 @@ import dropItem from './dropItem'
     }
 </script>
 
-<style>
+<style scoped>
 .select-item-drop {
   border:1px solid #5bc0de;
   display: inline-block;
@@ -152,9 +160,7 @@ import dropItem from './dropItem'
   cursor: default;
 }
 
-.people-content {
-    margin-top: 4px;
-}
+
 .drag-div {
     border: 1px solid #5bc0de;
     padding:10px;
@@ -188,6 +194,26 @@ import dropItem from './dropItem'
 }
 .el-tag {
     font-size: 13px
+}
+.box-style {
+    background-color: #f5f7fa;
+    color: #909399;
+    height: 100%;
+}
+.insert-tag {
+    padding: 0 10px;
+    height: 32px;
+    line-height: 32px;
+    font-size: 12px;
+    border-radius: 4px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+.el-input-group__prepend{
+    border: 0px solid;
+    border-bottom: 1px solid #dcdfe6; 
+    border-right: 1px solid #dcdfe6 
 }
 [v-cloak]{
     display:none;

@@ -1,6 +1,6 @@
 <template>
 <div id="rightBoard">
-  <GeminiScrollbar style="height:600px" class="my-scroll-bar">
+
     <div style="margin:10px;">
     <el-collapse  v-model="activeNames" >
       <el-collapse-item title="图表标题" name="1">
@@ -9,18 +9,18 @@
       <el-collapse-item title="图表类型" name="2">
         <rightChartSetting/>
       </el-collapse-item>
-      <el-collapse-item title="图表备注" name="3">
-        <rightTips/>
+      <el-collapse-item title="图表样式" name="5"  v-show="featureConfigurationFlag">
+        <chartStyle/>
       </el-collapse-item>
       <el-collapse-item title="功能配置" name="4" v-show="featureConfigurationFlag">
         <featureConfiguration/>
       </el-collapse-item>
-      <el-collapse-item title="图表样式" name="5"  v-show="featureConfigurationFlag">
-        <chartStyle/>
+      <el-collapse-item title="图表备注" name="3">
+        <rightTips/>
       </el-collapse-item>
     </el-collapse>
     </div>
-  </GeminiScrollbar>
+
 </div>
 </template>
 
@@ -44,7 +44,7 @@ import chartStyle from './rightOption/chartStyle'
         return {
         input: '',
         featureConfigurationFlag:false,
-        activeNames: ['1','2','3','4']
+        activeNames: ['1','2','3','4','5']
         }
     },
     mounted(){

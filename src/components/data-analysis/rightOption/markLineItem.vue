@@ -25,7 +25,7 @@
             </el-option>
         </el-select>
 
-        <el-input class="selectBox" v-model="inputValue" placeholder="请输入数值" v-show="inputVisiable" style="width:25%"></el-input>
+        <el-input class="selectBox" v-model="inputValue" placeholder="请输入数值" v-show="inputVisiable" style="width:20.52%"></el-input>
         
         <svg class="icon" aria-hidden="true" style="margin-left:10px" @click="rowAdd" v-show="iconVisiable"><use xlink:href="#icon-iconjia"></use></svg>
         <svg class="icon" aria-hidden="true" style="margin-left:10px" @click="rowDelete" v-show="!iconVisiable"><use xlink:href="#icon-koba"></use></svg>

@@ -1,16 +1,29 @@
 <template>
     <div class='drag-content' id="dragCon" >
-    <div class='project-content'>
-        <div style="margin-top:130px" v-if="loadingUsergroupList"><div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div></div>
-        <div class='select-ul' v-if="dragFlag">
-            <ul  style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
-                <li  class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)' style="margin-top: 5px;list-style-type:none; "><svg class="icon" aria-hidden="true"><use xlink:href="#icon-left-text"></use></svg>{{textField}}</li>
-            </ul>
-            <ul  style="display:table;text-align: left;" v-for="(numberField) in numberFields" :key="numberField">
-                <li  class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)' style="margin-top: 5px;list-style-type:none; "><svg class="icon" aria-hidden="true"><use xlink:href="#icon-shuzi"></use></svg>{{numberField}}</li>
-            </ul>
-        </div> <!-- 拖动的标签 -->
-    </div>
+        <el-tabs v-model="activeName">
+            <el-tab-pane  class="tab-pane-font" label="字段选择" name="first">
+                <div>
+                    <div style="margin-top:130px" v-if="loadingUsergroupList"><div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div></div>
+                    <div class='select-ul' v-if="dragFlag">
+                        <ul  style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
+                            <li  class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)' style="margin-top: 5px;list-style-type:none; ">
+                                <svg class="icon" aria-hidden="true" style="margin-right:20px"><use xlink:href="#icon-wenzi"></use></svg>{{textField}}
+                            </li>
+                        </ul>
+                        <ul  style="display:table;text-align: left;" v-for="(numberField) in numberFields" :key="numberField">
+                            <li  class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)' style="margin-top: 5px;list-style-type:none; ">
+                                <svg class="icon" aria-hidden="true" style="margin-right:20px"><use xlink:href="#icon-wellnum"></use></svg>{{numberField}}
+                            </li>
+                        </ul>
+                    </div> <!-- 拖动的标签 -->
+                </div>
+            </el-tab-pane>
+            <el-tab-pane  class="tab-pane-font" label="参数设置" name="second">
+
+            </el-tab-pane>
+        </el-tabs>
+
+
     <!-- <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shuzi"></use></svg> -->
     </div>
 </template>
@@ -25,7 +38,8 @@ import Bus from './Bus.js'
         numberFields:[],
         textFields:[],
         loadingUsergroupList:true,
-        dragFlag:false
+        dragFlag:false,
+        activeName:'first'
         }
     },
 
@@ -75,19 +89,18 @@ import Bus from './Bus.js'
     }
 </script>
 
-<style>
+<style scoped>
 .select-ul {
-  /* 自己写的，有冗余 */
-  display: inline-block;
+  padding: 30px;
   text-align: center;
-  border-radius: 3px;
-  margin-right: 10px;
+  
   cursor:pointer;
-  padding: 6px 20px;
-  color: #5bc0de;
+
+  color: #5A616A;
+  font-family: "Microsoft YaHei","微软雅黑"
 }
 .select-item {
-  border:1px solid #5bc0de;
+  /* border:1px solid #5bc0de;
   display: inline-block;
   text-align: left;
   border-radius: 3px;
@@ -95,7 +108,8 @@ import Bus from './Bus.js'
   cursor:pointer;
   padding: 6px 20px;
   color: #5bc0de;
-  width: 120px;
+  width: 120px; */
+  margin: 5px
 }
  .cursored{
   cursor: default;
@@ -103,13 +117,6 @@ import Bus from './Bus.js'
 
 .people-content {
     margin-top: 4px;
-}
-.drag-div {
-    border: 1px solid #5bc0de;
-    padding:10px;
-    margin-bottom: 10px;
-    width: 800px;
-    cursor: pointer;
 }
 .select-project-item {
     display: inline-block;
@@ -119,6 +126,9 @@ import Bus from './Bus.js'
 .drag-people-label{
   margin-bottom:0;
   padding-right:10px;
+}
+.tab-pane-font{
+    text-align: center;
 }
 [v-cloak]{
     display:none;

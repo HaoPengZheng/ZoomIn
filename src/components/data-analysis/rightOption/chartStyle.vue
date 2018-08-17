@@ -21,7 +21,7 @@ import Bus from '../Bus.js'
 export default {
     data(){
         return {
-            chartStyle:['dark','macarons','vintage','infographic','shine','roma']
+            chartStyle:['shine','macarons','vintage','infographic','dark','roma']
         }
     },
     methods:{
