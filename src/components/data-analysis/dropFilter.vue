@@ -78,7 +78,7 @@
 
 <script>
 import Bus from './Bus.js'
-import dropFilterItem from './dropFilterItem'
+
     export default {
     data () {
         return {
@@ -97,7 +97,7 @@ import dropFilterItem from './dropFilterItem'
         }
     },
     components:{
-        dropFilterItem
+        
     },
     mounted(){
         Bus.$on('AxiosDataDragItem',(e)=>{
