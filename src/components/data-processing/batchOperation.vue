@@ -1,12 +1,12 @@
 <template>
   <div class="margin-10">
     <div class="margin-10 floatR">
-      <el-button type="primary" size="mini" @click="edit">
+      <el-button type="primary" size="mini" @click="editOrSave">
         <i class="el-icon-edit" v-show="!showEdit"></i>
-        <i v-show="showEdit" class="el-icon-document  "></i>{{showEdit?" 保存 ":" 编辑 "}}</el-button>
+        <i v-show="showEdit" class="el-icon-document "></i>{{showEdit?" 保存 ":" 编辑 "}}</el-button>
     </div>
 
-    <el-table align="center" :data="tableProperty" border style="width: 100%">
+    <el-table align="center" :data="tablePropertys" border style="width: 100%">
       <el-table-column align="center" prop="keyVisibility" label="显示" width="180">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.keyVisibility" :disabled="!showEdit">
@@ -63,7 +63,7 @@ export default {
     keyVisibilitys: Array
   },
   computed: {
-    tableProperty: function() {
+    tablePropertys: function() {
       var tablePropertys = [];
       for (var i = 0; i < this.tableKeys.length; i++) {
         var tableProperty = {
@@ -80,7 +80,10 @@ export default {
     }
   },
   methods: {
-    edit: function() {
+    editOrSave: function() {
+      if(this.showEdit){
+        this.updateTableProperty();
+      }
       this.showEdit = !this.showEdit;
     },
     convertTypeForText: function(type) {
@@ -94,6 +97,18 @@ export default {
       } else {
         return dateTypeText;
       }
+    },
+    updateTableProperty:function(){
+      console.log(this.tablePropertys);
+      let newTableKeys = [];
+      let newTableKeysTypes = [];
+      let newKeyVisibilitys = [];
+      this.tablePropertys.array.forEach(tableProperty => {
+        newTableKeys.push(tableProperty.tableKey);
+        newTableKeysTypes.push(tableProperty.keyType);
+        newKeyVisibilitys.push(tableProperty.keyVisibility);
+      });
+      this.$emit('updateTableProperty',newTableKeys,newTableKeysTypes,newKeyVisibilitys);
     }
   }
 };

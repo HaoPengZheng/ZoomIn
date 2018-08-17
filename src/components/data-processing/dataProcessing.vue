@@ -54,7 +54,7 @@
                 </el-button>
               </el-row>
               <el-row>
-                <BatchOperation :tableKeys="tableKeys" :tableKeysTypes="tableKeysType" :keyVisibilitys="keyVisibilitys"></BatchOperation>
+                <BatchOperation :tableKeys="tableKeys" :tableKeysTypes="tableKeysType" :keyVisibilitys="keyVisibilitys" v-on:updateTableProperty="updateTableProperty"></BatchOperation>
               </el-row>
             </div>
           </el-tab-pane>
@@ -356,7 +356,12 @@ export default {
         alert("取消失败");
       }
     },
-    showBatchOperation: function() {}
+    updateTableProperty:function(tableKeys,tableKeysTypes,keyVisibilitys){
+      alert("更新："+tableKeys);
+      this.tableKeysType = [];
+      this.tableKeysType = tableKeys;
+      alert(this.tableKeysType);
+    }
     // @Autor End 郑浩鹏
 
     // @Autor 郭正浩
