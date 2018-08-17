@@ -356,11 +356,23 @@ export default {
         alert("取消失败");
       }
     },
-    updateTableProperty:function(tableKeys,tableKeysTypes,keyVisibilitys){
+    updateTableProperty:function(oldTableKeys,oldTableKeysTypes,oldKeyVisibilitys,tableKeys,tableKeysTypes,keyVisibilitys){
       alert("更新："+tableKeys);
+      this.batchTableKey(oldTableKeys,tableKeys);
+      this.tableKeys = [];
+      this.tableKeys = tableKeys;
       this.tableKeysType = [];
-      this.tableKeysType = tableKeys;
+      this.tableKeysType = tableKeysTypes;  
       alert(this.tableKeysType);
+    },
+    batchTableKey:function(oldTableKeys,newTableKeys){
+      this.tableData.forEach(data=>{
+        alert(data);
+        oldTableKeys.forEach(key=>{
+          alert(key)
+          alert(data[key]);
+        })
+      })
     }
     // @Autor End 郑浩鹏
 

@@ -103,12 +103,12 @@ export default {
       let newTableKeys = [];
       let newTableKeysTypes = [];
       let newKeyVisibilitys = [];
-      this.tablePropertys.array.forEach(tableProperty => {
+      this.tablePropertys.forEach(tableProperty => {
         newTableKeys.push(tableProperty.tableKey);
         newTableKeysTypes.push(tableProperty.keyType);
         newKeyVisibilitys.push(tableProperty.keyVisibility);
       });
-      this.$emit('updateTableProperty',newTableKeys,newTableKeysTypes,newKeyVisibilitys);
+      this.$emit('updateTableProperty',this.tableKeys,this.tableKeysTypes,this.keyVisibilitys,newTableKeys,newTableKeysTypes,newKeyVisibilitys);
     }
   }
 };
