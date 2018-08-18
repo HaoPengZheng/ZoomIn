@@ -16,11 +16,16 @@ import './icon/iconfont.js'
 import './icon/icon.css'
 import GeminiScrollbar from 'vue-gemini-scrollbar'
 
+// 滚动条插件
+import vuescroll from 'vuescroll/dist/vuescroll-native';
+// 导入css文件
+import 'vuescroll/dist/vuescroll.css';
+
 
 
 
 Vue.component('icon', Icon)
-Vue.use(GeminiScrollbar)
+
 Vue.config.productionTip = false
 axios.defaults.timeout = 5000
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -30,6 +35,8 @@ const root = document.createElement('div')
 document.body.appendChild(root)
 Vue.use(ElementUI)
 Vue.use(VueRouter)
+Vue.use(GeminiScrollbar)
+Vue.use(vuescroll)
 
 Vue.prototype.$echarts = echarts 
 Vue.prototype.$axios = axios

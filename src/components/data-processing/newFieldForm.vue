@@ -14,48 +14,52 @@
       </el-input>
     </el-form-item>
     <el-form-item>
-      <el-row class="tac" > 
+      <el-row class="tac">
         <el-col :span="12">
           <h5 style="text-align:center">函数</h5>
-          <el-menu default-active="1" style="max-height:200px;" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
-            <el-menu-item index="1">
-              <i class="el-icon-menu"></i>
-              <span slot="title">substr</span>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <i class="el-icon-menu"></i>
-              <span slot="title">add</span>
-            </el-menu-item>
-            <el-menu-item index="3">
-              <i class="el-icon-document"></i>
-              <span slot="title">pow</span>
-            </el-menu-item>
-            <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">log</span>
-            </el-menu-item>
-             <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">log</span>
-            </el-menu-item>
-             <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">log</span>
-            </el-menu-item>
-             <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">log</span>
-            </el-menu-item>
-             <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">log</span>
-            </el-menu-item>
-             <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">log</span>
-            </el-menu-item>
-            
-          </el-menu>
+          <vue-scroll :ops="ops">
+            <div class='your-content'>
+              <el-menu default-active="1" style="max-height:200px;" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
+                <el-menu-item index="1">
+                  <i class="el-icon-menu"></i>
+                  <span slot="title">substr</span>
+                </el-menu-item>
+                <el-menu-item index="2">
+                  <i class="el-icon-menu"></i>
+                  <span slot="title">add</span>
+                </el-menu-item>
+                <el-menu-item index="3">
+                  <i class="el-icon-document"></i>
+                  <span slot="title">pow</span>
+                </el-menu-item>
+                <el-menu-item index="4">
+                  <i class="el-icon-setting"></i>
+                  <span slot="title">log</span>
+                </el-menu-item>
+                <el-menu-item index="4">
+                  <i class="el-icon-setting"></i>
+                  <span slot="title">log</span>
+                </el-menu-item>
+                <el-menu-item index="4">
+                  <i class="el-icon-setting"></i>
+                  <span slot="title">log</span>
+                </el-menu-item>
+                <el-menu-item index="4">
+                  <i class="el-icon-setting"></i>
+                  <span slot="title">log</span>
+                </el-menu-item>
+                <el-menu-item index="4">
+                  <i class="el-icon-setting"></i>
+                  <span slot="title">log</span>
+                </el-menu-item>
+                <el-menu-item index="4">
+                  <i class="el-icon-setting"></i>
+                  <span slot="title">log</span>
+                </el-menu-item>
+              </el-menu>
+            </div>
+          </vue-scroll>
+
         </el-col>
         <el-col :span="12">
           <h5 style="text-align:center">字段</h5>
@@ -83,12 +87,28 @@
   </el-form>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      ops: {
+        vuescroll: {},
+        scrollPanel: {},
+        scrollContent: {}, // only for native-mode
+        rail: {
+          background: "#01a99a",
+          opacity: 0,
+          /** Rail's size(Height/Width) , default -> 6px */
+          size: "6px"
+        },
+        bar: {
+          background:"#90929880"
+        }
+      }
+    };
+  }
+};
 </script>
 
-<style <style lang="scss" scoped>
-
-</style>
->
+<style  scoped>
 </style>
 

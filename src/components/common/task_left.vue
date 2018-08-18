@@ -1,7 +1,8 @@
 <template>
   <el-aside :style="{width:width+'px'}">
     <div class="aside-warp">
-      <div style="overflow:scroll;width:100%;height:100%;">
+
+      <div style="overflow-y:scroll;width:100%;height:100%;">
         <!-- :remote-method="remoteMethod" :loading="loading" -->
         <el-select v-show="!isShrink" value-key="id" filterable reserve-keyword placeholder="搜索任务" style="padding:5px;" v-model="taskQueryName" @change="change(taskQueryName)">
           <el-option v-for="item in taskInfo" :key="item.id" :label="item.task_name" :value="item">
@@ -29,6 +30,7 @@
           </el-menu-item>
         </el-menu>
       </div>
+
       <a @click="shrink" :title="toggleTitle">
         <template v-if="isShrink === false">
           <icon name="angle-left" class="shrink"></icon>
@@ -108,6 +110,21 @@ export default {
       taskQueryName: {
         id: "",
         task_name: ""
+      },
+      // 滚动条配置
+      ops: {
+        vuescroll: {},
+        scrollPanel: {},
+        scrollContent: {}, // only for native-mode
+        rail: {
+          background: "#01a99a",
+          opacity: 0,
+          /** Rail's size(Height/Width) , default -> 6px */
+          size: "6px"
+        },
+        bar: {
+          background: "#90929880"
+        }
       },
       options: [
         {
