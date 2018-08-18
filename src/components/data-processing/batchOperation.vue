@@ -13,7 +13,7 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="originKey" label="源文件列名" width="180">
+      <el-table-column align="center" prop="originKey" label="源文件列名" width="180" v-if="!showEdit">
         <template slot-scope="scope">
           <span v-show="!showEdit">{{scope.row.originKey}}</span>
           <el-input v-model="scope.row.originKey" v-show="showEdit" size="small "></el-input>

@@ -3,7 +3,7 @@
     <!--  cell-mouse-enter 和 mouseleave.native 控制鼠标离开时重置拖拽状态-->
     <el-table :data="data" :border="option.border" :height="option.height" v-loading="loading" :style="{ width: parseInt(option.width)+'px' }" :cell-class-name="cellClassName" :header-cell-class-name="headerCellClassName" @cell-mouse-enter="handleMouseLeave" @mouseleave.native="handleMouseLeave">
       <slot name="fixed"></slot>
-      <el-table-column v-for="(col, index) in tableHeader" :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
+      <el-table-column v-for="(col, index) in tableHeader" v-if="keyVisibilitys[index]"  :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
       </el-table-column>
     </el-table>
   </div>
@@ -31,7 +31,8 @@ export default {
     },
     types: {
       type: Array
-    }
+    },
+    keyVisibilitys:Array,
   },
   data() {
     return {

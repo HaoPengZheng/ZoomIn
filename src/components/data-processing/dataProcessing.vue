@@ -1,4 +1,4 @@
-<template>
+  <template>
   <el-container>
     <Left :dataSetList="dataSetList" v-on:showDataSet="showDataSet">
     </Left>
@@ -13,9 +13,8 @@
                   数据筛选
                   <i class="el-icon-arrow-down"></i>
                 </el-button>
-                <el-button type="text" @click="showFiltrate">
-                  设置显示字段
-                  <i class="el-icon-arrow-down"></i>
+                <el-button type="text" @click="addNewField">
+                  新增字段
                 </el-button>
 
               </el-row>
@@ -34,7 +33,7 @@
                   </div>
                 </el-row>
                 <div style="padding-top:30px;width:100%;margin:0 auto">
-                  <wTable :data="tableData" :header="tableKeys" :option="tableOption" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                  <wTable :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
                   </wTable>
@@ -80,9 +79,17 @@
         <el-button type="primary" @click="renewColumnName(e)">确 定</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog title="增加新字段" :visible.sync="addFieldDialogVisible" width="30%">
+      <newFieldForm></newFieldForm>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="renewColumnName(e)">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
-<script>
+  <script>
 // 列拖拽尚未完成
 // 样式需优化
 // 改列名需要时间加载,有bug
@@ -93,13 +100,14 @@ import Left from "../common/data_set_list.vue";
 import ConditionFilter from "./conditionFilter.vue";
 import wTable from "../common/mytable.vue";
 import BatchOperation from "./batchOperation.vue";
-
+import newFieldForm from "./newFieldForm.vue"
 export default {
   components: {
     Left,
     ConditionFilter,
     wTable,
-    BatchOperation
+    BatchOperation,
+    newFieldForm
   },
   data() {
     return {
@@ -117,7 +125,7 @@ export default {
       dialogVisible: false,
       changeColumnIndex: 0,
       tableKeysType: ["#", "T", "d", "#", "T", "d", "#", "#"],
-      keyVisibilitys:[true,false,true,true,true,true],
+      keyVisibilitys: [true, true, true, true, true, true],
       newColumnName: "",
       newColumnType: "",
       dataTypeOption: [
@@ -128,8 +136,8 @@ export default {
       tableOption: {
         border: true,
         maxHeight: 500
-      }
-
+      },
+      addFieldDialogVisible: false
       // @Autor End 郑浩鹏
 
       // @Autor 郭正浩
@@ -356,23 +364,37 @@ export default {
         alert("取消失败");
       }
     },
-    updateTableProperty:function(oldTableKeys,oldTableKeysTypes,oldKeyVisibilitys,tableKeys,tableKeysTypes,keyVisibilitys){
-      alert("更新："+tableKeys);
-      this.batchTableKey(oldTableKeys,tableKeys);
+    updateTableProperty: function(
+      oldTableKeys,
+      oldTableKeysTypes,
+      oldKeyVisibilitys,
+      tableKeys,
+      tableKeysTypes,
+      keyVisibilitys
+    ) {
+      this.batchTableKey(oldTableKeys, tableKeys);
       this.tableKeys = [];
       this.tableKeys = tableKeys;
       this.tableKeysType = [];
-      this.tableKeysType = tableKeysTypes;  
-      alert(this.tableKeysType);
+      this.tableKeysType = tableKeysTypes;
+      this.keyVisibilitys = keyVisibilitys;
     },
-    batchTableKey:function(oldTableKeys,newTableKeys){
-      this.tableData.forEach(data=>{
-        alert(data);
-        oldTableKeys.forEach(key=>{
-          alert(key)
-          alert(data[key]);
-        })
-      })
+    batchTableKey: function(oldTableKeys, newTableKeys) {
+      let newData = [];
+      this.tableData.forEach(data => {
+        var obj = new Object();
+        for (var i = 0; i < oldTableKeys.length; i++) {
+          obj[newTableKeys[i]] = data[oldTableKeys[i]];
+        }
+        newData.push(obj);
+      });
+      console.log(newData);
+      this.tableData = newData;
+    },
+
+    // 增加新字段部分
+    addNewField: function() {
+      this.addFieldDialogVisible = true;
     }
     // @Autor End 郑浩鹏
 
@@ -382,7 +404,7 @@ export default {
   }
 };
 </script>
-<style >
+  <style >
 thead {
   line-height: 40px;
 }
