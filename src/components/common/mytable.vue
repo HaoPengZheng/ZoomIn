@@ -3,7 +3,7 @@
     <!--  cell-mouse-enter 和 mouseleave.native 控制鼠标离开时重置拖拽状态-->
     <el-table :data="data" :border="option.border" :height="option.height" v-loading="loading" :style="{ width: parseInt(option.width)+'px' }" :cell-class-name="cellClassName" :header-cell-class-name="headerCellClassName" @cell-mouse-enter="handleMouseLeave" @mouseleave.native="handleMouseLeave">
       <slot name="fixed"></slot>
-      <el-table-column v-for="(col, index) in tableHeader" v-if="keyVisibilitys[index]"  :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
+      <el-table-column v-for="(col, index) in tableHeader" v-if="keyVisibilitys[index]" :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
       </el-table-column>
     </el-table>
   </div>
@@ -32,7 +32,7 @@ export default {
     types: {
       type: Array
     },
-    keyVisibilitys:Array,
+    keyVisibilitys: Array
   },
   data() {
     return {
@@ -63,6 +63,7 @@ export default {
   },
   methods: {
     renderHeader: function(createElement, { column, $index }) {
+      var typeUIicon = this.$utils.showTypesUi(this.types[$index - 1]);
       return createElement(
         "div",
         {
@@ -81,13 +82,21 @@ export default {
         },
         [
           createElement(
-            "span",
+            "svg",
             {
-              style: "color:blue;margin-right:5px"
+              "aria-hidden": "true",
+              class: "icon",
+              style: "margin-right:5px"
             },
-            this.types[$index - 1]
+            [
+              createElement("use", {
+                attrs: {
+                  "xlink:href": typeUIicon
+                }
+              })
+            ]
           ),
-          // 添加 <a> 用于显示表头 label
+          // 添加 <a> 用于显示表头 label  
           createElement("a", column.label),
           // 添加一个修改标题的按钮
           createElement(
