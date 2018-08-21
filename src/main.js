@@ -14,7 +14,11 @@ import Icon from 'vue-awesome/components/Icon'
 import echarts from 'echarts'
 import './icon/iconfont.js'
 import './icon/icon.css'
+import './assets/icons/zhp-icon/iconfont.js'
+import './assets/icons/zhp-icon/iconfont.css'
 import GeminiScrollbar from 'vue-gemini-scrollbar'
+// 自定义公共方法
+import Utils from './components/common/common.js'
 
 // 滚动条插件
 import vuescroll from 'vuescroll/dist/vuescroll-native';
@@ -38,6 +42,7 @@ Vue.use(VueRouter)
 Vue.use(GeminiScrollbar)
 Vue.use(vuescroll)
 
+Vue.prototype.$utils = Utils
 Vue.prototype.$echarts = echarts 
 Vue.prototype.$axios = axios
 Vue.prototype.$qs = qs
