@@ -81,7 +81,7 @@
     </el-dialog>
 
     <el-dialog title="增加新字段" :visible.sync="addFieldDialogVisible" width="30%">
-      <newFieldForm></newFieldForm>
+      <newFieldForm :fields="tableKeys" :types="tableKeysType"></newFieldForm>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="renewColumnName(e)">确 定</el-button>

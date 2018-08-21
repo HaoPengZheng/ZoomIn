@@ -13,10 +13,10 @@
           </el-switch>
         </template>
       </el-table-column>
-      <el-table-column align="center" prop="originKey" label="源文件列名" width="180" v-if="!showEdit">
+      <el-table-column align="center" prop="originKey" label="源文件列名" width="180">
         <template slot-scope="scope">
           <span v-show="!showEdit">{{scope.row.originKey}}</span>
-          <el-input v-model="scope.row.originKey" v-show="showEdit" size="small "></el-input>
+          <el-input v-model="scope.row.originKey" v-show="showEdit" size="small " disabled></el-input>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="tableKey" label="列名">
@@ -27,9 +27,15 @@
       </el-table-column>
       <el-table-column align="center" prop="keyType" label="类型">
         <template slot-scope="scope">
-          <span v-show="!showEdit">{{convertTypeForText(scope.row.keyType)}}</span>
-          <el-select v-model="scope.row.keyType" placeholder="请选择字段类型"  v-show="showEdit" size="mini">
+          <span v-show="!showEdit">
+            <svg class="icon" aria-hidden="true" style="margin-right:20px">
+              <use :xlink:href="$utils.showTypesUi(scope.row.keyType)"></use>
+            </svg>
+            {{convertTypeForText(scope.row.keyType)}}
+          </span>
+          <el-select v-model="scope.row.keyType" placeholder="请选择字段类型" v-show="showEdit" size="mini">
             <el-option v-for="item in dataTypeOption" :key="item.value" :label="item.label" :value="item.value">
+            
             </el-option>
           </el-select>
         </template>
@@ -81,15 +87,15 @@ export default {
   },
   methods: {
     editOrSave: function() {
-      if(this.showEdit){
+      if (this.showEdit) {
         this.updateTableProperty();
       }
       this.showEdit = !this.showEdit;
     },
     convertTypeForText: function(type) {
-      const numberTypeText = "# 数值类型";
-      const textTypeText = "T 字符类型";
-      const dateTypeText = "d 时间类型";
+      const numberTypeText = "数值类型";
+      const textTypeText = "字符类型";
+      const dateTypeText = "时间类型";
       if (type == "#") {
         return numberTypeText;
       } else if (type == "T") {
@@ -98,7 +104,7 @@ export default {
         return dateTypeText;
       }
     },
-    updateTableProperty:function(){
+    updateTableProperty: function() {
       console.log(this.tablePropertys);
       let newTableKeys = [];
       let newTableKeysTypes = [];
@@ -108,7 +114,15 @@ export default {
         newTableKeysTypes.push(tableProperty.keyType);
         newKeyVisibilitys.push(tableProperty.keyVisibility);
       });
-      this.$emit('updateTableProperty',this.tableKeys,this.tableKeysTypes,this.keyVisibilitys,newTableKeys,newTableKeysTypes,newKeyVisibilitys);
+      this.$emit(
+        "updateTableProperty",
+        this.tableKeys,
+        this.tableKeysTypes,
+        this.keyVisibilitys,
+        newTableKeys,
+        newTableKeysTypes,
+        newKeyVisibilitys
+      );
     }
   }
 };
@@ -120,7 +134,7 @@ export default {
 .margin-10 {
   margin: 10px;
 }
-.floatR{
-  float: right ;
+.floatR {
+  float: right;
 }
 </style>

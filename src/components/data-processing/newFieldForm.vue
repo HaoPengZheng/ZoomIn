@@ -19,7 +19,7 @@
           <h5 style="text-align:center">函数</h5>
           <vue-scroll :ops="ops">
             <div class='your-content'>
-              <el-menu default-active="1" style="max-height:200px;" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
+              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
                 <el-menu-item index="1">
                   <i class="el-icon-menu"></i>
                   <span slot="title">substr</span>
@@ -59,28 +59,23 @@
               </el-menu>
             </div>
           </vue-scroll>
-
         </el-col>
         <el-col :span="12">
           <h5 style="text-align:center">字段</h5>
-          <el-menu default-active="1" style="text-align:center;border:0px">
-            <el-menu-item index="1">
-              <i class="el-icon-menu"></i>
-              <span slot="title">导航一</span>
-            </el-menu-item>
-            <el-menu-item index="2">
-              <i class="el-icon-menu"></i>
-              <span slot="title">导航二</span>
-            </el-menu-item>
-            <el-menu-item index="3">
-              <i class="el-icon-document"></i>
-              <span slot="title">导航三</span>
-            </el-menu-item>
-            <el-menu-item index="4">
-              <i class="el-icon-setting"></i>
-              <span slot="title">导航四</span>
-            </el-menu-item>
-          </el-menu>
+          <vue-scroll :ops="ops">
+            <div class='your-content'>
+              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
+                <el-menu-item :index="index" v-for="(field,index) in fields " :key="index">
+                  <span slot="title">
+                    <svg class="icon" aria-hidden="true" style="margin-right:20px">
+                      <use :xlink:href="$utils.showTypesUi(types[index])"></use>
+                    </svg>  
+                    {{field}}
+                  </span>
+                </el-menu-item>
+              </el-menu>
+            </div>
+          </vue-scroll>
         </el-col>
       </el-row>
     </el-form-item>
@@ -95,16 +90,24 @@ export default {
         scrollPanel: {},
         scrollContent: {}, // only for native-mode
         rail: {
-          background: "#01a99a",
-          opacity: 0,
+          background: "#eee",
+          opacity: 1,
           /** Rail's size(Height/Width) , default -> 6px */
           size: "6px"
         },
         bar: {
-          background:"#90929880"
+          onlyShowBarOnScroll: false,
+          background: "#90929880"
         }
       }
     };
+  },
+  props: {
+    fields: [],
+    types: []
+  },
+  methods: {
+   
   }
 };
 </script>
