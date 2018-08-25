@@ -10,7 +10,7 @@
       </el-select>
     </el-form-item>
     <el-form-item>
-      <el-input type="textarea" :rows="2" placeholder="SUM[A]+SUM[B]" v-model="textarea" resize="none">
+      <el-input type="textarea" :rows="2" placeholder="SUM[A]+SUM[B]" v-model="expression" resize="none">
       </el-input>
     </el-form-item>
     <el-form-item>
@@ -22,39 +22,7 @@
               <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
                 <el-menu-item index="1">
                   <i class="el-icon-menu"></i>
-                  <span slot="title">substr</span>
-                </el-menu-item>
-                <el-menu-item index="2">
-                  <i class="el-icon-menu"></i>
-                  <span slot="title">add</span>
-                </el-menu-item>
-                <el-menu-item index="3">
-                  <i class="el-icon-document"></i>
-                  <span slot="title">pow</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">log</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">log</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">log</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">log</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">log</span>
-                </el-menu-item>
-                <el-menu-item index="4">
-                  <i class="el-icon-setting"></i>
-                  <span slot="title">log</span>
+                  <span slot="title" @click="chooseFunction('add')">add</span>
                 </el-menu-item>
               </el-menu>
             </div>
@@ -67,10 +35,12 @@
               <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
                 <el-menu-item :index="index" v-for="(field,index) in fields " :key="index">
                   <span slot="title">
-                    <svg class="icon" aria-hidden="true" style="margin-right:20px">
-                      <use :xlink:href="$utils.showTypesUi(types[index])"></use>
-                    </svg>  
-                    {{field}}
+                    <a @click="chooseField(field)">
+                      <svg class="icon" aria-hidden="true" style="margin-right:20px">
+                        <use :xlink:href="$utils.showTypesUi(types[index])"></use>
+                      </svg>
+                      {{field}}
+                    </a>
                   </span>
                 </el-menu-item>
               </el-menu>
@@ -85,6 +55,7 @@
 export default {
   data() {
     return {
+      expression:"",
       ops: {
         vuescroll: {},
         scrollPanel: {},
@@ -107,7 +78,12 @@ export default {
     types: []
   },
   methods: {
-   
+    chooseField:function(field){
+      this.expression = this.expression+`[${field}]`.trim();
+    },
+    chooseFunction:function(fun){
+      this.expression = this.expression+`${fun}()`.trim();
+    }
   }
 };
 </script>

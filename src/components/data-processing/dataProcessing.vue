@@ -69,6 +69,7 @@
             <el-option v-for="item in dataTypeOption" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
+          
         </el-form-item>
         <el-form-item label="字段名称">
           <el-input v-model="newColumnName" placeholder="请输入内容"></el-input>
@@ -84,7 +85,7 @@
       <newFieldForm :fields="tableKeys" :types="tableKeysType"></newFieldForm>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="renewColumnName(e)">确 定</el-button>
+        <el-button type="primary" @click="addField">确 定</el-button>
       </span>
     </el-dialog>
   </el-container>
@@ -100,7 +101,8 @@ import Left from "../common/data_set_list.vue";
 import ConditionFilter from "./conditionFilter.vue";
 import wTable from "../common/mytable.vue";
 import BatchOperation from "./batchOperation.vue";
-import newFieldForm from "./newFieldForm.vue"
+import newFieldForm from "./newFieldForm.vue";
+import typeSelect from "../common/typeSelect.vue";
 export default {
   components: {
     Left,
@@ -214,6 +216,27 @@ export default {
           this.tableKeys = Object.keys(this.tableData[0]);
           console.log(this.tableKeys);
           this.loading = false;
+        })
+        .catch(response => {
+          alert("获取数据失败");
+        });
+
+      this.$axios
+        .post(
+          "http://120.79.146.91:8000/task/dataProcessing/showDtypes",
+          {
+            data_set_id: this.dataSetId
+          },
+          {
+            headers: {
+              Authorization: "JWT " + localStorage.getItem("token")
+            }
+          }
+        )
+        .then(response => {
+          console.log(`response`);
+          alert(typeof response.data.data);
+          console.log(response.data.data);
         })
         .catch(response => {
           alert("获取数据失败");
@@ -395,6 +418,35 @@ export default {
     // 增加新字段部分
     addNewField: function() {
       this.addFieldDialogVisible = true;
+    },
+    addField: function(fieldName, fieldType, expression) {
+      let tableData = this.tableData;
+      fieldName = "新增字段";
+      fieldType = "#";
+      tableData.forEach(data => {
+        var xxcj;
+        var zcj;
+        var value;
+        console.log(data);
+        for (var key in data) {
+          if (key == "笔试成绩") {
+            xxcj = data[key];
+          }
+          if (key == "总成绩") {
+            zcj = data[key];
+          }
+          value = xxcj + zcj;
+        }
+
+        data[fieldName] = value;
+      });
+      this.tableData = [];
+      this.tableData = tableData;
+      this.tableKeys.push(fieldName);
+      this.tableKeysType.push(fieldType);
+      this.keyVisibilitys.push(true);
+      console.log(this.tableData);
+      this.addFieldDialogVisible = false;
     }
     // @Autor End 郑浩鹏
 

@@ -38,6 +38,7 @@
             
             </el-option>
           </el-select>
+          <typeSelect v-model="scope.row.keyType" :placeholder="`请选择字段类型`" v-show="showEdit" :size="`mini`" ></typeSelect>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="keyDesc" label="描述">
@@ -52,7 +53,11 @@
 
 
 <script>
+import typeSelect from "../common/typeSelect.vue";
 export default {
+  components:{
+    typeSelect
+  },
   data() {
     return {
       showEdit: false,
