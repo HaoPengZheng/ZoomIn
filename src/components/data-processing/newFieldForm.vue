@@ -4,10 +4,7 @@
       <el-input v-model="newFieldName" placeholder="字段名称"></el-input>
     </el-form-item>
     <el-form-item>
-      <el-select v-model="newFieldType" placeholder="字段类型" style="width:100%;">
-        <el-option v-for="item in dataTypeOption" :key="item.value" :label="item.label" :value="item.value">
-        </el-option>
-      </el-select>
+       <typeSelect v-model="newFieldType" style="width:100%;" :placeholder="`请选择字段类型`" ></typeSelect>
     </el-form-item>
     <el-form-item>
       <el-input type="textarea" :rows="2" placeholder="SUM[A]+SUM[B]" v-model="expression" resize="none">
@@ -52,10 +49,14 @@
   </el-form>
 </template>
 <script>
+import typeSelect from "../common/typeSelect.vue";
 export default {
+  components: {
+    typeSelect
+  },
   data() {
     return {
-      expression:"",
+      expression: "",
       ops: {
         vuescroll: {},
         scrollPanel: {},
@@ -78,11 +79,11 @@ export default {
     types: []
   },
   methods: {
-    chooseField:function(field){
-      this.expression = this.expression+`[${field}]`.trim();
+    chooseField: function(field) {
+      this.expression = this.expression + `[${field}]`.trim();
     },
-    chooseFunction:function(fun){
-      this.expression = this.expression+`${fun}()`.trim();
+    chooseFunction: function(fun) {
+      this.expression = this.expression + `${fun}()`.trim();
     }
   }
 };

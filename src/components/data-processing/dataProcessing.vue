@@ -16,7 +16,7 @@
                 <el-button type="text" @click="addNewField">
                   新增字段
                 </el-button>
-
+                <el-button type="primary" style="float:right;margin-right:20px" @click="saveAndGoDataAnalysis">下一步</el-button>
               </el-row>
               <el-row style="text-align:left;padding-left:10px">
                 <div v-if="filtrateVisable">
@@ -65,11 +65,7 @@
     <el-dialog title="修改" :visible.sync="dialogVisible" width="30%">
       <el-form ref="form" label-width="80px">
         <el-form-item label="字段类型">
-          <el-select v-model="newColumnType" placeholder="请选择">
-            <el-option v-for="item in dataTypeOption" :key="item.value" :label="item.label" :value="item.value">
-            </el-option>
-          </el-select>
-          
+           <typeSelect v-model="newColumnType" :placeholder="`请选择`"></typeSelect>
         </el-form-item>
         <el-form-item label="字段名称">
           <el-input v-model="newColumnName" placeholder="请输入内容"></el-input>
@@ -109,7 +105,8 @@ export default {
     ConditionFilter,
     wTable,
     BatchOperation,
-    newFieldForm
+    newFieldForm,
+    typeSelect
   },
   data() {
     return {
@@ -130,11 +127,6 @@ export default {
       keyVisibilitys: [true, true, true, true, true, true],
       newColumnName: "",
       newColumnType: "",
-      dataTypeOption: [
-        { value: "#", label: "#数值类型" },
-        { value: "T", label: "T文本类型" },
-        { value: "d", label: "d时间类型" }
-      ],
       tableOption: {
         border: true,
         maxHeight: 500
@@ -447,6 +439,12 @@ export default {
       this.keyVisibilitys.push(true);
       console.log(this.tableData);
       this.addFieldDialogVisible = false;
+    },
+    saveAndGoDataAnalysis:function(){
+      var c = confirm("是否保存处理结果？");
+      if(c){
+        this.$route.push("data-analysis");
+      }
     }
     // @Autor End 郑浩鹏
 

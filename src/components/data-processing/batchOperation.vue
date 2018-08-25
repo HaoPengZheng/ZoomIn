@@ -33,11 +33,6 @@
             </svg>
             {{convertTypeForText(scope.row.keyType)}}
           </span>
-          <el-select v-model="scope.row.keyType" placeholder="请选择字段类型" v-show="showEdit" size="mini">
-            <el-option v-for="item in dataTypeOption" :key="item.value" :label="item.label" :value="item.value">
-            
-            </el-option>
-          </el-select>
           <typeSelect v-model="scope.row.keyType" :placeholder="`请选择字段类型`" v-show="showEdit" :size="`mini`" ></typeSelect>
         </template>
       </el-table-column>
@@ -61,11 +56,6 @@ export default {
   data() {
     return {
       showEdit: false,
-      dataTypeOption: [
-        { value: "#", label: "#数值类型" },
-        { value: "T", label: "T文本类型" },
-        { value: "d", label: "d时间类型" }
-      ]
     };
   },
   props: {

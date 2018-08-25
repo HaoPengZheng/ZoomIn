@@ -72,11 +72,6 @@ export default {
   created: function() {
     this.featchTask();
   },
-  mounted() {
-    this.list = this.states.map(item => {
-      return { value: item, label: item };
-    });
-  },
   methods: {
     featchTask: function() {
       this.$axios
@@ -94,19 +89,6 @@ export default {
         .catch(response => {
           alert("error");
         });
-    },
-    remoteMethod(query) {
-      if (query !== "") {
-        this.loading = true;
-        setTimeout(() => {
-          this.loading = false;
-          this.options4 = this.list.filter(item => {
-            return item.label.toLowerCase().indexOf(query.toLowerCase()) > -1;
-          });
-        }, 200);
-      } else {
-        this.options4 = [];
-      }
     },
     dealTask: function() {
       var tasks = [];
