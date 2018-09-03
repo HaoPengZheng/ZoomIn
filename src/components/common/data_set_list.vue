@@ -17,7 +17,7 @@
           <el-menu-item :index="index" v-for="(dataSet,index) in dataSetList" :key="index">
             <a @click="showDataSet(dataSet.id)">
               <i class="el-icon-document" style=""></i>
-              <span slot="title" style="padding-right:80px">{{dataSet.id}}</span>
+              <span slot="title" style="padding-right:80px">{{dataSet.title}}</span>
             </a>
             <el-dropdown style="position: absolute;right:20px;">
               <span class="el-dropdown-link">

@@ -179,7 +179,7 @@ export default {
       //     JSON.stringify(this.tablejsons) +
       //     "}"
       // );
-
+      alert(`filename ${this.filename}`)
       this.$axios
         .post(
           "http://120.79.146.91:8000/dataSet/",

@@ -65,7 +65,7 @@
     <el-dialog title="修改" :visible.sync="dialogVisible" width="30%">
       <el-form ref="form" label-width="80px">
         <el-form-item label="字段类型">
-           <typeSelect v-model="newColumnType" :placeholder="`请选择`"></typeSelect>
+          <typeSelect v-model="newColumnType" :placeholder="`请选择`"></typeSelect>
         </el-form-item>
         <el-form-item label="字段名称">
           <el-input v-model="newColumnName" placeholder="请输入内容"></el-input>
@@ -162,30 +162,6 @@ export default {
     // 参数，data_set_id
     // 返回json
     fetch: function() {
-      this.$axios
-        .post(
-          "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
-          {
-            data_set_id: this.dataSetId
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
-        .then(response => {
-          this.tableData = response.data.data.slice(0, 100);
-          console.log(this.tableData);
-          this.tableKeys = Object.keys(this.tableData[0]);
-          console.log(this.tableKeys);
-          this.loading = false;
-        })
-        .catch(response => {
-          alert("获取数据失败");
-        });
-    },
-    fetch: function() {
       if (typeof this.dataSetId == "undefined") {
         alert("undefind");
         this.dataSetId = 64;
@@ -226,7 +202,7 @@ export default {
           }
         )
         .then(response => {
-          console.log(`response`);
+          console.log(`response data type`);
           alert(typeof response.data.data);
           console.log(response.data.data);
         })
@@ -440,10 +416,13 @@ export default {
       console.log(this.tableData);
       this.addFieldDialogVisible = false;
     },
-    saveAndGoDataAnalysis:function(){
+    saveAndGoDataAnalysis: function() {
       var c = confirm("是否保存处理结果？");
-      if(c){
-        this.$route.push("data-analysis");
+      if (c) {
+        this.$router.push({
+          name: "task-analysis",
+          params: { dataSetId: this.dataSetId }
+        });
       }
     }
     // @Autor End 郑浩鹏
