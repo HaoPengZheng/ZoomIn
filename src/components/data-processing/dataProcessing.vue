@@ -184,27 +184,37 @@ export default {
           this.tableKeys = Object.keys(this.tableData[0]);
           console.log(this.tableKeys);
           this.loading = false;
-        })
-        .catch(response => {
-          alert("获取数据失败");
-        });
-
-      this.$axios
-        .post(
-          "http://120.79.146.91:8000/task/dataProcessing/showDtypes",
-          {
-            data_set_id: this.dataSetId
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
+          if (this.tableKeys.length > 0) {
+            this.$axios
+              .post(
+                "http://120.79.146.91:8000/task/dataProcessing/showDtypes",
+                {
+                  data_set_id: this.dataSetId
+                },
+                {
+                  headers: {
+                    Authorization: "JWT " + localStorage.getItem("token")
+                  }
+                }
+              )
+              .then(response => {
+                console.log(`response data type`);
+                var types = this.converterStringToType(response.data.data);
+                var tableKeysTypes = [];
+                console.log(this.tableKeys);
+                this.tableKeys.forEach(tablekey => {
+                  tablekey = tablekey.trim();
+                  tableKeysTypes.push(types[tablekey]);
+                  this.tableKeysType = tableKeysTypes;
+                });
+                console.log(tableKeysTypes);
+                console.log("=============================");
+                console.log(types);
+              })
+              .catch(response => {
+                alert("获取数据失败");
+              });
           }
-        )
-        .then(response => {
-          console.log(`response data type`);
-          alert(typeof response.data.data);
-          console.log(response.data.data);
         })
         .catch(response => {
           alert("获取数据失败");
@@ -334,9 +344,6 @@ export default {
         })
         .then(response => {
           this.dataSetList = response.data;
-          console.log("!!!!!!");
-          console.log(this.dataSetList);
-          console.log(response);
         })
         .catch(response => {
           alert("error");
@@ -424,6 +431,29 @@ export default {
           params: { dataSetId: this.dataSetId }
         });
       }
+    },
+    converterStringToType: function(str) {
+      if (str.startsWith("{")) {
+        str = str.substring(1, str.length - 1);
+      }
+      var typeArr = str.split(",");
+      var types = {};
+      typeArr.forEach((typeString, index) => {
+        var key = typeString.split(":")[0].trim();
+        if (key.startsWith("'")) {
+          key = key.substring(1, key.length - 1);
+        }
+        var value = typeString.split(":")[1].trim();
+        if (value == "dtype('O')") {
+          value = "T";
+        } else if (value == "dtype('<M8[ns]')") {
+          value = "d";
+        } else {
+          value = "#";
+        }
+        types[key] = value;
+      });
+      return types;
     }
     // @Autor End 郑浩鹏
 
