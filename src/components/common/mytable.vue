@@ -252,9 +252,17 @@ th .cell {
   padding: 0 !important;
 }
 .thead-cell {
-  padding: 12px 10px;
-  width: 100%;
-  height: 100%;
+  width: 80%;
+  height:50px;
+  margin-right:10px;
+}
+.thead-cell a{
+  line-height: 56px;
+}
+.caret-wrapper{
+  float: right;
+  margin-top: 11px;
+  margin-right: 5px;
 }
 </style>
 
