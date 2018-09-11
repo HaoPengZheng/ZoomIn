@@ -54,7 +54,11 @@ export default {
 	  //表格数据
 	  tableData: [],
 	  fields:[],
-	  tableVisible:false
+	  tableVisible:false,
+	  chartYAxis:[{
+					name : '',
+		            type : 'value'
+				}]
     }
   },
   mounted(){
@@ -91,7 +95,7 @@ export default {
        Bus.$on('coldata', (e) => {
 
 			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
-
+			
     　　　　for(let i=0;i<myAioxObj.length;i++){
                 this.seriesDataItem.push(myAioxObj[i][e])  //根据传进来的字段，给X轴赋值
             }
@@ -117,6 +121,48 @@ export default {
 
 			
 	   })
+
+
+	   //然后是监听次轴传值
+       Bus.$on('dropAxisCol', (e) => {
+
+			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
+
+    　　　　for(let i=0;i<myAioxObj.length;i++){
+                this.seriesDataItem.push(myAioxObj[i][e])  //根据传进来的字段，给X轴赋值
+            }
+
+			this.seriesData.push({
+				name:e,
+				type:'line',
+				yAxisIndex: 1,
+				data:this.seriesDataItem
+			})
+			this.seriesDataItem = [] //清空serIDataItem否则重叠
+			//console.log(this.seriesData)
+			
+		   if(this.Xdata.length<1){
+			   this.tableVisible = true
+				for(let j =0 ;j < 15;j++){
+				this.tableData[j] = myAioxObj[j];
+				}
+				this.fields.push(e)
+		   }
+		   else{
+			   	this.chartYAxis.push(
+				{
+					name : e,
+		            type : 'value'
+				})
+				console.log(this.option.yAxis)
+				this.myChart.dispose()
+				this.drawLine();
+		   }
+
+			
+	   })
+
+
 	   
 	   //监听移除事件
        Bus.$on('rowdataRemove', (e) => {
@@ -361,11 +407,7 @@ export default {
 		            data : this.Xdata
 		        }
 		    ],
-		    yAxis : [
-		        {
-		            type : 'value'
-		        }
-		    ],
+		    yAxis : this.chartYAxis,
 		    series : this.seriesData	
 		};
 

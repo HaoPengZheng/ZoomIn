@@ -27,23 +27,43 @@
                 <div class="el-input el-input-group el-input-group--prepend">
                     <div class="el-input-group__prepend" style="border-left: 1px solid #dcdfe6">数值<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wellnum"></use></svg></div>
                     <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                        
                         <el-tag v-for="(item,index) in dropCol" :key="index" 
                             closable
                             :disable-transitions="false"
                             @close="colRemove(index)"
-                            style="margin:3px">{{item}}
+                            style="margin:3px">{{item}}(求和)
                         </el-tag>
-                        <div>
-                            <div class="insert-tag">&nbsp;</div>
-                        </div>
+
+                        <!-- 添加的按钮 -->
+                        <svg class="icon" aria-hidden="true" style="float:right;margin:10px" @click="addRowClick" v-show="addIconFlag"><use xlink:href="#icon-iconjia"></use></svg>
                     </div>
                 </div>
 
 
             </el-col>
         </el-row>
+
+        <el-row>
+                <div class="el-input el-input-group el-input-group--prepend" v-show="axisFlag">
+                    <div class="el-input-group__prepend" style="border-left: 1px solid #dcdfe6">次轴<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wellnum"></use></svg></div>
+                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colAxisDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                        
+                        <el-tag v-for="(item,index) in dropAxisCol" :key="index" 
+                            closable
+                            :disable-transitions="false"
+                            @close="colRemove(index)"
+                            style="margin:3px">{{item}}(求和)
+                        </el-tag>
+
+                        <!--减的按钮 -->
+                        <svg class="icon" aria-hidden="true" style="float:right;margin:10px" @click="removeRowClick"><use xlink:href="#icon-jianhao"></use></svg>
+                    </div>
+                </div>
+        </el-row>
     </div>
     
+
     </div>
 
     
@@ -60,7 +80,10 @@ import dropItem from './dropItem'
     data () {
         return {
             dropRow:[],
-            dropCol:[]
+            dropCol:[],
+            dropAxisCol:[],
+            axisFlag:false,
+            addIconFlag:true
         }
     },
     methods:{
@@ -110,14 +133,12 @@ import dropItem from './dropItem'
                         if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
 			        
             },
-            liClick:function(event){
-                // if(event.target.id==='row-学校')
-                // //alert(event.target.id)
-                // var obj = document.getElementById(event.target.id);
-                // obj.remove();
-                //alert(123);
-                alert("???")
-                 
+            colAxisDrop:function(ev){
+              ev.preventDefault();
+			        let data = ev.dataTransfer.getData("ID");//拖动的元素的ID
+                        this.dropAxisCol.push(data)
+                        Bus.$emit('dropAxisCol', data)//给echarts组件发名字
+			        
             },
             allowDrop:function(event){
               event.preventDefault();
@@ -139,6 +160,17 @@ import dropItem from './dropItem'
                 Bus.$emit('coldataRemove', tag)
                 this.dropCol.splice(this.dropCol.indexOf(tag), 1);
             },
+            summationType(){//没用等删
+                Bus.$emit('summation', 'summationType')
+            },
+            addRowClick(){
+                this.axisFlag = true;
+                this.addIconFlag = false
+            },
+            removeRowClick(){
+                this.axisFlag = false;
+                this.addIconFlag = true
+            }
 		    
     }
     }

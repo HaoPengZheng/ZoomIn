@@ -22,7 +22,7 @@
       </div>
     </el-col>
 
-    <el-col :span="4"><div><rightBoard/></div></el-col>
+    <el-col :span="4"><vue-scroll><div><rightBoard/></div></vue-scroll></el-col>
 
     </el-row>
 
@@ -39,7 +39,6 @@ import echarts from './echarts'
 import rightBoard from './rightBoard'
 import AxiosDistribute from './AxiosDistribute'
 import tableInfo from './tableInfo'
-
 export default {
   name: 'App',
   components:{

@@ -4,7 +4,8 @@
         <el-row>
             <el-col :span="24" >
                 <!-- 字段框 -->
-                <div class="el-input el-input-group el-input-group--prepend"><div class="el-input-group__prepend" style="border: 1px solid #dcdfe6" >筛选<svg class="icon" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg></div>
+                <div class="el-input el-input-group el-input-group--prepend" style="margin-left:1px;">
+                    <div class="el-input-group__prepend" style="border: 1px solid #dcdfe6" >筛选<svg class="icon" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg></div>
                     <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='filterDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         <el-tag v-for="(item,index) in dropFilter" :key="index" 
                             closable
@@ -78,7 +79,7 @@
 
 <script>
 import Bus from './Bus.js'
-
+import dropFilterItem from './dropFilterItem'
     export default {
     data () {
         return {
@@ -97,7 +98,7 @@ import Bus from './Bus.js'
         }
     },
     components:{
-        
+        dropFilterItem
     },
     mounted(){
         Bus.$on('AxiosDataDragItem',(e)=>{

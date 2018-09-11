@@ -1,6 +1,6 @@
 <template>
 <div id="rightBoard">
-
+<vue-scroll>
     <div style="margin:10px;">
     <el-collapse  v-model="activeNames" >
       <el-collapse-item title="图表标题" name="1">
@@ -20,7 +20,7 @@
       </el-collapse-item>
     </el-collapse>
     </div>
-
+</vue-scroll>
 </div>
 </template>
 
