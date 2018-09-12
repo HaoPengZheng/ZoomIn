@@ -164,7 +164,7 @@ export default {
     fetch: function() {
       if (typeof this.dataSetId == "undefined") {
         alert("undefind");
-        this.dataSetId = 64;
+        this.dataSetId = 1;
       }
       this.$axios
         .post(
@@ -485,5 +485,3 @@ thead {
   background: #e5e9f2;
 }
 </style>
-
-
