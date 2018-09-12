@@ -102,8 +102,8 @@ export default {
             }
           )
           .then(response => {
-            this.taskid = response.data.id;
-            console.log(response.data.id);
+            this.taskid = response.data.data.id;
+            console.log(response);
             this.tablePreviewVisable = true;
             this.newTaskDialogVisable = false;
           })
@@ -179,7 +179,6 @@ export default {
       //     JSON.stringify(this.tablejsons) +
       //     "}"
       // );
-      alert(`filename ${this.filename}`)
       this.$axios
         .post(
           "http://120.79.146.91:8000/dataSet/",
@@ -189,6 +188,7 @@ export default {
             step1: "1",
             step2: "2",
             step3: "3",
+            stepX1:"x1",  
             title:this.filename,
             row_num: (this.titleIndex - 2).toString(),
             data_set: this.tablejsons
