@@ -9,16 +9,20 @@
       <el-collapse-item title="图表类型" name="2">
         <rightChartSetting/>
       </el-collapse-item>
-      <el-collapse-item title="图表样式" name="5"  v-show="featureConfigurationFlag">
+      <el-collapse-item title="图表样式" name="3"  v-show="featureConfigurationFlag">
         <chartStyle/>
       </el-collapse-item>
       <el-collapse-item title="功能配置" name="4" v-show="featureConfigurationFlag">
         <featureConfiguration/>
       </el-collapse-item>
-      <el-collapse-item title="图表备注" name="3">
+      <el-collapse-item title="图内筛选器" name="5">
+        <picFilter/>
+      </el-collapse-item>
+      <el-collapse-item title="图表备注" name="6">
         <rightTips/>
       </el-collapse-item>
     </el-collapse>
+    <el-button @click="nextClick">下一步</el-button>
     </div>
 </vue-scroll>
 </div>
@@ -31,6 +35,7 @@ import rightTitle from './rightOption/rightTitle'
 import rightChartSetting from './rightOption/rightChartSetting'
 import featureConfiguration from './rightOption/featureConfiguration'
 import chartStyle from './rightOption/chartStyle'
+import picFilter from './rightOption/picFilter'
 
     export default {
     components:{
@@ -38,7 +43,8 @@ import chartStyle from './rightOption/chartStyle'
         rightTitle,
         rightChartSetting,
         featureConfiguration,
-        chartStyle
+        chartStyle,
+        picFilter
     },
     data() {
         return {
@@ -73,6 +79,12 @@ import chartStyle from './rightOption/chartStyle'
             //DIV高度为浏览器窗口的高度
         //document.getElementById("rightBoardScrollbar").style.height = this.winHeight*0.95	 + "px";
         //console.log(document.getElementById("rightBoardScrollbar").style.height)
+      },
+      nextClick(){
+        this.$router.push({
+          name: "task-release",
+          params: {}
+        });
       }
     }
     }

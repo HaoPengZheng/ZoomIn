@@ -71,11 +71,9 @@
 
 <script>
 import Bus from './Bus.js'
-import dropItem from './dropItem'
     export default {
     name: 'drop',
     components:{
-        dropItem:dropItem
     },
     data () {
         return {
@@ -98,9 +96,9 @@ import dropItem from './dropItem'
                         this.dropRow.push(data)
                         //console.log(this.dropRow.length)
                         //判定是否超过要求的范围
-                        if(this.dropRow.length > 1){
+                        if(this.dropRow.length > 2){
                             this.$message({
-                                message: '只允许有一个维度',
+                                message: '只允许有两个维度',
                                 showClose: true,
                                 type: 'warning',
                                 duration:1000
@@ -141,7 +139,7 @@ import dropItem from './dropItem'
 			        
             },
             allowDrop:function(event){
-              event.preventDefault();
+              event.preventDefault();//阻止默认事件
             },
             removeDrop:function(ev) {
 			        ev.preventDefault();
@@ -169,7 +167,8 @@ import dropItem from './dropItem'
             },
             removeRowClick(){
                 this.axisFlag = false;
-                this.addIconFlag = true
+                this.addIconFlag = true;
+                // if(yAxisIndex)
             }
 		    
     }

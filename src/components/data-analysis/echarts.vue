@@ -1,6 +1,21 @@
 <template>
 	<div>
 		<el-card class="box-card cardStyle" id="echartsCard">
+
+			<div>
+				<svg class="icon dropdowmMenuStyle" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg>	
+				<el-dropdown class="dropdowmMenuStyle" v-for="(val,index) in dropdownArray" :key="index"  @command="handleCommand">
+				<span class="el-dropdown-link">
+					{{val}}<i class="el-icon-arrow-down el-icon--right"></i>
+				</span>
+				<el-dropdown-menu slot="dropdown">
+					<el-dropdown-item v-for="(item,k) in dropdownItemArray[index]" :key="k" :command="item">
+						{{item}}
+					</el-dropdown-item>
+				</el-dropdown-menu>
+				</el-dropdown>
+			</div>
+
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
 			
 			<p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p>
@@ -40,6 +55,8 @@ export default {
   data () {
     return {
 	  msg: 'Welcome to Your Vue.js App',
+	  echartAxiosData:[],
+	  originAxiosData:[],
 	  winHeight:0,
 	  winWidth:0,
 	  yAxisItemName:[],
@@ -54,6 +71,8 @@ export default {
 	  //表格数据
 	  tableData: [],
 	  fields:[],
+	  dropdownArray:[],
+	  dropdownItemArray:[],//图内筛选器的选项
 	  tableVisible:false,
 	  chartYAxis:[{
 					name : '',
@@ -63,24 +82,23 @@ export default {
   },
   mounted(){
 	  this.autoDivSize();//先根据浏览器尺寸设置echarts的宽高
-		var myAioxObj;
-		var originAioxObj;
+		//var myAioxObj;
         Bus.$on('AxiosDataEcharts', (e) => {
-			originAioxObj = e; //原初的数据
-			myAioxObj = e;		//被用来操作（筛选）的数据
+			this.originAxiosData = e; //原初的数据
+			this.echartAxiosData = e;		//被用来操作（筛选）的数据
 			})
       
-      
+      //监听x轴传值
        Bus.$on('rowdata', (e) => {
 
-	　　　　for(let i=0;i<myAioxObj.length;i++){
-				this.Xdata.push(myAioxObj[i][e])  //根据传进来的字段，给X轴赋值
+	　　　　for(let i=0;i<this.echartAxiosData.length;i++){
+				this.Xdata.push(this.echartAxiosData[i][e])  //根据传进来的字段，给X轴赋值
 			}
 
 		   if(this.yAxisItemName.length<1){
 			   this.tableVisible = true
 				for(let j =0 ;j < 15;j++){
-				this.tableData[j] = myAioxObj[j];
+				this.tableData[j] = this.echartAxiosData[j];
 				}
 				this.fields.push(e)
 		   }
@@ -96,8 +114,8 @@ export default {
 
 			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
 			
-    　　　　for(let i=0;i<myAioxObj.length;i++){
-                this.seriesDataItem.push(myAioxObj[i][e])  //根据传进来的字段，给X轴赋值
+    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
+                this.seriesDataItem.push(this.echartAxiosData[i][e])  //根据传进来的字段，给X轴赋值
             }
 
 			this.seriesData.push({
@@ -111,7 +129,7 @@ export default {
 		   if(this.Xdata.length<1){
 			   this.tableVisible = true
 				for(let j =0 ;j < 15;j++){
-				this.tableData[j] = myAioxObj[j];
+				this.tableData[j] = this.echartAxiosData[j];
 				}
 				this.fields.push(e)
 		   }
@@ -128,8 +146,8 @@ export default {
 
 			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
 
-    　　　　for(let i=0;i<myAioxObj.length;i++){
-                this.seriesDataItem.push(myAioxObj[i][e])  //根据传进来的字段，给X轴赋值
+    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
+                this.seriesDataItem.push(this.echartAxiosData[i][e])  //根据传进来的字段，给X轴赋值
             }
 
 			this.seriesData.push({
@@ -144,7 +162,7 @@ export default {
 		   if(this.Xdata.length<1){
 			   this.tableVisible = true
 				for(let j =0 ;j < 15;j++){
-				this.tableData[j] = myAioxObj[j];
+				this.tableData[j] = this.echartAxiosData[j];
 				}
 				this.fields.push(e)
 		   }
@@ -327,10 +345,10 @@ export default {
 					break;
 			}
 			
-			myAioxObj = Enumerable.from(myAioxObj).where(sql).toArray();//myAioxObj没用this，以后可能有问题
+			this.echartAxiosData = Enumerable.from(this.echartAxiosData).where(sql).toArray();//this.echartAxiosData没用this，以后可能有问题
 
-    　　　　for(let i=0;i<myAioxObj.length;i++){
-                this.seriesDataItem.push(myAioxObj[i][dropName])  //根据传进来的字段，给X轴赋值
+    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
+                this.seriesDataItem.push(this.echartAxiosData[i][dropName])  //根据传进来的字段，给X轴赋值
             }
 
 			for(let j=0;j<this.seriesData.length;j++){
@@ -349,8 +367,8 @@ export default {
 
 		//监听筛选移除
 		Bus.$on('numberFilterRemove',(dropName)=>{
-    　　　　for(let i=0;i<myAioxObj.length;i++){
-                this.seriesDataItem.push(myAioxObj[i][dropName])  //根据传进来的字段，给X轴赋值
+    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
+                this.seriesDataItem.push(this.echartAxiosData[i][dropName])  //根据传进来的字段，给X轴赋值
             }
 			console.log(this.seriesDataItem)
 			for(let j=0;j<this.seriesData.length;j++){
@@ -367,7 +385,27 @@ export default {
 			this.drawLine()
 		})
 
-		//定义二维数组存，否则会窜数据，先写死吧…呵呵
+		//监听图内筛选器
+		Bus.$on('transferChoice',(e)=>{
+			this.dropdownArray = [];
+			this.dropdownArray = e
+			this.dropdownArray.forEach((val)=>{
+				let itemArray=[]
+				for (let i = 0; i < this.originAxiosData.length; i++) {//this.originAxiosData去重，不用this.originAxiosData
+				console.log()
+				//console.log(val)
+					itemArray.push(this.originAxiosData[i][val])
+					if(i>=10)break;
+				}
+				this.dropdownItemArray.push(itemArray)
+				console.log(this.dropdownItemArray)
+				itemArray = []
+			})
+			
+			
+		})
+
+		//定义二维数组存，否则会窜数据
 		for(var k=0;k<=20;k++){        
 			this.markPointArray[k]=new Array();   
 		}
@@ -414,7 +452,14 @@ export default {
         this.myChart.setOption(this.option,true);
 		Bus.$emit('chartsOption',this.option)
 	},
-
+	handleCommand(command) {
+		alert(command)
+		let sql = "x=>x."+ 'RANK' +">"+ command
+		this.echartAxiosData = Enumerable.from(this.echartAxiosData).where(sql).toArray();//this.echartAxiosData没用this，以后可能有问题
+		this.myChart.dispose()
+		this.drawLine();//应该把x轴y轴的值处理都放到drawLine()里去
+		
+	},
 
 	autoDivSize(){
 		if (window.innerHeight)
@@ -458,5 +503,9 @@ export default {
 	font-family: '新宋体';
 	margin:auto;
 
+}
+.dropdowmMenuStyle {
+	float: left;
+	margin-left: 10px
 }
 </style>

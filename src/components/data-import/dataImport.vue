@@ -57,7 +57,6 @@ export default {
       })
       .then(response => {
         this.allTaskList = response.data;
-        console.log(response.data)
       })
       .catch(response => {
         this.$message({

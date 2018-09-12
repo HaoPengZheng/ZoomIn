@@ -61,19 +61,7 @@ import Bus from './Bus.js'
       },
         myAiox(){
         return JSON.parse('[{	"RANK": "1111",	"RANK_H": "1291",	"姓名_x": "赵一钦1",	"学校名称": "市三中1",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区1",	"考生号": "170010508"}, {	"RANK": "2222",	"RANK_H": "1292",	"姓名_x": "赵一钦2",	"学校名称": "市三中2",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区2",	"考生号": "170010508"}, {	"RANK": "3333",	"RANK_H": "1293",	"姓名_x": "赵一钦3",	"学校名称": "市三中3",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区3",	"考生号": "170010508"}]')
-    },
-      gettime(){
-        var date = new Date();
-        var year = date.getFullYear();
-        var month = date.getMonth()+1;//js中是从0开始所以要加1
-        var day = date.getDate();
-        var hour = date.getHours();
-        var minute = date.getMinutes();
-        var second = date.getSeconds();
-        
-        this.dateString = year+'年'+month+'月'+day+'日 '+hour+':'+minute+':'+second
-
-      }
+    }
     }
   };
 </script>

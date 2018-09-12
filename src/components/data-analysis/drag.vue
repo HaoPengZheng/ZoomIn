@@ -51,7 +51,6 @@ import Bus from './Bus.js'
             this.dragFlag = true
 
        })
-        this.typeClassify();
     }, 
     watch:{
         keyArray(val){
