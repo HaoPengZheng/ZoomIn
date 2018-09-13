@@ -46,7 +46,7 @@ body {
   padding: 0 !important;
 }
 .left-picture {
-  background-image: url("http://img3.imgtn.bdimg.com/it/u=372053034,258457233&fm=26&gp=0.jpg");
+  background-image: url('../assets/Login/logo.jpg');
   height: 100%;
 }
 .left-picture img {
