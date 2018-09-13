@@ -41,7 +41,7 @@ export default {
   components: {}
 };
 </script>
-<style >
+<style scoped>
 .nav {
   min-width: 600px;
 }
@@ -73,17 +73,9 @@ body,
 #home {
   height: 100%;
 }
-.el-header {
-  padding: 0px!important;
+.el-menu-item{
+  padding: 0 20px;
 }
-
-.el-main {
-  background-color: #fff;
-  color: #333;
-  text-align: center;
-  min-width: 650px;
-}
-
 body > .el-container {
   margin-bottom: 40px;
 }

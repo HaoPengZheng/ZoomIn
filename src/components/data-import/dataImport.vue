@@ -11,15 +11,9 @@
           <OldTask></OldTask>
         </div>
         <!-- 分享任务部分 -->
-        <div>
+        <!-- <div>
           <ShareTask></ShareTask>
-        </div>
-        <!-- <el-carousel indicator-position="outside">
-                    <el-carousel-item v-for="(task,index) in tasks" :key="index">
-                    <h3>{{ task.name }}</h3>
-                    <h4>{{task.time}}</h4>
-                    </el-carousel-item>
-                </el-carousel> -->
+        </div> -->
         <Myfooter></Myfooter>
       </el-main>
 
@@ -68,22 +62,25 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
+html,body{
+  min-width: 600px;
+}
 .el-footer {
   background-color: #fff;
   color: #333;
   text-align: center;
   height: 80px !important;
 }
-.el-main {
-  padding: 0 10% !important;
-  /* 页面左右空白    */
-}
+
 .el-carousel__item h3 {
   color: #475669;
   font-size: 14px;
   opacity: 0.75;
   line-height: 200px;
   margin: 0;
+}
+.el-main{
+  padding: 0 10%;
 }
 </style>

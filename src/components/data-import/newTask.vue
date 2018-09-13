@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="warp">
     <div class="application-header-box">
       <div class="application-header ">新建任务</div>
     </div>
@@ -208,15 +208,21 @@ export default {
             params: { taskId: this.taskid, dataSetId: dataSetId }
           });
         })
-        .catch(response => {});
+        .catch(response => {
+          
+        });
     }
   }
 };
 </script>
 <style  >
+.warp{
+  min-width: 600px;
+}
 .el-main {
   line-height: 40px;
 }
+
 .application-header-box {
   border-bottom: 1px solid #979797;
   padding-top: 0;
@@ -239,4 +245,5 @@ export default {
   opacity: 0.8;
   border: 1px solid #eee;
 }
+
 </style>

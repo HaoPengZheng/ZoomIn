@@ -25,6 +25,12 @@ import vuescroll from 'vuescroll/dist/vuescroll-native';
 // 导入css文件
 import 'vuescroll/dist/vuescroll.css';
 
+import {post,fetch,patch,put} from './api/http.js'
+//定义全局变量
+Vue.prototype.$post=post;
+Vue.prototype.$fetch=fetch;
+Vue.prototype.$patch=patch;
+Vue.prototype.$put=put;
 
 
 

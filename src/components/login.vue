@@ -1,42 +1,95 @@
 <template>
-  <div style="min-width: 400px;">
-    <el-row :gutter="20" class="login-warp">
-      <el-col :span="12" :offset="6">
+  <div class="warp full-height">
+    <el-row :gutter="20" class="full-height">
+      <el-col :span="6" class="left-picture-col full-height hidden-sm-and-down">
+        <div class="left-picture">
+
+        </div>
+      </el-col>
+      <el-col :span="18" class="login-right">
         <div>
-          <router-link to="/" class="login-link" :class="{'highlight':flag==0}" @click.native="flag=0">登录</router-link>
-          <b style="   font-weight: 700;color: #969696; padding: 10px;">.</b>
-          <router-link to="/register" class="login-link" :class="{'highlight':flag==1}" @click.native="flag=1">注册</router-link>
+          <LoginTitle></LoginTitle>
+          <LoginOrRegister></LoginOrRegister>
+          
         </div>
-        <div style="margin-top:20px">
-          <router-view></router-view>
-        </div>
+       
       </el-col>
     </el-row>
   </div>
 
 </template>
-<style>
+<style scoped>
+* {
+  padding: 0;
+  margin: 0;
+}
+html {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+body {
+  height: 100%;
+}
+.full-height {
+  height: 100%;
+}
+.warp {
+  min-width: 400px;
+}
+.title {
+  font-size: 44px;
+}
+.left-picture-col {
+  padding: 0 !important;
+}
+.left-picture {
+  background-image: url("http://img3.imgtn.bdimg.com/it/u=372053034,258457233&fm=26&gp=0.jpg");
+  height: 100%;
+}
+.left-picture img {
+  height: 100%;
+  overflow: hidden;
+}
 .login-warp {
   margin-top: 150px;
   text-align: center;
 }
-.login-link {
-  padding: 10px;
-  color: #969696;
-  font-size: 18px;
-  text-decoration: none;
+
+.login-right {
+  margin-top: 100px;
 }
-.highlight {
-  color: red;
+.el-row {
+  margin: 0 !important;
+}
+.login-title {
 }
 </style>
 <script>
+import "element-ui/lib/theme-chalk/display.css";
+import LoginTitle from "./login/LoginTitle.vue";
+import LoginOrRegister from "./login/LoginOrRegister.vue";
+// import 'element-ui/lib/theme-chalk/display.css';
+// 包含的类名及其含义为：
+// hidden-xs-only - 当视口在 xs 尺寸时隐藏
+// hidden-sm-only - 当视口在 sm 尺寸时隐藏
+// hidden-sm-and-down - 当视口在 sm 及以下尺寸时隐藏
+// hidden-sm-and-up - 当视口在 sm 及以上尺寸时隐藏
+// hidden-md-only - 当视口在 md 尺寸时隐藏
+// hidden-md-and-down - 当视口在 md 及以下尺寸时隐藏
+// hidden-md-and-up - 当视口在 md 及以上尺寸时隐藏
+// hidden-lg-only - 当视口在 lg 尺寸时隐藏
+// hidden-lg-and-down - 当视口在 lg 及以下尺寸时隐藏
+// hidden-lg-and-up - 当视口在 lg 及以上尺寸时隐藏
+// hidden-xl-only - 当视口在 xl 尺寸时隐藏
+
 export default {
-  data() {
-    return {
-      flag: 0
-    };
+  components: {
+    LoginTitle,
+    LoginOrRegister
   },
-  methods: {}
+
 };
 </script>

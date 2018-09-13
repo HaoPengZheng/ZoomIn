@@ -15,7 +15,7 @@
 <script>
 export default {};
 </script>
-<style>
+<style scoped>
 .footer-content {
   min-width: 650px;
   font-family: "microsoft YaHei";
@@ -24,6 +24,8 @@ export default {};
   float: left;
   font-size: 12px;
   line-height: 22px;
+  margin: 0 auto;
+  text-align: center;
 }
 
 .footer-link a {
