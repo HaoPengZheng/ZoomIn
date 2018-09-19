@@ -87,36 +87,51 @@ export default {
         });
       } else {
         // alert(localStorage.getItem("token"));
-        this.$axios
-          .post(
-            "http://120.79.146.91:8000/taskinfo/",
-            {
-              task_name: this.newTaskModel.name,
-
-              task_desc: this.newTaskModel.describe
-            },
-            {
-              headers: {
-                Authorization: "JWT " + localStorage.getItem("token")
-              }
-            }
-          )
-          .then(response => {
-            this.taskid = response.data.data.id;
-            console.log(response);
-            this.tablePreviewVisable = true;
-            this.newTaskDialogVisable = false;
+        let query = this.$post(
+          "http://120.79.146.91:8000/taskinfo/",
+          this.$qs.stringify({
+            task_name: this.newTaskModel.name,
+            task_desc: this.newTaskModel.describe
           })
-          .catch(response => {
-            console.log(response.data);
-          });
+        );
+        query.then(response => {
+          console.log(response);
+          this.taskid = response.data.id;
+          this.tablePreviewVisable = true;
+          this.newTaskDialogVisable = false;
+        });
+        // this.$axios
+        //   .post(
+        //     "http://120.79.146.91:8000/taskinfo/",
+        //     {
+        //       task_name: this.newTaskModel.name,
+        //       task_desc: this.newTaskModel.describe
+        //     },
+        //     {
+        //       headers: {
+        //         Authorization: "JWT " + localStorage.getItem("token")
+        //       }
+        //     }
+        //   )
+        //   .then(response => {
+        //     this.taskid = response.data.data.id;
+        //     console.log(response);
+        //     this.tablePreviewVisable = true;
+        //     this.newTaskDialogVisable = false;
+        //   })
+        //   .catch(response => {
+        //     console.log(response.data);
+        //   });
       }
     },
     importf() {
       //导入
       let obj = this.$refs.obj;
 
-      this.filename = obj.value.substring(obj.value.lastIndexOf("\\") + 1, obj.value.lastIndexOf("."));
+      this.filename = obj.value.substring(
+        obj.value.lastIndexOf("\\") + 1,
+        obj.value.lastIndexOf(".")
+      );
 
       if (!obj.files) {
         return;
@@ -188,8 +203,8 @@ export default {
             step1: "1",
             step2: "2",
             step3: "3",
-            stepX1:"x1",  
-            title:this.filename,
+            stepX1: "x1",
+            title: this.filename,
             row_num: (this.titleIndex - 2).toString(),
             data_set: this.tablejsons
           },
@@ -208,15 +223,13 @@ export default {
             params: { taskId: this.taskid, dataSetId: dataSetId }
           });
         })
-        .catch(response => {
-          
-        });
+        .catch(response => {});
     }
   }
 };
 </script>
 <style  >
-.warp{
+.warp {
   min-width: 600px;
 }
 .el-main {
@@ -245,5 +258,4 @@ export default {
   opacity: 0.8;
   border: 1px solid #eee;
 }
-
 </style>

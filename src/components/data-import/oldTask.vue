@@ -74,21 +74,29 @@ export default {
   },
   methods: {
     featchTask: function() {
-      this.$axios
-        .get("http://120.79.146.91:8000/taskinfo/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          this.originList = response.data;
-          this.taskList = response.data;
-          this.dealTask();
-          console.log(response);
-        })
-        .catch(response => {
-          alert("error");
-        });
+      let query = this.$fetch("http://120.79.146.91:8000/taskinfo/");
+      query.then(response => {
+        console.log(response);
+        this.originList = response;
+        this.taskList = response;
+        this.dealTask();
+        
+      });
+      // this.$axios
+      //   .get("http://120.79.146.91:8000/taskinfo/", {
+      //     headers: {
+      //       Authorization: "JWT " + localStorage.getItem("token")
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.originList = response.data;
+      //     this.taskList = response.data;
+      //     this.dealTask();
+      //     console.log(response);
+      //   })
+      //   .catch(response => {
+      //     alert("error");
+      //   });
     },
     dealTask: function() {
       var tasks = [];
@@ -115,7 +123,7 @@ export default {
           this.$message({
             message: "删除成功",
             type: "success",
-            showClose:true,
+            showClose: true,
             duration: 1500
           });
           this.featchTask();
@@ -124,7 +132,7 @@ export default {
           this.$message({
             message: "删除失败",
             type: "warning",
-            showClose:true,
+            showClose: true,
             duration: 1500
           });
         });

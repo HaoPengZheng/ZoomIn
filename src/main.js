@@ -17,6 +17,7 @@ import './icon/icon.css'
 import './assets/icons/zhp-icon/iconfont.js'
 import './assets/icons/zhp-icon/iconfont.css'
 import GeminiScrollbar from 'vue-gemini-scrollbar'
+
 // 自定义公共方法
 import Utils from './components/common/common.js'
 

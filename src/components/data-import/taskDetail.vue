@@ -101,18 +101,22 @@ export default {
   },
   methods: {
     fetchTask: function() {
-      this.$axios
-        .get("http://120.79.146.91:8000/taskinfo/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          this.taskInfo = response.data;
-        })
-        .catch(response => {
-          alert("error");
-        });
+      let query = this.$fetch("http://120.79.146.91:8000/taskinfo/");
+      query.then(response =>{
+        this.taskInfo = response;
+      })
+      // this.$axios
+      //   .get("http://120.79.146.91:8000/taskinfo/", {
+      //     headers: {
+      //       Authorization: "JWT " + localStorage.getItem("token")
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.taskInfo = response.data;
+      //   })
+      //   .catch(response => {
+      //     alert("error");
+      //   });
     },
     fetchTaskById: function() {
       this.$axios.post("");

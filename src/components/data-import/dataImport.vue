@@ -43,22 +43,22 @@ export default {
     };
   },
   created: function() {
-    this.$axios
-      .get("http://120.79.146.91:8000/taskinfo/", {
-        headers: {
-          Authorization: "JWT " + localStorage.getItem("token")
-        }
-      })
-      .then(response => {
-        this.allTaskList = response.data;
-      })
-      .catch(response => {
-        this.$message({
-          message: "出错了",
-          type: "warning",
-          duration: 1500
-        });
-      });
+    // this.$axios
+    //   .get("http://120.79.146.91:8000/taskinfo/", {
+    //     headers: {
+    //       Authorization: "JWT " + localStorage.getItem("token")
+    //     }
+    //   })
+    //   .then(response => {
+    //     this.allTaskList = response.data;
+    //   })
+    //   .catch(response => {
+    //     this.$message({
+    //       message: "出错了",
+    //       type: "warning",
+    //       duration: 1500
+    //     });
+    //   });
   }
 };
 </script>

@@ -7,7 +7,7 @@
         <el-tabs v-model="activeName" @tab-click="handleClick" style="padding:0 50px">
           <el-tab-pane label="数据预览" name="first">
             <div>
-              <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
+              <el-row :gutter="20" style="text-align:left;padding-left:20px;margin-bottom: 0px;">
 
                 <el-button type="text" @click="showFiltrate">
                   数据筛选
@@ -200,6 +200,7 @@ export default {
               .then(response => {
                 console.log(`response data type`);
                 var types = this.converterStringToType(response.data.data);
+                alert(types);
                 var tableKeysTypes = [];
                 console.log(this.tableKeys);
                 this.tableKeys.forEach(tablekey => {
@@ -444,9 +445,10 @@ export default {
           key = key.substring(1, key.length - 1);
         }
         var value = typeString.split(":")[1].trim();
-        if (value == "dtype('O')") {
+        alert(value)
+        if (value == "'object'") {
           value = "T";
-        } else if (value == "dtype('<M8[ns]')") {
+        } else if (value == "datetime64[ns]") {
           value = "d";
         } else {
           value = "#";
