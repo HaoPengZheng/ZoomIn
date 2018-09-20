@@ -3,7 +3,7 @@
 
 
 
-    <el-button type="text" @click="dialogVisible = true">图内筛选器</el-button>
+    <el-button type="text" @click="dialogVisible = true">临时按钮</el-button>
 
     <el-dialog
     title="图内筛选器"

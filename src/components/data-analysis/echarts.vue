@@ -2,6 +2,27 @@
 	<div>
 		<el-card class="box-card cardStyle" id="echartsCard">
 
+			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
+				
+				<!-- 表格部分 -->
+				<p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p>
+				<el-table
+				:data="tableData"
+				stripe border
+				style="width: 100%"
+				v-if="tableVisible">
+				<el-table-column
+				v-for="(item,index) in fields"
+					:key="index"
+					:prop= item
+					:label= item
+					align="center"
+					>
+				</el-table-column>
+				</el-table>
+			</div>
+
+			<!-- 图内筛选器部分 -->
 			<div>
 				<svg class="icon dropdowmMenuStyle" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg>	
 				<el-dropdown class="dropdowmMenuStyle" v-for="(val,index) in dropdownArray" :key="index"  @command="handleCommand">
@@ -16,27 +37,7 @@
 				</el-dropdown>
 			</div>
 
-			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
-			
-			<p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p>
-		
 
-            <el-table
-            :data="tableData"
-            stripe border
-            style="width: 100%"
-			v-if="tableVisible">
-            <el-table-column
-            v-for="(item,index) in fields"
-                :key="index"
-                :prop= item
-                :label= item
-                align="center"
-                >
-            </el-table-column>
-            </el-table>
-		
-		</div>
 		</el-card>
 	</div>
 </template>
@@ -61,6 +62,7 @@ export default {
 	  winWidth:0,
 	  yAxisItemName:[],
       Xdata:[],
+	  xAxisItem:[],
 	  seriesData:[],
 	  seriesDataItem:[],
 	  myChart:{},
@@ -77,71 +79,124 @@ export default {
 	  chartYAxis:[{
 					name : '',
 		            type : 'value'
-				}]
+				}],
+		chartId:1
     }
   },
   mounted(){
-	  this.autoDivSize();//先根据浏览器尺寸设置echarts的宽高
-		//var myAioxObj;
+
+	this.autoDivSize();//根据浏览器尺寸设置echarts的宽高
+//1.页面加载时创建图表或者PATCH图表（得到id,data_set）data_set：任务id，title随机生成
+// 2.拖动到框上的时候求和
+// 3.每一步PATCH
+
+		//0.从AxiosDistribute过来的图表ID
+		Bus.$on('chartID',(e)=>{
+			this.chartId = e
+			//alert(e)
+		})
+		//0.从AxiosDistribute过来的完整图表数据
         Bus.$on('AxiosDataEcharts', (e) => {
 			this.originAxiosData = e; //原初的数据
 			this.echartAxiosData = e;		//被用来操作（筛选）的数据
 			})
-      
-      //监听x轴传值
-       Bus.$on('rowdata', (e) => {
+	  
+	  
+		//1.监听X轴传值
+		Bus.$on('rowdata', (e) => {
+			this.xAxisItem.push(e)
+			//this.echartAxiosData[e].length 用来取代下面的15
 
-	　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-				this.Xdata.push(this.echartAxiosData[i][e])  //根据传进来的字段，给X轴赋值
-			}
-
-		   if(this.yAxisItemName.length<1){
-			   this.tableVisible = true
-				for(let j =0 ;j < 15;j++){
-				this.tableData[j] = this.echartAxiosData[j];
+			//图表展示控制
+			if(this.yAxisItemName.length<1){
+					this.tableVisible = true
+					for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+					this.fields.push(e)
 				}
-				this.fields.push(e)
-		   }
-		   else{
-				this.drawLine();
-		   }
-	   })
+				else{this.drawLine();}
+		})
 	   
 
 
-        //然后是监听y轴传值
-       Bus.$on('coldata', (e) => {
+		//1.监听Y轴传值
+		Bus.$on('coldata', (e) => {
+			//获得拖到y轴上的节点字段数组
+			this.yAxisItemName.push(e)
+			//拼x轴字符串
+			let yAxisString = this.yAxisItemName[0]; 
+			for (let i = 1; i < this.yAxisItemName.length; i++) {
+				yAxisString = yAxisString + ',' + this.yAxisItemName[i] 
+			}
+			//拼Y轴字符串
+			let xAxisString = this.xAxisItem[0]; 
+			for (let i = 1; i < this.xAxisItem.length; i++) {
+				xAxisString = xAxisString + ',' + this.xAxisItem[i] 
+			}
 
-			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
-			
-    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-                this.seriesDataItem.push(this.echartAxiosData[i][e])  //根据传进来的字段，给X轴赋值
-            }
-
-			this.seriesData.push({
-				name:e,
-				type:'bar',
-				data:this.seriesDataItem
-			})
-			this.seriesDataItem = [] //清空serIDataItem否则重叠
-			//console.log(this.seriesData)
-			
-		   if(this.Xdata.length<1){
-			   this.tableVisible = true
-				for(let j =0 ;j < 15;j++){
-				this.tableData[j] = this.echartAxiosData[j];
+			//发送求和请求
+			this.$axios
+			.post(
+			"http://120.79.146.91:8000/task/chart/sum",
+				{
+					chart_id:this.chartId,
+					data_set:4,//应该是data_set_id?到时换成this.$router.parms
+					chart_type:1,
+					x_axis:xAxisString,
+					y_axis:yAxisString
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
 				}
-				this.fields.push(e)
-		   }
-		   else{
+			)
+			.then(r => {
+				console.log(r.data.data)//完整数据
+				console.log(Object.values(JSON.parse(r.data.data)))//表头
+				Object.values(JSON.parse(r.data.data)).forEach((element) => {
+				console.log(Object.keys(element))//去重的X轴的值
+
+				//给X轴赋值,Xdata为echarts的X轴的值
+		　　　　for(let i=0;i<Object.keys(element).length;i++){
+					this.Xdata.push(Object.keys(element)[i])  
+				}
+				//给Y轴赋值
+		　　　　for(let i=0;i<Object.keys(element).length;i++){
+					this.seriesDataItem.push(element[Object.keys(element)[i]])  
+				}							
+				this.seriesData.push({
+					name:e,
+					type:'bar',
+					data:this.seriesDataItem
+				})
+				this.seriesDataItem = [] //清空serIDataItem否则重叠
+							
+				//!!!!!!!!!!!!!!!!!!!!!!!!!!每次都清空数据，再赋值
+				console.log(this.seriesData)
+
+				});//循环赋值结束
+
 				this.drawLine();
-		   }
 
-			
-	   })
+			})
+			.catch(response => {
+				alert("求和失败");
+			});
 
+			//表格显示
+			if(this.Xdata.length<1){
+				this.tableVisible = true
+					for(let j =0 ;j < 15;j++){
+					this.tableData[j] = this.echartAxiosData[j];
+					}
+					this.fields.push(e)
+			}
+			else{this.drawLine();}
 
-	   //然后是监听次轴传值
+		})
+
+		//次轴也要求和…………………………参数为X轴和次轴
+	   //2.然后是监听次轴传值
        Bus.$on('dropAxisCol', (e) => {
 
 			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
@@ -156,8 +211,7 @@ export default {
 				yAxisIndex: 1,
 				data:this.seriesDataItem
 			})
-			this.seriesDataItem = [] //清空serIDataItem否则重叠
-			//console.log(this.seriesData)
+			this.seriesDataItem = []
 			
 		   if(this.Xdata.length<1){
 			   this.tableVisible = true
@@ -176,20 +230,20 @@ export default {
 				this.myChart.dispose()
 				this.drawLine();
 		   }
-
-			
-	   })
-
+	   	})
 
 	   
-	   //监听移除事件
+	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
        Bus.$on('rowdataRemove', (e) => {
 			this.Xdata = [];
+			//this.Xdata.splice(e, 1);
 			this.tableVisible = false
 			if(this.myChart)this.myChart.dispose()
 			this.drawLine();
 	   })
-		//监听移除事件
+
+
+		//2.监听移除事件(还没有PATCH)
        Bus.$on('coldataRemove', (e) => {
 			this.seriesData.splice(e, 1);
 			this.tableVisible = false
@@ -197,7 +251,7 @@ export default {
 			this.drawLine();
 	   })
 		
-		//监听图表类型改变
+		//3.监听图表类型改变(还没有PATCH)
 		Bus.$on('typeChange',(e)=>{
 			for(var i = 0;i<this.option.series.length;i++){
 				this.option.series[i].type = e; //可以改类型，不能改标题，重新drawLine也没用
@@ -207,21 +261,21 @@ export default {
 			this.drawLine();
 		})
 
-		//监听图表风格
+		//3.监听图表风格(不PATCH)
 		Bus.$on('chartStyleType',(e)=>{
 			this.chartStyle = e;
 			this.myChart.dispose()
 			this.drawLine();
 		})
 
-		//监听标题改变
+		//3.监听标题改变(还没有PATCH)
 		Bus.$on('titleChange',(e)=>{
 			this.chartTitle = e;
 			this.myChart.dispose()
 			this.drawLine();
 		})
 
-		//监听辅助线设置
+		//监听辅助线设置（不PATCH）
 		Bus.$on('markLineOption',(e)=>{
 			if(e.selectTypeValue == '计算值'){
 				for(var i = 0;i<this.option.series.length;i++){
@@ -266,7 +320,8 @@ export default {
 
 			this.drawLine();
 		})
-		//监听辅助线删除
+
+		//监听辅助线删除（不PATCH）
 		Bus.$on('deleteLine',(e)=>{
 			for(var i = 0;i<this.option.series.length;i++){
 				if(this.option.series[i].name == e){
@@ -276,7 +331,8 @@ export default {
 			}
 			this.drawLine();
 		})
-		//监听数据标注
+
+		//监听数据标注（不PATCH）
 		Bus.$on('echartsMarkPoint',(seriesIndex,data,dataIndex,pointInput)=>{
 			//其实markPoint应该写到series里面，但是我不想改series了
 			this.option.series[seriesIndex].markPoint = {
@@ -305,7 +361,7 @@ export default {
 			this.drawLine();
 		})
 
-		//监听数据标注删除
+		//监听数据标注删除（不PATCH）
 		Bus.$on('deletePoint',(val,pointSeriesIndex)=>{   //尝试传(pointSeries,pointY,pointX)失败，pointSeries被覆盖，用回名字
 			console.log(val,pointSeriesIndex)
 			// for(var i = 0;i<this.option.series.length;i++){
@@ -322,7 +378,8 @@ export default {
 			this.drawLine();
 
 		})
-		//监听筛选
+
+		//监听数值筛选（还没有PATCH）
 		Bus.$on('numberFilter',(numberInput,numberTypeSelect,dropName)=>{
 			let sql = ''
 			switch (numberTypeSelect) {
@@ -415,9 +472,6 @@ export default {
     drawLine(){
 		let dom = this.$refs.myChart;
       	this.myChart = this.$echarts.init(dom,this.chartStyle);
-        // 基于准备好的dom，初始化echarts实例
-        //let myChart = this.$echarts.init(document.getElementById('myChart'),'macarons')
-        // 绘制图表
         this.option = {
 		    title : {
 		        text: this.chartTitle,
@@ -452,13 +506,14 @@ export default {
         this.myChart.setOption(this.option,true);
 		Bus.$emit('chartsOption',this.option)
 	},
+
+	//图内筛选器事件
 	handleCommand(command) {
 		alert(command)
 		let sql = "x=>x."+ 'RANK' +">"+ command
 		this.echartAxiosData = Enumerable.from(this.echartAxiosData).where(sql).toArray();//this.echartAxiosData没用this，以后可能有问题
 		this.myChart.dispose()
-		this.drawLine();//应该把x轴y轴的值处理都放到drawLine()里去
-		
+		this.drawLine();
 	},
 
 	autoDivSize(){

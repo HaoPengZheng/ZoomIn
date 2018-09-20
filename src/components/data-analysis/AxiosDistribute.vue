@@ -14,7 +14,9 @@ axios.defaults.withCredentials = true;   // axios 默认不发送cookie，需要
 export default {
     data(){
         return{
-            dataSetId:1
+            dataSetId:1,
+            chartTitle:'图表标题',
+            chartId:1
         }
     },
     created() {
@@ -22,7 +24,10 @@ export default {
 
     },
     mounted(){
+      //打印TOKEN供测试用
+      console.log(localStorage.getItem("token"))
 
+      //1.获取完整数据集数据
       this.$axios
         .post(
           "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
@@ -44,45 +49,20 @@ export default {
           alert("获取数据失败");
         });
 
-
-
-
-        this.$axios
-        .post(
-          "http://120.79.146.91:8000/task/chart/sum",
-          {
-              chart_id:11,
-              data_set:4,
-              chart_type:1,
-              x_axis:"性别_x,考生号",
-              y_axis:"RANK,RANK_H"
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
-        .then(response => {
-          //console.log(response.data.data);
-           console.log(response)
-
-        })
-        .catch(response => {
-          alert("response");
-        });
-
-
+      //2.随机生成图表标题
+      this.chartTitle = this.chartTitle + Math.floor(Math.random()*(1000000-1+1)+1)//用当前时间(new Date()).valueOf();，创建于2018-9-18-16:32:45
+      
+      //3.创建图表信息
       this.$axios
         .post(
           "http://120.79.146.91:8000/chart/",
           {
-              data_set : 2334,
-              title : "柱状图9134",
-              desc: "zzzzz",
+              data_set : 10001,//好像没用
+              title : this.chartTitle,
+              desc: "",
               chart_type: 1,
-              x_axis: "性别_x,考生号",
-              y_axis: "RANK,RANK_H",
+              x_axis: "",
+              y_axis: "",
               contrast_axis: "",
               secondary_axis: ""
           },
@@ -93,7 +73,9 @@ export default {
           }
         )
         .then(response => {
-            console.log(response)
+      			this.chartId = response.data.data.id
+            //alert("创建图表成功")
+            Bus.$emit('chartID',this.chartId)
         })
         .catch(response => {
           //alert("获取数据失败");
@@ -103,30 +85,12 @@ export default {
 
 
 
-      // this.$axios
-      //   .delete(
-      //     "http://120.79.146.91:8000/chart/" + id + "/",  //id输入
-
-      //     {
-      //       headers: {
-      //         Authorization: "JWT " + localStorage.getItem("token")
-      //       }
-      //     }
-      //   )
-      //   .then(response => {
-      //       alert(response)
-            
-      //   })
-      //   .catch(response => {
-      //     //alert("获取数据失败");
-      //   });
-
-
+      //PATCH暂时没用上，这个属于echarts.vue
       // this.$axios
       //   .patch(
-      //     "http://120.79.146.91:8000/chart/" + 4 +"/",
+      //     "http://120.79.146.91:8000/chart/" + this.chartId +"/", //这个id是图表的id
       //     {
-      //             id:6,
+      //             id:12,
       //             title:"柱x状x图",
       //             desc:"zzzxxxzz",
       //             chart_type:1,
@@ -142,34 +106,12 @@ export default {
       //     }
       //   )
       //   .then(response => {
-
+      //     alert("patch成功")
       //   })
       //   .catch(response => {
       //     //alert("获取数据失败");
       //   });
 
-
-
-
-
-
-
-
-      this.$axios
-        .get(
-        "http://120.79.146.91:8000/chart/",
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
-      .then(response => {
-        console.log(response)
-      })
-      .catch(response => {
-      //alert("获取数据失败");
-      });
 
     }
 

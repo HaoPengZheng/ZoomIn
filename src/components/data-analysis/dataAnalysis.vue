@@ -2,8 +2,8 @@
   <div id="app">
     <el-row>
     
-    <el-col :span="3" style="padding:30px;"><div>
-      <table-info style="  margin-bottom: 30px"></table-info></div>
+    <el-col :span="3" style="padding:30px;"><div> 
+      <table-info style="margin-bottom: 30px"></table-info></div>
       <drag ></drag>
     </el-col>
     
@@ -49,7 +49,8 @@ export default {
     rightBoard:rightBoard,
     AxiosDistribute,
     dropFilter,
-    tableInfo
+    tableInfo,
+    spanParms:3
 
   }
 }

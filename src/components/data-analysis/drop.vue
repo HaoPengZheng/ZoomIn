@@ -96,9 +96,9 @@ import Bus from './Bus.js'
                         this.dropRow.push(data)
                         //console.log(this.dropRow.length)
                         //判定是否超过要求的范围
-                        if(this.dropRow.length > 2){
+                        if(this.dropRow.length > 1){
                             this.$message({
-                                message: '只允许有两个维度',
+                                message: '只允许有一个维度',
                                 showClose: true,
                                 type: 'warning',
                                 duration:1000
