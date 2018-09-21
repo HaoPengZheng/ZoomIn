@@ -37,6 +37,8 @@ Vue.prototype.$echarts = echarts
 Vue.prototype.$axios = axios
 Vue.prototype.$qs = qs
 
+
+//这是啥？
 Vue.component('icon', Icon)
 
 const root = document.createElement('div')

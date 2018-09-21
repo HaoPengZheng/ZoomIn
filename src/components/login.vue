@@ -64,8 +64,6 @@ body {
 .el-row {
   margin: 0 !important;
 }
-.login-title {
-}
 </style>
 <script>
 import "element-ui/lib/theme-chalk/display.css";

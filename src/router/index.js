@@ -80,6 +80,7 @@ const router = new Router({
     ]
 })
 
+//TODO:token 未正确使用
 router.beforeEach((to, from, next) => {
     if (to.matched.some(res => res.meta.requireAuth)) {
         if (localStorage.getItem('token')) {
