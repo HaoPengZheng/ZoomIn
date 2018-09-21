@@ -45,7 +45,7 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let promise = this.$post(
-            "http://120.79.146.91:8000/login/",
+            "/login/",
             this.$qs.stringify(this.loginForm),
             {
               message:"登录失败!",

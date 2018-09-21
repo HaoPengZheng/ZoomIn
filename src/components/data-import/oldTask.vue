@@ -13,13 +13,14 @@
     <div style="padding:0 40px;">
       <el-carousel indicator-position="none">
         <el-carousel-item v-for="(tasks,index) in newTaskList" :key="index" interval=5000>
-          <el-col :span="4" v-for="(task,index) in tasks" :key="index" :offset="index==0?2:1">
+          <el-col :span="renderSpan" v-for="(task,index) in tasks" :key="index" :offset="index==0?2:1">
             <Task index :taskName="task.task_name" :createTime="task.add_time.substring(0,10)" :taskid="task.id" v-on:deleteTask="deleteTask" v-on:editTask="editTask">
             </Task>
           </el-col>
         </el-carousel-item>
       </el-carousel>
     </div>
+    <div>{{clientWidth}}</div>
     <!-- 编辑任务名的模态框 -->
     <el-dialog title="编辑任务名" :visible.sync="editDialogVisible" width="30%">
       <el-form ref="form" label-width="80px" label-position="left">
@@ -66,21 +67,51 @@ export default {
         describe: ""
       },
       editTaskId: "", //
-      queryName: ""
+      queryName: "",
+      clientWidth: document.body.clientWidth,
+      taskCarouselCount: 4,
+      renderSpan: 4
     };
   },
   created: function() {
     this.featchTask();
   },
+  mounted: function() {
+    //监听窗口变化
+    const that = this;
+    window.onresize = () => {
+      window.screenWidth = document.body.clientWidth;
+      that.clientWidth = window.screenWidth;
+    };
+    this.calculateTaskCount();
+  },
   methods: {
+    calculateTaskCount: function() {
+      const threeCountWidth = 1200;
+      const twoCountWidth = 800;
+      const oneContWidth = 400;
+      let width = this.clientWidth;
+      if (width > threeCountWidth) {
+        this.taskCarouselCount = 4;
+        this.renderSpan = 4;
+      } else if (width <= threeCountWidth && width > twoCountWidth) {
+        this.taskCarouselCount = 3;
+        this.renderSpan = 6;
+      } else if (width <= twoCountWidth && width > oneContWidth) {
+        this.taskCarouselCount = 2;
+        this.renderSpan = 8;
+      } else {
+        this.taskCarouselCount = 1;
+        this.renderSpan = 16;
+      }
+    },
     featchTask: function() {
-      let query = this.$fetch("http://120.79.146.91:8000/taskinfo/");
+      let query = this.$get("http://120.79.146.91:8000/taskinfo/");
       query.then(response => {
         console.log(response);
         this.originList = response;
         this.taskList = response;
         this.dealTask();
-        
       });
       // this.$axios
       //   .get("http://120.79.146.91:8000/taskinfo/", {
@@ -99,11 +130,12 @@ export default {
       //   });
     },
     dealTask: function() {
-      var tasks = [];
-      this.newTaskList = [];
+      let tasks = []; //临时存储task
+      this.newTaskList = []; //用来渲染的taskList
+      let taskCount = this.taskCarouselCount; // 每一个轮播的task个数
       for (var i = 0; i < this.taskList.length; i++) {
         tasks.push(this.taskList[i]);
-        if ((i + 1) % 4 == 0) {
+        if ((i + 1) % taskCount == 0) {
           this.newTaskList.push(tasks);
           tasks = [];
         }
@@ -113,82 +145,118 @@ export default {
       }
     },
     deleteTask: function(id) {
-      this.$axios
-        .delete("http://120.79.146.91:8000/taskinfo/" + id + "/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          this.$message({
-            message: "删除成功",
-            type: "success",
-            showClose: true,
-            duration: 1500
-          });
-          this.featchTask();
-        })
-        .catch(response => {
-          this.$message({
-            message: "删除失败",
-            type: "warning",
-            showClose: true,
-            duration: 1500
-          });
+      let query = this.$delete(
+        "http://120.79.146.91:8000/taskinfo/" + id + "/"
+      );
+      query.then(response => {
+        this.$message({
+          message: "删除成功",
+          type: "success",
+          showClose: true,
+          duration: 1500
         });
+        this.featchTask();
+      });
+      // this.$axios
+      //   .delete("http://120.79.146.91:8000/taskinfo/" + id + "/", {
+      //     headers: {
+      //       Authorization: "JWT " + localStorage.getItem("token")
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.$message({
+      //       message: "删除成功",
+      //       type: "success",
+      //       showClose: true,
+      //       duration: 1500
+      //     });
+      //     this.featchTask();
+      //   })
+      //   .catch(response => {
+      //     this.$message({
+      //       message: "删除失败",
+      //       type: "warning",
+      //       showClose: true,
+      //       duration: 1500
+      //     });
+      //   });
     },
     editTask: function(taskid) {
       this.editTaskId = taskid;
-      this.$axios
-        .get("http://120.79.146.91:8000/taskinfo/" + taskid + "/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          this.taskModel.name = response.data.task_name;
-          this.taskModel.describe = response.data.task_desc;
-        })
-        .catch(response => {
-          // alert("error");
-        });
+      let query = this.$get(
+        "http://120.79.146.91:8000/taskinfo/" + taskid + "/"
+      );
+      query.then(response => {
+        this.taskModel.name = response.task_name;
+        this.taskModel.describe = response.task_desc;
+      });
+      // this.$axios
+      //   .get("http://120.79.146.91:8000/taskinfo/" + taskid + "/", {
+      //     headers: {
+      //       Authorization: "JWT " + localStorage.getItem("token")
+      //     }
+      //   })
+      //   .then(response => {
+      //     this.taskModel.name = response.data.task_name;
+      //     this.taskModel.describe = response.data.task_desc;
+      //   })
+      //   .catch(response => {
+      //     // alert("error");
+      //   });
       this.editDialogVisible = true;
     },
     updateTask: function() {
       this.editDialogVisible = false;
       //更新接口
-      this.$axios
-        .put(
-          "http://120.79.146.91:8000/taskinfo/" + this.editTaskId + "/",
+      let query = this.$put(
+        "http://120.79.146.91:8000/taskinfo/" + this.editTaskId + "/",
+        {
+          task_name: this.taskModel.name,
 
-          {
-            task_name: this.taskModel.name,
-
-            task_desc: this.taskModel.describes
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
-        .then(response => {
-          console.log(response);
-          this.$message.success({
-            message: "保存成功",
-            showClose: true,
-            duration: 2000
-          });
-          this.fetchTask();
-        })
-        .catch(err => {
-          this.$message.error({
-            message: err.response.data.non_field_errors[0],
-            showClose: true,
-            duration: 1000
-          });
-          console.log(err.response);
+          task_desc: this.taskModel.describes
+        }
+      );
+      query.then(response => {
+        console.log(response);
+        this.$message.success({
+          message: "保存成功",
+          showClose: true,
+          duration: 2000
         });
+        this.featchTask();
+      });
+      // this.$axios
+      //   .put(
+      //     "http://120.79.146.91:8000/taskinfo/" + this.editTaskId + "/",
+
+      //     {
+      //       task_name: this.taskModel.name,
+
+      //       task_desc: this.taskModel.describes
+      //     },
+      //     {
+      //       headers: {
+      //         Authorization: "JWT " + localStorage.getItem("token")
+      //       }
+      //     }
+      //   )
+      //   .then(response => {
+      //     console.log(response);
+      //     this.$message.success({
+      //       message: "保存成功",
+      //       showClose: true,
+      //       duration: 2000
+      //     });
+      //     this.fetchTask();
+      //   })
+      //   .catch(err => {
+      //     this.$message.error({
+      //       message: err.response.data.non_field_errors[0],
+      //       showClose: true,
+      //       duration: 1000
+      //     });
+      //     console.log(err.response);
+      //   });
     },
     filterTask: function() {
       let query = this.queryName;
@@ -208,6 +276,13 @@ export default {
     queryName: {
       handler: function(value, oldValue) {
         this.filterTask();
+      }
+    },
+    clientWidth: {
+      handler: function(value) {
+        this.clientWidth = value;
+        this.calculateTaskCount();
+        this.dealTask();
       }
     }
   }

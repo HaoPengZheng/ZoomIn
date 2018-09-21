@@ -1,12 +1,14 @@
 import axios from 'axios'
 import { Message } from 'element-ui';
-
+import qs from 'qs'
 const defaultErrorMessage ={
   message: "出错了",
-  type: "error"
+  type: "error",
+  showClose: true,
+  duration: 1500
 }
 axios.defaults.timeout = 5000;
-axios.defaults.baseURL = '';
+axios.defaults.baseURL = 'http://120.79.146.91:8000';
 
 axios.interceptors.request.use(
   config => {
@@ -44,7 +46,7 @@ axios.interceptors.response.use(
  * @returns {Promise}
  */
 
-export function fetch(url, params = {}) {
+export function get(url, params = {}) {
   return new Promise((resolve, reject) => {
     axios.get(url, {
       params: params
@@ -105,11 +107,31 @@ export function patch(url, data = {}) {
 */
 
 export function put(url, data = {}) {
+  data = qs.stringify(data);
   return new Promise((resolve, reject) => {
     axios.put(url, data)
       .then(response => {
         resolve(response.data);
       }, err => {
+        console.log(err.response.data.non_field_errors[0]);
+        reject(err)
+      })
+  })
+}
+/**
+* 封装delete请求
+* @param url
+* @param data
+* @returns {Promise}
+*/
+
+export function toDelete(url,data={},errormessage = defaultErrorMessage){
+  return new Promise((resolve,reject)=>{
+    axios.delete(url,data)
+      .then(response=>{
+        resolve(response.data);
+      },err=>{
+        this.$message(errormessage);
         reject(err)
       })
   })

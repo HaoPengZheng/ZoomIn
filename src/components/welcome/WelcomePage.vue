@@ -48,7 +48,7 @@ const featureTextLists = [
       "Zoomin 学业分析系统分析成绩、教研成果不再求人"
     ],
     pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-  }
+  },  
 ];
 export default {
   components: {
