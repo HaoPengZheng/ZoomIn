@@ -101,22 +101,10 @@ export default {
   },
   methods: {
     fetchTask: function() {
-      let query = this.$fetch("http://120.79.146.91:8000/taskinfo/");
-      query.then(response =>{
+      let query = this.$get("/taskinfo/");
+      query.then(response => {
         this.taskInfo = response;
-      })
-      // this.$axios
-      //   .get("http://120.79.146.91:8000/taskinfo/", {
-      //     headers: {
-      //       Authorization: "JWT " + localStorage.getItem("token")
-      //     }
-      //   })
-      //   .then(response => {
-      //     this.taskInfo = response.data;
-      //   })
-      //   .catch(response => {
-      //     alert("error");
-      //   });
+      });
     },
     fetchTaskById: function() {
       this.$axios.post("");
@@ -133,55 +121,26 @@ export default {
       if (id == undefined || id == null) {
         return;
       }
-      this.$axios
-        .get("http://120.79.146.91:8000/taskinfo/" + id + "/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          this.form.taskname = response.data.task_name;
-          this.form.createTime = response.data.add_time;
-          this.form.remarks = response.data.task_desc;
-          this.form.author = response.data.user;
-        })
-        .catch(response => {
-          // alert("error");
-        });
+      this.$get("/taskinfo/" + id + "/").then(response => {
+        this.form.taskname = response.task_name;
+        this.form.createTime = response.add_time;
+        this.form.remarks = response.task_desc;
+        this.form.author = response.user;
+      });
     },
     updateTask: function() {
-      this.$axios
-        .put(
-          "http://120.79.146.91:8000/taskinfo/" + this.taskId + "/",
-
-          {
-            task_name: this.form.taskname,
-
-            task_desc: this.form.remarks
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
-        .then(response => {
-          console.log(response);
-          this.$message.success({
-            message:'保存成功',
-            showClose:true,
-            duration:1000
-          });
-          this.fetchTask();
-        })
-        .catch(err => {
-          this.$message.error({
-            message:err.response.data.non_field_errors[0],
-            showClose:true,
-            duration:1000
-          });
-          console.log(err.response)
+      this.$put("/taskinfo/" + this.taskId + "/", {
+        task_name: this.form.taskname,
+        task_desc: this.form.remarks
+      }).then(response => {
+        console.log(response);
+        this.$message.success({
+          message: "保存成功",
+          showClose: true,
+          duration: 1000
         });
+        this.fetchTask();
+      });
     }
   }
 };

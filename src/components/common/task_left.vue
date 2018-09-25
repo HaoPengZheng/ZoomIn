@@ -5,7 +5,7 @@
       <div style="overflow-y:scroll;width:100%;height:100%;">
         <!-- :remote-method="remoteMethod" :loading="loading" -->
         <el-select v-show="!isShrink" value-key="id" filterable reserve-keyword placeholder="搜索任务" style="padding:5px;" v-model="taskQueryName" @change="change(taskQueryName)">
-          <el-option v-for="item in taskInfo" :key="item.id" :label="item.task_name" :value="item">
+          <el-option v-for="item in allTaskInfo" :key="item.id" :label="item.task_name" :value="item">
           </el-option>
         </el-select>
         <el-button v-show="!isShrink" @click="newTaskDialogVisable = true" type="text" style="font-size:16px">
@@ -13,7 +13,7 @@
         </el-button>
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
         <el-menu :default-active="activeIndex==undefined?'':activeIndex+''" :collapse="isShrink">
-          <el-menu-item :index="task.id==undefined?'':task.id+''" v-for="(task,index) in taskInfo" :key="index">
+          <el-menu-item :index="task.id==undefined?'':task.id+''" v-for="(task,index) in allTaskInfo" :key="index">
             <a @click="showTaskDetail(task.id)">
               <i class="el-icon-document" style=""></i>
               <span slot="title" style="padding-right:80px">{{task.task_name}}</span>
@@ -42,7 +42,7 @@
     </div>
     <el-dialog title="上传数据集" :visible.sync="uploadDataSetDialogVisible" width="30%">
       <div style="margin:0 auto">
-        <el-upload class="upload-demo" style="padding:0 10%" drag action="https://jsonplaceholder.typicode.com/posts/" multiple>
+        <el-upload class="upload-demo" style="padding:0 10%" drag  multiple>
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或
             <em>点击上传</em>
@@ -106,7 +106,9 @@ export default {
       isShrink: false,
       toggleTitle: "隐藏侧边栏",
       uploadDataSetDialogVisible: false,
+      activeNumber:Number,
       activeIndex: String,
+      allTaskInfo:this.taskInfo,
       taskQueryName: {
         id: "",
         task_name: ""
@@ -126,28 +128,6 @@ export default {
           background: "#90929880"
         }
       },
-      options: [
-        {
-          value: "选项1",
-          label: "黄金糕"
-        },
-        {
-          value: "选项2",
-          label: "双皮奶"
-        },
-        {
-          value: "选项3",
-          label: "蚵仔煎"
-        },
-        {
-          value: "选项4",
-          label: "龙须面"
-        },
-        {
-          value: "选项5",
-          label: "北京烤鸭"
-        }
-      ],
       value: "",
       newTaskDialogVisable: false,
       tablePreviewVisable: false,
@@ -160,7 +140,7 @@ export default {
       titleIndex: 1,
       accept:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel",
-      taskid: 0
+      taskid: 0,
     };
   },
   created: function() {
@@ -171,28 +151,21 @@ export default {
       this.$emit("updateDetail", task.id);
     },
     fetchTask: function() {
-      this.$axios
-        .get("http://120.79.146.91:8000/taskinfo/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          this.taskInfo = response.data;
-          console.log(this.taskInfo[0].id);
+      let query = this.$get("/taskinfo");
+      query.then(response => {
+
+          this.allTaskInfo = response;
+          console.log(this.allTaskInfo[0].id);
           // this.showTaskDetail(this.taskInfo[0].id);
           // this.$emit("updateDetail", this.taskInfo[0].id);
           // console.log(response);
           // 默认第一个
-          if (this.active == undefined) {
-            this.active = this.taskInfo[0].id;
-            this.showTaskDetail(this.taskInfo[0].id);
-            this.activeIndex = this.active;
+          if (this.activeNumber == undefined) {
+            this.activeNumber = this.allTaskInfo[0].id;
+            this.showTaskDetail(this.allTaskInfo[0].id);
+            this.activeIndex = this.activeNumber.toString();
           }
         })
-        .catch(response => {
-          alert("error");
-        });
     },
     shrink: function() {
       if (this.isShrink) {
@@ -209,7 +182,7 @@ export default {
       this.$router.push({ name: "task-detail", params: { taskId: id } });
     },
     showTaskDetail: function(id) {
-      this.active = id;
+      this.activeNumber = id;
       this.taskQueryName = "";
       this.$emit("updateDetail", id);
     },
@@ -358,11 +331,11 @@ export default {
           }
         })
         .then(response => {
-          if (this.active == id) {
-            this.active = undefined;
+          if (this.activeNumber == id) {
+            this.activeNumber = undefined;
           }
           this.fetchTask();
-          this.showTaskDetail(this.active);
+          this.showTaskDetail(this.activeNumber);
           console.log(response);
         })
         .catch(response => {
@@ -378,7 +351,15 @@ export default {
     active: {
       immediate: true,
       handler: function(val) {
+        this.activeNumber =val;
         this.activeIndex = val;
+      }
+    },
+    taskInfo:{
+      immediate:true,
+      deep:true,
+      handler:function(val){
+        this.allTaskInfo = val;
       }
     }
   }
