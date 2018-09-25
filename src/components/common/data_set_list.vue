@@ -14,7 +14,7 @@
         </el-button>
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
         <el-menu default-active="1" :collapse="isShrink">
-          <el-menu-item :index="index" v-for="(dataSet,index) in dataSetList" :key="index">
+          <el-menu-item :index="index.toString()" v-for="(dataSet,index) in dataSetList" :key="index">
             <a @click="showDataSet(dataSet.id)">
               <i class="el-icon-document" style=""></i>
               <span slot="title" style="padding-right:80px">{{dataSet.title}}</span>

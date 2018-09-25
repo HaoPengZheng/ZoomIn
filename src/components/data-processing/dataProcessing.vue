@@ -4,7 +4,7 @@
     </Left>
     <el-container>
       <el-main>
-        <el-tabs v-model="activeName" @tab-click="handleClick" style="padding:0 50px">
+        <el-tabs v-model="activeName"  style="padding:0 50px">
           <el-tab-pane label="数据预览" name="first">
             <div>
               <el-row :gutter="20" style="text-align:left;padding-left:20px;margin-bottom: 0px;">
@@ -44,7 +44,7 @@
           <el-tab-pane label="字段设置" name="second">
             <div>
               <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
-                <el-button type="text" @click="showBatchOperation">
+                <el-button type="text" >
                   批量修改
                   <!-- <i class="el-icon-arrow-down"></i> -->
                 </el-button>
@@ -169,8 +169,6 @@ export default {
               })
             )
               .then(response => {
-                var types = this.converterStringToType(response.data);
-                alert(types);
                 var tableKeysTypes = [];
                 this.tableKeys.forEach(tablekey => {
                   tablekey = tablekey.trim();
@@ -178,17 +176,12 @@ export default {
                   this.tableKeysType = tableKeysTypes;
                 });
               })
-              .catch(response => {
-                alert("获取数据失败");
-              });
+      
           }
         })
         .catch(response => {
           alert("获取数据失败");
         });
-    },
-    handleClick(tab, event) {
-      console.log(tab, event);
     },
     showFiltrate: function() {
       if (this.filtrateVisable === false) {
