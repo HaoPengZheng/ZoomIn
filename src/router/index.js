@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import home from '@/components/home'
-import login from '@/components/login'
-import dataImport from '@/components/data-import/dataImport'
+import Home from '@/components/Home'
+import Login from '@/components/Login'
+import DataImport from '@/components/data-import/DataImport'
 import childrenRegister from '@/components/login/register'
 import childrenLogin from '@/components/login/toLogin'
 import dataProcessing from '@/components/data-processing/dataProcessing'
@@ -15,11 +15,11 @@ const router = new Router({
     routes: [{
         path: '/home',
         name: 'home',
-        component: home,
+        component: Home,
         children: [{
             path: 'data-import',
             name: 'data-import',
-            component: dataImport,
+            component: DataImport,
             meta: {
                 requireAuth: true
             },
@@ -68,7 +68,7 @@ const router = new Router({
     {
         path: '/',
         name: 'login',
-        component: login,
+        component: Login,
         children: [{
             path: '/',
             component: childrenLogin

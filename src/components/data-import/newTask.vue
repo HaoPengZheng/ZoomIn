@@ -44,13 +44,13 @@
 </template>
 <script>
 import XLSX from "xlsx";
-import previewTable from "./prviewTable.vue";
+import PreviewTable from "./PrviewTable.vue";
 let wb; //读取完成的数据
 let rABS = false; //是否将文件读取为二进制字符串
 let filename;
 export default {
   components: {
-    previewTable
+    PreviewTable
   },
   data() {
     return {

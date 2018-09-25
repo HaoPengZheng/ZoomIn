@@ -25,7 +25,7 @@
 </template>
 <script>
 import Myfooter from "../common/footer.vue";
-import NewTask from "./newTask.vue";
+import NewTask from "./NewTask.vue";
 import OldTask from "./oldTask.vue";
 import ShareTask from "./shareTask.vue";
 // import Left from '../common/left.vue'

@@ -50,7 +50,7 @@
 
 </template>
 <script>
-import Task from "./task.vue";
+import Task from "./Task.vue";
 export default {
   components: {
     Task
