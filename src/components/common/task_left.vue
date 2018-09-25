@@ -42,7 +42,7 @@
     </div>
     <el-dialog title="上传数据集" :visible.sync="uploadDataSetDialogVisible" width="30%">
       <div style="margin:0 auto">
-        <el-upload class="upload-demo" style="padding:0 10%" drag  multiple>
+        <el-upload class="upload-demo" style="padding:0 10%" drag multiple>
           <i class="el-icon-upload"></i>
           <div class="el-upload__text">将文件拖到此处，或
             <em>点击上传</em>
@@ -106,9 +106,9 @@ export default {
       isShrink: false,
       toggleTitle: "隐藏侧边栏",
       uploadDataSetDialogVisible: false,
-      activeNumber:Number,
+      activeNumber: Number,
       activeIndex: String,
-      allTaskInfo:this.taskInfo,
+      allTaskInfo: this.taskInfo,
       taskQueryName: {
         id: "",
         task_name: ""
@@ -140,11 +140,12 @@ export default {
       titleIndex: 1,
       accept:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel",
-      taskid: 0,
+      taskid: 0
     };
   },
   created: function() {
     this.fetchTask();
+    console.log(`taskInfo is ${this.taskInfo}`);
   },
   methods: {
     change: function(task) {
@@ -153,19 +154,18 @@ export default {
     fetchTask: function() {
       let query = this.$get("/taskinfo");
       query.then(response => {
-
-          this.allTaskInfo = response;
-          console.log(this.allTaskInfo[0].id);
-          // this.showTaskDetail(this.taskInfo[0].id);
-          // this.$emit("updateDetail", this.taskInfo[0].id);
-          // console.log(response);
-          // 默认第一个
-          if (this.activeNumber == undefined) {
-            this.activeNumber = this.allTaskInfo[0].id;
-            this.showTaskDetail(this.allTaskInfo[0].id);
-            this.activeIndex = this.activeNumber.toString();
-          }
-        })
+        this.allTaskInfo = response;
+        console.log(this.allTaskInfo[0].id);
+        // this.showTaskDetail(this.taskInfo[0].id);
+        // this.$emit("updateDetail", this.taskInfo[0].id);
+        // console.log(response);
+        // 默认第一个
+        if (this.activeNumber == undefined) {
+          this.activeNumber = this.allTaskInfo[0].id;
+          this.showTaskDetail(this.allTaskInfo[0].id);
+          this.activeIndex = this.activeNumber.toString();
+        }
+      });
     },
     shrink: function() {
       if (this.isShrink) {
@@ -324,41 +324,28 @@ export default {
         });
     },
     deleteTask: function(id) {
-      this.$axios
-        .delete("http://120.79.146.91:8000/taskinfo/" + id + "/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          if (this.activeNumber == id) {
-            this.activeNumber = undefined;
-          }
-          this.fetchTask();
-          this.showTaskDetail(this.activeNumber);
-          console.log(response);
-        })
-        .catch(response => {
-          alert("删除失败");
-          this.$message({
-            message: "删除失败",
-            type: "warning"
-          });
-        });
+      this.$toDelete("/taskinfo/" + id + "/").then(response => {
+        if (this.activeNumber == id) {
+          this.activeNumber = undefined;
+        }
+        this.fetchTask();
+        this.showTaskDetail(this.activeNumber);
+        console.log(response);
+      });
     }
   },
   watch: {
     active: {
       immediate: true,
       handler: function(val) {
-        this.activeNumber =val;
+        this.activeNumber = val;
         this.activeIndex = val;
       }
     },
-    taskInfo:{
-      immediate:true,
-      deep:true,
-      handler:function(val){
+    taskInfo: {
+      immediate: true,
+      deep: true,
+      handler: function(val) {
         this.allTaskInfo = val;
       }
     }
