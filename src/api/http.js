@@ -1,13 +1,13 @@
 import axios from 'axios'
 import { Message } from 'element-ui';
 import qs from 'qs'
-const defaultErrorMessage ={
+const defaultErrorMessage = {
   message: "出错了",
   type: "error",
   showClose: true,
   duration: 1500
 }
-axios.defaults.timeout = 5000;
+
 axios.defaults.baseURL = 'http://120.79.146.91:8000';
 
 axios.interceptors.request.use(
@@ -29,7 +29,7 @@ axios.interceptors.response.use(
     if (response.data.errCode == 2) {
       router.push({
         path: "/login",
-        querry: { redirect: router.currentRoute.fullPath }//从哪个页面跳转
+        query: { redirect: router.currentRoute.fullPath }//从哪个页面跳转
       })
     }
     return response;
@@ -75,6 +75,7 @@ export function post(url, data = {}, errormessage = defaultErrorMessage) {
         resolve(response.data);
       }, err => {
         console.log(err)
+        console.log("???")
         this.$message(errormessage);
         reject(err)
       })
@@ -125,12 +126,12 @@ export function put(url, data = {}) {
 * @returns {Promise}
 */
 
-export function toDelete(url,data={},errormessage = defaultErrorMessage){
-  return new Promise((resolve,reject)=>{
-    axios.delete(url,data)
-      .then(response=>{
+export function toDelete(url, data = {}, errormessage = defaultErrorMessage) {
+  return new Promise((resolve, reject) => {
+    axios.delete(url, data)
+      .then(response => {
         resolve(response.data);
-      },err=>{
+      }, err => {
         this.$message(errormessage);
         reject(err)
       })

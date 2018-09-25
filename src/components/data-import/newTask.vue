@@ -86,10 +86,10 @@ export default {
           duration: 1500
         });
       } else {
-        // alert(localStorage.getItem("token"));
+        // 新建任务
         let query = this.$post(
-          "http://120.79.146.91:8000/taskinfo/",
-          this.$qs.stringify({
+          "/taskinfo/",this.$qs.stringify(
+          {
             task_name: this.newTaskModel.name,
             task_desc: this.newTaskModel.describe
           })
@@ -100,28 +100,6 @@ export default {
           this.tablePreviewVisable = true;
           this.newTaskDialogVisable = false;
         });
-        // this.$axios
-        //   .post(
-        //     "http://120.79.146.91:8000/taskinfo/",
-        //     {
-        //       task_name: this.newTaskModel.name,
-        //       task_desc: this.newTaskModel.describe
-        //     },
-        //     {
-        //       headers: {
-        //         Authorization: "JWT " + localStorage.getItem("token")
-        //       }
-        //     }
-        //   )
-        //   .then(response => {
-        //     this.taskid = response.data.data.id;
-        //     console.log(response);
-        //     this.tablePreviewVisable = true;
-        //     this.newTaskDialogVisable = false;
-        //   })
-        //   .catch(response => {
-        //     console.log(response.data);
-        //   });
       }
     },
     importf() {
@@ -184,46 +162,55 @@ export default {
     },
     createTask: function() {
       this.tablePreviewVisable = false;
-      //显示json 信息
-      // alert(
-      //   "{'title':'" +
-      //     (this.titleIndex - 1) +
-      //     ",'name:'" +
-      //     this.newTaskModel.name +
-      //     ",'json:'" +
-      //     JSON.stringify(this.tablejsons) +
-      //     "}"
-      // );
-      this.$axios
-        .post(
-          "http://120.79.146.91:8000/dataSet/",
-          {
-            task: this.taskid,
-            title: "数据集名",
-            step1: "1",
-            step2: "2",
-            step3: "3",
-            stepX1: "x1",
-            title: this.filename,
-            row_num: (this.titleIndex - 2).toString(),
-            data_set: this.tablejsons
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
-        .then(response => {
-          console.log(response);
-          var dataSetId = response.data.data.id;
-          //创建完成之后，跳转到数据处理页面，传任务ID
-          this.$router.push({
-            name: "data-processing",
-            params: { taskId: this.taskid, dataSetId: dataSetId }
-          });
-        })
-        .catch(response => {});
+      var params = new URLSearchParams();
+      params.append('task', this.taskid);
+      params.append('title', this.filename);
+      params.append('step1', '1');
+      params.append('step2', '2');
+      params.append('stepX1',  "x1");
+      params.append('row_num',(this.titleIndex - 2).toString());
+      params.append('data_set', JSON.stringify(this.tablejsons));
+
+      let query = this.$post("/dataSet/",params);
+      query.then(response => {
+        console.log(response);
+        var dataSetId = response.data.id;
+        //创建完成之后，跳转到数据处理页面，传任务ID
+        this.$router.push({
+          name: "data-processing",
+          params: { taskId: this.taskid, dataSetId: dataSetId }
+        });
+      });
+      // this.$axios
+      //   .post(
+      //     "http://120.79.146.91:8000/dataSet/",
+      //     {
+      //       task: this.taskid,
+      //       title: "数据集名",
+      //       step1: "1",
+      //       step2: "2",
+      //       step3: "3",
+      //       stepX1: "x1",
+      //       title: this.filename,
+      //       row_num: (this.titleIndex - 2).toString(),
+      //       data_set: this.tablejsons
+      //     },
+      //     {
+      //       headers: {
+      //         Authorization: "JWT " + localStorage.getItem("token")
+      //       }
+      //     }
+      //   )
+      //   .then(response => {
+      //     console.log(response);
+      //     var dataSetId = response.data.data.id;
+      //     //创建完成之后，跳转到数据处理页面，传任务ID
+      //     this.$router.push({
+      //       name: "data-processing",
+      //       params: { taskId: this.taskid, dataSetId: dataSetId }
+      //     });
+      //   })
+      //   .catch(response => {});
     }
   }
 };
