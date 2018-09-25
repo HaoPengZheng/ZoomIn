@@ -26,13 +26,14 @@ import vuescroll from 'vuescroll/dist/vuescroll-native';
 // 导入css文件
 import 'vuescroll/dist/vuescroll.css';
 
-import {post,get,patch,put} from './api/http.js'
+import {post,toDelete,get,patch,put} from './api/http.js'
 //定义全局变量
 Vue.prototype.$post=post;
 Vue.prototype.$get=get;
 Vue.prototype.$patch=patch;
 Vue.prototype.$put=put;
 Vue.prototype.$utils = Utils
+Vue.prototype.$toDelete = toDelete
 Vue.prototype.$echarts = echarts 
 Vue.prototype.$axios = axios
 Vue.prototype.$qs = qs

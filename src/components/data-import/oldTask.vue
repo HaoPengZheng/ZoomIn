@@ -145,7 +145,7 @@ export default {
       }
     },
     deleteTask: function(id) {
-      let query = this.$delete(
+      let query = this.$toDelete(
         "http://120.79.146.91:8000/taskinfo/" + id + "/"
       );
       query.then(response => {
