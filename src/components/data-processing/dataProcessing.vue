@@ -151,9 +151,9 @@ export default {
       }
       this.$post(
         "/task/dataProcessing/showDataSet1",
-        this.$qs.stringify({
+        {
           data_set_id: this.dataSetId
-        })
+        }
       )
         .then(response => {
           this.tableData = response.data.slice(0, 100);

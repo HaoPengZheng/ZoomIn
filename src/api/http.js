@@ -14,7 +14,6 @@ axios.interceptors.request.use(
   config => {
     let token = localStorage.getItem("token");
     config.headers = {
-      'Content-Type': 'application/x-www-form-urlencoded',
       'Authorization': "JWT " + token
     }
     return config;
