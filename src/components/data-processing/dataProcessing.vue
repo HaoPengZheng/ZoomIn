@@ -110,7 +110,6 @@ export default {
   },
   data() {
     return {
-      // @Autor 郑浩鹏
       taskId: 1,
       dataSetId: Number,
       dataSetList: [],
@@ -132,32 +131,16 @@ export default {
         maxHeight: 500
       },
       addFieldDialogVisible: false
-      // @Autor End 郑浩鹏
-
-      // @Autor 郭正浩
-
-      // @Autor End 郭正浩
     };
   },
 
   created: function() {
-    // @Autor  郑浩鹏
-    // 接收创建人物以后返回的data_set_id
     //this.$route.params.id接受参数
     this.dataSetId = this.$route.params.dataSetId;
     this.fetch();
-    // this.fetchData();
     this.fetchAllDataSet();
-
-    // @Autor End 郑浩鹏
-
-    // @Autor 郭正浩
-
-    // @Autor End 郭正浩
   },
   methods: {
-    // @Autor 郑浩鹏
-
     // 初始化数据，拉取表格数据，
     // 参数，data_set_id
     // 返回json
@@ -166,51 +149,34 @@ export default {
         alert("undefind");
         this.dataSetId = 1;
       }
-      this.$axios
-        .post(
-          "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
-          {
-            data_set_id: this.dataSetId
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
+      this.$post(
+        "/task/dataProcessing/showDataSet1",
+        this.$qs.stringify({
+          data_set_id: this.dataSetId
+        })
+      )
         .then(response => {
-          this.tableData = response.data.data.slice(0, 100);
+          this.tableData = response.data.slice(0, 100);
           console.log(this.tableData);
           this.tableKeys = Object.keys(this.tableData[0]);
           console.log(this.tableKeys);
           this.loading = false;
           if (this.tableKeys.length > 0) {
-            this.$axios
-              .post(
-                "http://120.79.146.91:8000/task/dataProcessing/showDtypes",
-                {
-                  data_set_id: this.dataSetId
-                },
-                {
-                  headers: {
-                    Authorization: "JWT " + localStorage.getItem("token")
-                  }
-                }
-              )
+            this.$post(
+              "/task/dataProcessing/showDtypes",
+              this.$qs.stringify({
+                data_set_id: this.dataSetId
+              })
+            )
               .then(response => {
-                console.log(`response data type`);
-                var types = this.converterStringToType(response.data.data);
+                var types = this.converterStringToType(response.data);
                 alert(types);
                 var tableKeysTypes = [];
-                console.log(this.tableKeys);
                 this.tableKeys.forEach(tablekey => {
                   tablekey = tablekey.trim();
                   tableKeysTypes.push(types[tablekey]);
                   this.tableKeysType = tableKeysTypes;
                 });
-                console.log(tableKeysTypes);
-                console.log("=============================");
-                console.log(types);
               })
               .catch(response => {
                 alert("获取数据失败");
@@ -221,27 +187,6 @@ export default {
           alert("获取数据失败");
         });
     },
-    // 拉取固定的那张学生表的数据
-    // fetchData: function() {
-    //   this.$axios
-    //     .get("http://120.79.146.91:8000/task/scoreAnalysis")
-    //     .then(response => {
-    //       this.tableData = response.data.data.slice(0, 100);
-    //       console.log(this.tableData);
-    //       this.tableKeys = Object.keys(this.tableData[0]);
-    //       console.log(this.tableKeys);
-    //       this.loading = false;
-    //       document
-    //         .querySelector(".el-table__header-wrapper th")
-    //         .on("dragover", function(e) {
-    //           e.originalEvent.preventDefault();
-    //         });
-    //     })
-    //     .catch(response => {
-    //       alert(document.querySelector("table tr>th"));
-    //       alert("error");
-    //     });
-    // },
     handleClick(tab, event) {
       console.log(tab, event);
     },
@@ -252,36 +197,6 @@ export default {
         this.filtrateVisable = false;
       }
     },
-    // 自定义表头
-    // renderTableTitle(h, { column, $index }) {
-    //   return h("span", [
-    //     h(
-    //       "span",
-    //       {
-    //         style: "color:blue;margin-right:5px"
-    //       },
-    //       this.tableKeysType[$index - 1]
-    //     ),
-    //     h("span", column.label),
-    //     h(
-    //       "a",
-    //       {
-    //         style: "color:red;float:right; ",
-    //         on: {
-    //           click: this.changeHeaderName
-    //         }
-    //       },
-    //       [
-    //         h("i", {
-    //           attrs: {
-    //             id: $index - 1
-    //           },
-    //           class: "el-icon-edit"
-    //         })
-    //       ]
-    //     )
-    //   ]);
-    // },
     changeHeaderName: function(e) {
       this.changeColumnIndex = e.target.id;
       this.newColumnName = this.tableKeys[this.changeColumnIndex];
@@ -337,18 +252,9 @@ export default {
       this.tableKeysType = newTypes;
     },
     fetchAllDataSet: function() {
-      this.$axios
-        .get("http://120.79.146.91:8000/dataSet/", {
-          headers: {
-            Authorization: "JWT " + localStorage.getItem("token")
-          }
-        })
-        .then(response => {
-          this.dataSetList = response.data;
-        })
-        .catch(response => {
-          alert("error");
-        });
+      this.$get("/dataSet/").then(response => {
+        this.dataSetList = response;
+      });
     },
     showDataSet: function(dataSetId) {
       // TODO 是否保存？
@@ -445,7 +351,7 @@ export default {
           key = key.substring(1, key.length - 1);
         }
         var value = typeString.split(":")[1].trim();
-        alert(value)
+        alert(value);
         if (value == "'object'") {
           value = "T";
         } else if (value == "datetime64[ns]") {
@@ -457,11 +363,6 @@ export default {
       });
       return types;
     }
-    // @Autor End 郑浩鹏
-
-    // @Autor 郭正浩
-
-    // @Autor End 郭正浩
   }
 };
 </script>

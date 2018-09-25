@@ -5,7 +5,7 @@ import Login from '@/components/Login'
 import DataImport from '@/components/data-import/DataImport'
 import childrenRegister from '@/components/login/register'
 import childrenLogin from '@/components/login/toLogin'
-import dataProcessing from '@/components/data-processing/dataProcessing'
+import DataProcessing from '@/components/data-processing/DataProcessing'
 import TaskDetail from '@/components/data-import/taskDetail'
 import TaskRelease from '@/components/task-release/taskRelease.vue'
 import dataAnalysis from '@/components/data-analysis/dataAnalysis'
@@ -27,7 +27,7 @@ const router = new Router({
         {
             path: 'data-processing',
             name: 'data-processing',
-            component: dataProcessing,
+            component: DataProcessing,
             meta: {
                 requireAuth: true
             }
