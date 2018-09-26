@@ -106,7 +106,7 @@ export default {
       }
     },
     featchTask: function() {
-      let query = this.$get("http://120.79.146.91:8000/taskinfo/");
+      let query = this.$get("/taskinfo/");
       query.then(response => {
         console.log(response);
         this.originList = response;
@@ -146,7 +146,7 @@ export default {
     },
     deleteTask: function(id) {
       let query = this.$toDelete(
-        "http://120.79.146.91:8000/taskinfo/" + id + "/"
+        "/taskinfo/" + id + "/"
       );
       query.then(response => {
         this.$message({
@@ -184,7 +184,7 @@ export default {
     editTask: function(taskid) {
       this.editTaskId = taskid;
       let query = this.$get(
-        "http://120.79.146.91:8000/taskinfo/" + taskid + "/"
+        "/taskinfo/" + taskid + "/"
       );
       query.then(response => {
         this.taskModel.name = response.task_name;
