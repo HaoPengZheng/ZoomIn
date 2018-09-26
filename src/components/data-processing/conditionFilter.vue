@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import ConditionItem from "./conditionItem.vue";
+import ConditionItem from "./ConditionItem.vue";
 
 export default {
   components: {

@@ -94,10 +94,10 @@
 // 改列名,条件筛选中已选择的未自动改正
 
 import Left from "../common/data_set_list.vue";
-import ConditionFilter from "./conditionFilter.vue";
+import ConditionFilter from "./ConditionFilter.vue";
 import wTable from "../common/mytable.vue";
-import BatchOperation from "./batchOperation.vue";
-import newFieldForm from "./newFieldForm.vue";
+import BatchOperation from "./BatchOperation.vue";
+import NewFieldForm from "./NewFieldForm.vue";
 import typeSelect from "../common/typeSelect.vue";
 export default {
   components: {
@@ -105,7 +105,7 @@ export default {
     ConditionFilter,
     wTable,
     BatchOperation,
-    newFieldForm,
+    NewFieldForm,
     typeSelect
   },
   data() {
