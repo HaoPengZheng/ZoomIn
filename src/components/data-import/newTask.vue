@@ -4,7 +4,7 @@
       <div class="application-header ">新建任务</div>
     </div>
     <el-row :gutter="30">
-      <el-col :xs="8" :sm="8" :md="8" :lg="5" :offset="2">
+      <el-col :xs="8" :sm="8" :md="8" :lg="5" :offset="2" style="padding-left:45px;">
         <img src="../../assets/data-import/excel.png" @click="showNewTaskDialog('excel')" class="input-img" ondragstart="return false;">
       </el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="5">

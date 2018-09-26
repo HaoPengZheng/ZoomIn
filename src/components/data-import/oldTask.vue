@@ -20,7 +20,6 @@
         </el-carousel-item>
       </el-carousel>
     </div>
-    <div>{{clientWidth}}</div>
     <!-- 编辑任务名的模态框 -->
     <el-dialog title="编辑任务名" :visible.sync="editDialogVisible" width="30%">
       <el-form ref="form" label-width="80px" label-position="left">
@@ -87,9 +86,9 @@ export default {
   },
   methods: {
     calculateTaskCount: function() {
-      const threeCountWidth = 1200;
-      const twoCountWidth = 800;
-      const oneContWidth = 400;
+      const threeCountWidth = 1600;
+      const twoCountWidth = 1200;
+      const oneContWidth = 600;
       let width = this.clientWidth;
       if (width > threeCountWidth) {
         this.taskCarouselCount = 4;
@@ -209,7 +208,7 @@ export default {
       this.editDialogVisible = false;
       //更新接口
       let query = this.$put(
-        "http://120.79.146.91:8000/taskinfo/" + this.editTaskId + "/",
+        "/taskinfo/" + this.editTaskId + "/",
         {
           task_name: this.taskModel.name,
 
