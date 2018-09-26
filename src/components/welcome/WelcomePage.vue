@@ -1,21 +1,38 @@
 <template>
-<div>
-  <div class="bg">
-    <div class="bg-nav">
-      <div class="logo">Zoom In</div>
-    </div>
-    <div class="bg-warp">
-        <div class="bg-left"><img src="https://me.bdp.cn/personal/img/banner/banner1_56d9c8b.png" width="600" height="400">  </div>
+  <div>
+    <div class="bg">
+      <div  :class="{'bg-nav':true,'changeNav':isOverScroll}">
+        <div class="logo">Zoom In</div>
+        <ul class="bg-nav-menu">
+          <li>
+            使用教程
+          </li>
+          <li>
+            用户反馈
+          </li>
+          <li>
+            项目合作
+          </li>
+          <li>
+            {{isOverScroll}}
+          </li>
+        </ul>
+        <div style="padding-right:50px;">
+          登录
+        </div>
+      </div>
+      <div class="bg-warp">
+        <div class="bg-left"><img src="https://me.bdp.cn/personal/img/banner/banner1_56d9c8b.png" width="600" height="400"> </div>
         <div class="bg-right">
           <h3 class="title">Zoomin 学业分析系统</h3>
           <h3 class="small-title">分析成绩、教研成果不再求人</h3>
           <el-button type="primary" round>立即使用</el-button>
-        </div>    
+        </div>
+      </div>
     </div>
+    <FeatureList :textList="featureTextLists"></FeatureList>
+    <WelcomeFooter></WelcomeFooter>
   </div>
-  <FeatureList :textList="featureTextLists"></FeatureList>
-  <WelcomeFooter></WelcomeFooter>
-</div>
 </template>
 
 <script>
@@ -53,8 +70,9 @@ const featureTextLists = [
       "Zoomin 学业分析系统分析成绩、教研成果不再求人"
     ],
     pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-  },  
+  }
 ];
+const overScrollHeight = 527;
 export default {
   components: {
     FeatureList,
@@ -62,8 +80,23 @@ export default {
   },
   data() {
     return {
-      featureTextLists: featureTextLists
+      featureTextLists: featureTextLists,
+      scrollY: 0,
+
     };
+  },
+  mounted: function() {
+    window.addEventListener("scroll", this.handleScroll);
+  },
+  computed:{
+    isOverScroll:function(){
+      return this.scrollY>overScrollHeight;
+    }
+  },
+  methods: {
+    handleScroll:function() {
+      this.scrollY = window.scrollY
+    }
   }
 };
 </script>
@@ -90,22 +123,43 @@ body {
   padding-bottom: 20px;
   background: linear-gradient(to top, #7ededeed 0, #66cccc 100%);
 }
-.bg-nav{
-  padding-top: 20px;
-  padding-left:50px;
+.bg-nav {
+  padding: 15px 25px;
   color: #fff;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
 }
-.bg-nav .logo{
+.bg-nav-menu {
+  list-style: none;
+}
+.bg-nav-menu li {
+  float: left;
+  padding: 0 22px;
+  font-weight: 500;
+}
+.bg-nav .logo {
   border: 1px solid #fff;
   font-weight: 600;
-  font-family:"微软雅黑","黑体","宋体";
+  font-family: "微软雅黑", "黑体", "宋体";
   width: 100px;
   text-align: center;
   padding: 5px;
-  border-radius: 6px  ;
+  border-radius: 6px;
+}
+.changeNav {
+  position: fixed;
+  background-color: #fff;
+  z-index: 999;
+  color:#333;
+}
+.changeNav li{
+  font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
 }
 .bg-warp {
-  padding-top:100px;
+  padding-top: 100px;
   max-width: 1346px;
   margin: 0 auto;
   display: flex;
@@ -113,15 +167,15 @@ body {
   align-items: center;
   flex-wrap: wrap;
 }
-.bg-left{
+.bg-left {
   margin: 0 50px;
-  order:1;
+  order: 1;
 }
-.bg-right{
+.bg-right {
   margin: 0 50px;
   order: 2;
 }
-.small-title{
+.small-title {
   padding: 10px 0;
 }
 

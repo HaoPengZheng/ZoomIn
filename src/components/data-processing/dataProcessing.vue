@@ -123,7 +123,7 @@ export default {
       dialogVisible: false,
       changeColumnIndex: 0,
       tableKeysType: ["#", "T", "d", "#", "T", "d", "#", "#"],
-      keyVisibilitys: [true, true, true, true, true, true],
+      keyVisibilitys: [true, true, true, true, true, true,true,true],
       newColumnName: "",
       newColumnType: "",
       tableOption: {

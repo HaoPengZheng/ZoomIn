@@ -9,7 +9,7 @@
             </span>
           </div>
           <div class="nav center">
-            <el-menu mode="horizontal" background-color="#00c587" text-color="#fff" active-text-color="#ffd04b" v-bind:router="true">
+            <el-menu mode="horizontal" :default-active="activeIndex" background-color="#00c587" text-color="#fff" active-text-color="#ffd04b" v-bind:router="true">
               <el-menu-item index="/home/data-import">
                 数据导入
               </el-menu-item>
@@ -38,7 +38,18 @@
 </template>
 <script>
 export default {
-  components: {}
+  components: {
+    
+  },
+  data(){
+    return {
+      activeIndex:"/home/data-import"
+    }
+  },
+  //TODO:修改active
+  methods:{
+
+  }
 };
 </script>
 <style scoped>
