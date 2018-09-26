@@ -46,7 +46,7 @@ export default {
         if (valid) {
           let promise = this.$post(
             "/login/",
-            this.$qs.stringify(this.loginForm),
+            this.loginForm,
             {
               message:"登录失败!",
               type:"error"

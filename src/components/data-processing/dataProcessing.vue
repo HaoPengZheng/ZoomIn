@@ -164,17 +164,24 @@ export default {
           if (this.tableKeys.length > 0) {
             this.$post(
               "/task/dataProcessing/showDtypes",
-              this.$qs.stringify({
+              {
                 data_set_id: this.dataSetId
-              })
+              }
             )
               .then(response => {
+                // 用来存储字段类型
                 var tableKeysTypes = [];
+                // 将后端传回的字符串转换为Object
+                var types = this.converterStringToType(response.data);
+                // 匹配正确的key-value
                 this.tableKeys.forEach(tablekey => {
                   tablekey = tablekey.trim();
+                  console.log(types[tablekey]);
                   tableKeysTypes.push(types[tablekey]);
-                  this.tableKeysType = tableKeysTypes;
                 });
+                this.tableKeysType = tableKeysTypes;
+                console.log("now table keys type is ");
+                console.log(this.tableKeysType);
               })
       
           }
@@ -344,7 +351,6 @@ export default {
           key = key.substring(1, key.length - 1);
         }
         var value = typeString.split(":")[1].trim();
-        alert(value);
         if (value == "'object'") {
           value = "T";
         } else if (value == "datetime64[ns]") {

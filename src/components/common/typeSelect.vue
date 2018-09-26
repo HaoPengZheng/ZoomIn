@@ -19,7 +19,6 @@ export default {
         { value: "T", label: "文本类型" },
         { value: "d", label: "时间类型" }
       ],
-      type: ""
     };
   },
   props: {
