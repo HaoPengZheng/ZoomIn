@@ -7,7 +7,7 @@ import childrenRegister from '@/components/login/register'
 import childrenLogin from '@/components/login/toLogin'
 import DataProcessing from '@/components/data-processing/DataProcessing'
 import TaskDetail from '@/components/data-import/taskDetail'
-import TaskRelease from '@/components/task-release/taskRelease.vue'
+import TaskRelease from '@/components/task-release/TaskRelease.vue'
 import dataAnalysis from '@/components/data-analysis/dataAnalysis'
 import Welcome from '@/components/welcome/WelcomePage.vue'
 Vue.use(Router)

@@ -1,21 +1,26 @@
 <template>
 <div>
   <div class="bg">
+    <div class="bg-nav">
+      <div class="logo">Zoom In</div>
+    </div>
     <div class="bg-warp">
         <div class="bg-left"><img src="https://me.bdp.cn/personal/img/banner/banner1_56d9c8b.png" width="600" height="400">  </div>
         <div class="bg-right">
           <h3 class="title">Zoomin 学业分析系统</h3>
-          <h3>分析成绩、教研成果不再求人</h3>
+          <h3 class="small-title">分析成绩、教研成果不再求人</h3>
           <el-button type="primary" round>立即使用</el-button>
         </div>    
     </div>
   </div>
   <FeatureList :textList="featureTextLists"></FeatureList>
+  <WelcomeFooter></WelcomeFooter>
 </div>
 </template>
 
 <script>
 import FeatureList from "./FeatureList.vue";
+import WelcomeFooter from "./WelcomeFooter.vue";
 const featureTextLists = [
   {
     title: "整合各类数据，全面分析业务",
@@ -52,7 +57,8 @@ const featureTextLists = [
 ];
 export default {
   components: {
-    FeatureList
+    FeatureList,
+    WelcomeFooter
   },
   data() {
     return {
@@ -84,7 +90,20 @@ body {
   padding-bottom: 20px;
   background: linear-gradient(to top, #7ededeed 0, #66cccc 100%);
 }
-
+.bg-nav{
+  padding-top: 20px;
+  padding-left:50px;
+  color: #fff;
+}
+.bg-nav .logo{
+  border: 1px solid #fff;
+  font-weight: 600;
+  font-family:"微软雅黑","黑体","宋体";
+  width: 100px;
+  text-align: center;
+  padding: 5px;
+  border-radius: 6px  ;
+}
 .bg-warp {
   padding-top:100px;
   max-width: 1346px;
@@ -101,6 +120,9 @@ body {
 .bg-right{
   margin: 0 50px;
   order: 2;
+}
+.small-title{
+  padding: 10px 0;
 }
 
 @media (max-width: 1100px) {
