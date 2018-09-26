@@ -46,8 +46,9 @@ body {
   padding: 0 !important;
 }
 .left-picture {
-  background-image: url('../assets/Login/logo.jpg');
+  background-image: url('../assets/Login/login.jpg');
   height: 100%;
+  background-repeat: round;
 }
 .left-picture img {
   height: 100%;

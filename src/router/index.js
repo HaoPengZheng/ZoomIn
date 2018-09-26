@@ -3,8 +3,8 @@ import Router from 'vue-router'
 import Home from '@/components/Home'
 import Login from '@/components/Login'
 import DataImport from '@/components/data-import/DataImport'
-import childrenRegister from '@/components/login/register'
-import childrenLogin from '@/components/login/toLogin'
+import ChildrenRegister from '@/components/login/Register'
+import ChildrenLogin from '@/components/login/Login'
 import DataProcessing from '@/components/data-processing/DataProcessing'
 import TaskDetail from '@/components/data-import/taskDetail'
 import TaskRelease from '@/components/task-release/TaskRelease.vue'
@@ -71,10 +71,10 @@ const router = new Router({
         component: Login,
         children: [{
             path: '/',
-            component: childrenLogin
+            component: ChildrenLogin
         }, {
             path: '/register',
-            component: childrenRegister
+            component: ChildrenRegister
         }]
     }
     ]
