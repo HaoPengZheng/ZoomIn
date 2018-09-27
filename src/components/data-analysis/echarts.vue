@@ -1,11 +1,46 @@
 <template>
 	<div>
-		<el-card class="box-card cardStyle" id="echartsCard">
+		
+		<el-card class="box-card analysisCardStyle" id="echartsCard" shadow="never">
+
+			<!-- 图内筛选器部分 -->
+			<div v-show="picFilterFlag">
+				&nbsp;
+				<el-dropdown trigger="click" class="dropdowmMenuStyle" v-for="(val,index) in dropdownArray" :key="index"  @command="handleCommand">
+				<span class="el-dropdown-link">
+					{{val}}<i class="el-icon-arrow-down el-icon--right"></i>
+				</span>
+				<el-dropdown-menu slot="dropdown" style="padding:10px">
+					<!-- <el-dropdown-item v-for="(item,k) in dropdownItemArray[index]" :key="k" :command="item">
+						{{item}}
+					</el-dropdown-item> -->
+
+					<!-- 数值筛选器部分 -->
+					<div>
+						<el-select v-model="numberFilterSelectValue" placeholder="请选择" style="width:50%" class="echart">
+							<el-option
+							v-for="item in numberFilterItemType"
+							:key="item"
+							:label="item"
+							:value="item">
+							</el-option>
+						</el-select>
+					</div>
+					<div>
+					<el-input v-model="numberFilterInput" placeholder="请输入数值"  class="echart"></el-input>
+					</div>
+
+				</el-dropdown-menu>
+				</el-dropdown>
+			</div>
 
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
+				<!-- 未显示图表时 -->
+				<div class="echarts-font" id="font-position" v-show="!tableVisible" v-loading="loading">当前图表无数据</div>
+				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
 				
 				<!-- 表格部分 -->
-				<p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p>
+				<!-- <p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p> -->
 				<el-table
 				:data="tableData"
 				stripe border
@@ -21,22 +56,6 @@
 				</el-table-column>
 				</el-table>
 			</div>
-
-			<!-- 图内筛选器部分 -->
-			<div>
-				<svg class="icon dropdowmMenuStyle" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg>	
-				<el-dropdown class="dropdowmMenuStyle" v-for="(val,index) in dropdownArray" :key="index"  @command="handleCommand">
-				<span class="el-dropdown-link">
-					{{val}}<i class="el-icon-arrow-down el-icon--right"></i>
-				</span>
-				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item v-for="(item,k) in dropdownItemArray[index]" :key="k" :command="item">
-						{{item}}
-					</el-dropdown-item>
-				</el-dropdown-menu>
-				</el-dropdown>
-			</div>
-
 
 		</el-card>
 	</div>
@@ -80,7 +99,12 @@ export default {
 					name : '',
 		            type : 'value'
 				}],
-		chartId:1
+		chartId:1,
+		picFilterFlag:false,
+		numberFilterItemType:['等于','大于','小于','不大于','不小于'],	//图内筛选器-数值-可选类型
+		numberFilterSelectValue:'等于',  							  //图内筛选器-数值-选择的类型
+		numberFilterInput:''	,									  //图内筛选器-数值-填写的数值
+		loading:false
     }
   },
   mounted(){
@@ -90,6 +114,21 @@ export default {
 // 2.拖动到框上的时候求和
 // 3.每一步PATCH
 
+Bus.$on('leftChange',(e)=>{
+	if(e){
+		document.getElementById("myChart").style.width= this.winWidth*0.87 + "px";
+		document.getElementById("echartsCard").style.width= this.winWidth*0.898 + "px";
+		this.myChart.dispose();
+		this.drawLine();
+	}
+	else{
+		document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
+		document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
+		this.myChart.dispose();
+		this.drawLine();
+	}
+
+})
 		//0.从AxiosDistribute过来的图表ID
 		Bus.$on('chartID',(e)=>{
 			this.chartId = e
@@ -107,6 +146,66 @@ export default {
 			this.xAxisItem.push(e)
 			//this.echartAxiosData[e].length 用来取代下面的15
 
+/////////为了实现可以随时拖X轴，从底下复制过来，否则单独拖动X轴时不触发请求
+
+// //拼y轴字符串
+// 			let yAxisString = this.yAxisItemName[0]; 
+// 			for (let i = 1; i < this.yAxisItemName.length; i++) {
+// 				yAxisString = yAxisString + ',' + this.yAxisItemName[i] 
+// 			}
+// 			//拼x轴字符串
+// 			let xAxisString = this.xAxisItem[0]; 
+// 			for (let i = 1; i < this.xAxisItem.length; i++) {
+// 				xAxisString = xAxisString + ',' + this.xAxisItem[i] 
+// 			}
+
+// 			//发送求和请求
+// 			this.$axios
+// 			.post(
+// 			"http://120.79.146.91:8000/task/chart/sum",
+// 				{
+// 					chart_id:this.chartId,
+// 					data_set:4,//应该是data_set_id?到时换成this.$router.parms
+// 					chart_type:1,
+// 					x_axis:xAxisString,
+// 					y_axis:yAxisString
+// 				},
+// 				{
+// 					headers: {
+// 					Authorization: "JWT " + localStorage.getItem("token")
+// 					}
+// 				}
+// 			)
+// 			.then(r => {
+// 				console.log(r.data.data)
+// 				console.log(JSON.parse(r.data.data))
+// 				//r.data.data 								完整数据
+// 				//Object.values(JSON.parse(r.data.data)) 	表头
+// 				//Object.keys(element)						去重的X轴的值
+// 				let element = JSON.parse(r.data.data)[e]	//对应的y轴的值
+// 				this.Xdata = []//每次循环清空X轴，否则重叠
+// 				this.seriesDataItem = [] //清空serIDataItem否则重叠
+// 				//给X轴赋值,Xdata为echarts的X轴的值
+// 		　　　　for(let i=0;i<Object.keys(element).length;i++){
+// 					this.Xdata.push(Object.keys(element)[i])  
+// 				}
+// 				//给Y轴赋值
+// 		　　　　for(let i=0;i<Object.keys(element).length;i++){
+// 					this.seriesDataItem.push(element[Object.keys(element)[i]])  
+// 				}
+				
+// 				console.log(this.seriesDataItem)					
+// 				this.seriesData.push({
+// 					name:this.yAxisItemName[this.yAxisItemName.length-1],
+// 					type:'bar',
+// 					data:this.seriesDataItem
+// 				})
+
+// })
+
+/////////取出key的数据插入换行"["女","北大附校"]"
+
+
 			//图表展示控制
 			if(this.yAxisItemName.length<1){
 					this.tableVisible = true
@@ -122,12 +221,13 @@ export default {
 		Bus.$on('coldata', (e) => {
 			//获得拖到y轴上的节点字段数组
 			this.yAxisItemName.push(e)
-			//拼x轴字符串
+			
+			//拼y轴字符串
 			let yAxisString = this.yAxisItemName[0]; 
 			for (let i = 1; i < this.yAxisItemName.length; i++) {
 				yAxisString = yAxisString + ',' + this.yAxisItemName[i] 
 			}
-			//拼Y轴字符串
+			//拼x轴字符串
 			let xAxisString = this.xAxisItem[0]; 
 			for (let i = 1; i < this.xAxisItem.length; i++) {
 				xAxisString = xAxisString + ',' + this.xAxisItem[i] 
@@ -151,11 +251,18 @@ export default {
 				}
 			)
 			.then(r => {
-				console.log(r.data.data)//完整数据
-				console.log(Object.values(JSON.parse(r.data.data)))//表头
-				Object.values(JSON.parse(r.data.data)).forEach((element) => {
-				console.log(Object.keys(element))//去重的X轴的值
-
+				console.log(r.data.data)
+				let str1 = r.data.data
+				let str2 = str1.replace(/\["|\"]/g,"")
+				let str3 = str2.replace(/\","/g,"·")
+				console.log(str3)
+				//r.data.data 								完整数据
+				//Object.values(JSON.parse(r.data.data)) 	表头
+				//Object.keys(element)						去重的X轴的值
+				//element       							去重的X值和Y值
+				let element = JSON.parse(str3)[e]	//对应的y轴的值
+				this.Xdata = []//每次循环清空X轴，否则重叠
+				this.seriesDataItem = [] //清空serIDataItem否则重叠
 				//给X轴赋值,Xdata为echarts的X轴的值
 		　　　　for(let i=0;i<Object.keys(element).length;i++){
 					this.Xdata.push(Object.keys(element)[i])  
@@ -163,35 +270,49 @@ export default {
 				//给Y轴赋值
 		　　　　for(let i=0;i<Object.keys(element).length;i++){
 					this.seriesDataItem.push(element[Object.keys(element)[i]])  
-				}							
+				}
+				
+				console.log(this.seriesDataItem)					
 				this.seriesData.push({
-					name:e,
+					name:this.yAxisItemName[this.yAxisItemName.length-1],
 					type:'bar',
 					data:this.seriesDataItem
 				})
-				this.seriesDataItem = [] //清空serIDataItem否则重叠
-							
-				//!!!!!!!!!!!!!!!!!!!!!!!!!!每次都清空数据，再赋值
-				console.log(this.seriesData)
-
-				});//循环赋值结束
-
+				
+				//打开dataZoom，X轴大于10时
+				if(Object.keys(element).length>10){
+					this.dataZoom = {
+						type: 'slider',
+						show: true,
+						xAxisIndex: [0],
+						start: 0,
+						end: 30
+					}
+				}
+				this.loading = false
 				this.drawLine();
 
 			})
 			.catch(response => {
-				alert("求和失败");
+				this.loading = false
+				this.yAxisItemName.pop()
+				Bus.$emit('yAixsFail','fail');
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
 			});
 
 			//表格显示
-			if(this.Xdata.length<1){
-				this.tableVisible = true
-					for(let j =0 ;j < 15;j++){
-					this.tableData[j] = this.echartAxiosData[j];
-					}
-					this.fields.push(e)
-			}
-			else{this.drawLine();}
+			// if(this.Xdata.length<1){
+			// 	this.tableVisible = true
+			// 		for(let j =0 ;j < 15;j++){
+			// 		this.tableData[j] = this.echartAxiosData[j];
+			// 		}
+			// 		this.fields.push(e)
+			// }
+			this.drawLine();
 
 		})
 
@@ -236,18 +357,20 @@ export default {
 	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
        Bus.$on('rowdataRemove', (e) => {
 			this.Xdata = [];
-			//this.Xdata.splice(e, 1);
+			//this.Xdata.splice(e, 1);这种写法是错的，Xdata是18个学校的名字
 			this.tableVisible = false
-			if(this.myChart)this.myChart.dispose()
+			this.myChart.dispose()
 			this.drawLine();
 	   })
 
 
-		//2.监听移除事件(还没有PATCH)
+		//2.监听y轴移除事件(还没有PATCH)
        Bus.$on('coldataRemove', (e) => {
 			this.seriesData.splice(e, 1);
+			this.yAxisItemName.splice(e, 1);
+			
 			this.tableVisible = false
-			if(this.myChart)this.myChart.dispose()
+			this.myChart.dispose()
 			this.drawLine();
 	   })
 		
@@ -444,20 +567,22 @@ export default {
 
 		//监听图内筛选器
 		Bus.$on('transferChoice',(e)=>{
+			this.picFilterFlag = true
 			this.dropdownArray = [];
-			this.dropdownArray = e
-			this.dropdownArray.forEach((val)=>{
-				let itemArray=[]
-				for (let i = 0; i < this.originAxiosData.length; i++) {//this.originAxiosData去重，不用this.originAxiosData
-				console.log()
-				//console.log(val)
-					itemArray.push(this.originAxiosData[i][val])
-					if(i>=10)break;
-				}
-				this.dropdownItemArray.push(itemArray)
-				console.log(this.dropdownItemArray)
-				itemArray = []
-			})
+			this.dropdownArray = e //e是选定的字段
+			
+			// this.dropdownArray.forEach((val)=>{
+			// 	let itemArray=[]
+			// 	for (let i = 0; i < this.originAxiosData.length; i++) {//this.originAxiosData去重，不用this.originAxiosData
+			// 	console.log()
+			// 	//console.log(val)
+			// 		itemArray.push(this.originAxiosData[i][val])
+			// 		if(i>=10)break;
+			// 	}
+			// 	this.dropdownItemArray.push(itemArray)
+			// 	console.log(this.dropdownItemArray)
+			// 	itemArray = []
+			// })
 			
 			
 		})
@@ -481,23 +606,20 @@ export default {
 				trigger: 'axis',
 				axisPointer : {type : 'shadow'}
 			},
-			dataZoom: [
-				{
-					type: 'slider',
-					show: true,
-					xAxisIndex: [0],
-					start: 0,
-					end: 2
-				}],
+			dataZoom: this.dataZoom,
 		    legend: {
-		        data:this.yAxisItemName  //拖到y轴的节点来创建图例
+				data:this.yAxisItemName,  //拖到y轴的节点来创建图例
+				x: 'center' //居右显示
 		    },
 		    calculable : true,
 		    xAxis : [
 		        {
 		            type : 'category',
-		            data : this.Xdata
-		        }
+					data : this.Xdata,
+					axisLabel :{
+					interval:0 
+				}
+				}
 		    ],
 		    yAxis : this.chartYAxis,
 		    series : this.seriesData	
@@ -548,19 +670,26 @@ export default {
 }
 </script>
 <style>
-.cardStyle{
-	
-	margin: 10px;
+.analysisCardStyle{
+	border: 0px;
+	margin: 15px;
 	margin-top: 20px;
 	
 }
 .echarts-font {
 	font-family: '新宋体';
-	margin:auto;
+	font-size: 10px;
+	position: absolute;left: 45%; 
 
 }
 .dropdowmMenuStyle {
 	float: left;
 	margin-left: 10px
 }
+
+.echart .el-input__inner{
+        border: 1px solid #ffffff;
+        border-bottom-color: #dcdfe6;
+    }
+
 </style>
