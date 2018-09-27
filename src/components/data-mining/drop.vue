@@ -5,7 +5,7 @@
             <el-col :span="12" >
                 <!-- 字段框 -->
                 <div class="el-input el-input-group el-input-group--prepend"><div class="el-input-group__prepend">自变量字段</div>
-                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='rowDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left;margin-top:2px" @drop='rowDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         <el-tag v-for="(item,index) in dropRow" :key="index" 
                             closable
                             :disable-transitions="false"
@@ -24,8 +24,8 @@
 
                 <!-- 数值框 -->
                 <div class="el-input el-input-group el-input-group--prepend">
-                    <div class="el-input-group__prepend" style="border-left: 1px solid #dcdfe6">因变量字段</div>
-                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                    <div class="el-input-group__prepend" style="border-left: 0px solid #dcdfe6">因变量字段</div>
+                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left;margin-top:2px" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         
                         <el-tag v-for="(item,index) in dropCol" :key="index" 
                             closable
@@ -82,6 +82,11 @@ import Bus from './Bus.js'
             axisFlag:false,
             addIconFlag:true
         }
+    },
+    mounted(){
+        Bus.$on('yAixsFail',(e)=>{
+            this.dropCol.pop()
+        })
     },
     methods:{
             drag:function(ev){
@@ -226,7 +231,7 @@ import Bus from './Bus.js'
     font-size: 13px
 }
 .box-style {
-    background-color: #f5f7fa;
+    background-color: #fff;
     color: #909399;
     height: 100%;
 }
@@ -243,8 +248,8 @@ import Bus from './Bus.js'
 .el-input-group__prepend{
     /* background-color: #ffffff; */
     border: 0px solid;
-    border-bottom: 1px solid #dcdfe6; 
-    border-right: 1px solid #dcdfe6 
+    /* border-bottom: 1px solid #dcdfe6;  */
+
 }
 [v-cloak]{
     display:none;

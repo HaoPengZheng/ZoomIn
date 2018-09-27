@@ -1,6 +1,6 @@
 <template>
 <div >
-<el-input v-model="input" placeholder="请输入标题" suffix-icon="el-icon-edit" @blur='titleBlur'  class="titleStyle" ></el-input>
+<el-input v-model="input" placeholder="请输入标题" suffix-icon="el-icon-edit" class="titleStyle" ></el-input>
 </div>
 </template>
 
