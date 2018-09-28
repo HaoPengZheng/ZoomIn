@@ -14,7 +14,7 @@
         <!-- <div>
           <ShareTask></ShareTask>
         </div> -->
-        <Myfooter></Myfooter>
+        <Myfooter style="margin-top:150px"></Myfooter>
       </el-main>
 
       <!-- <el-footer>

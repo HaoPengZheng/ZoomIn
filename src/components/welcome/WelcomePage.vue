@@ -1,24 +1,27 @@
 <template>
   <div>
     <div class="bg">
-      <div  :class="{'bg-nav':true,'changeNav':isOverScroll}">
-        <div class="logo">Zoom In</div>
+      <div :class="{'bg-nav':true,'changeNav':isOverScroll}">
+        <div style="margin-right:200px;"><img src="../../assets/image/Logo.png"></div>
         <ul class="bg-nav-menu">
           <li>
-            使用教程
+            首页
           </li>
           <li>
-            用户反馈
+            概览
+          </li>
+          <li>
+            使用教程
           </li>
           <li>
             项目合作
           </li>
           <li>
-            {{isOverScroll}}
+            帮助
           </li>
         </ul>
-        <div style="padding-right:50px;">
-          登录
+        <div>
+          <button class="login" @click="toLogin">登录</button>
         </div>
       </div>
       <div class="bg-warp">
@@ -81,21 +84,23 @@ export default {
   data() {
     return {
       featureTextLists: featureTextLists,
-      scrollY: 0,
-
+      scrollY: 0
     };
   },
   mounted: function() {
     window.addEventListener("scroll", this.handleScroll);
   },
-  computed:{
-    isOverScroll:function(){
-      return this.scrollY>overScrollHeight;
+  computed: {
+    isOverScroll: function() {
+      return this.scrollY > overScrollHeight;
     }
   },
   methods: {
-    handleScroll:function() {
-      this.scrollY = window.scrollY
+    handleScroll: function() {
+      this.scrollY = window.scrollY;
+    },
+    toLogin: function() {
+      this.$router.push('/');
     }
   }
 };
@@ -108,7 +113,8 @@ export default {
 }
 body {
   padding: 0;
-  margin: 0；;
+  margin: 0;
+  max-width: 100%;
 }
 .title {
   line-height: 56px;
@@ -124,12 +130,11 @@ body {
   background: linear-gradient(to top, #7ededeed 0, #66cccc 100%);
 }
 .bg-nav {
-  padding: 15px 25px;
   color: #fff;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   width: 100%;
 }
 .bg-nav-menu {
@@ -138,9 +143,27 @@ body {
 .bg-nav-menu li {
   float: left;
   padding: 0 22px;
-  font-weight: 500;
+  font-weight: 700;
+  position: relative;
+}
+.bg-nav-menu li:hover {
+  cursor: pointer;
+  color: #333;
+}
+.bg-nav-menu li.active::before {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: #000;
+  transition: all 0.3s ease-in-out;
+  left: calc(50% - 10px);
+  width: 20px;
 }
 .bg-nav .logo {
+  margin-right: 200px;
   border: 1px solid #fff;
   font-weight: 600;
   font-family: "微软雅黑", "黑体", "宋体";
@@ -153,10 +176,12 @@ body {
   position: fixed;
   background-color: #fff;
   z-index: 999;
-  color:#333;
+  color: #888;
+  border-bottom: 1px solid #dcdfe6;
 }
-.changeNav li{
-  font-family: Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,SimSun,sans-serif;
+.changeNav li {
+  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, SimSun, sans-serif;
 }
 .bg-warp {
   padding-top: 100px;
@@ -177,6 +202,27 @@ body {
 }
 .small-title {
   padding: 10px 0;
+}
+.login {
+  line-height: 28px;
+  padding: 0 14px;
+  font-weight: 700;
+  font-size: 14px;
+  background: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  margin-left: 200px;
+  outline: none;
+}
+.login:hover {
+  cursor: pointer;
+  background: #fff;
+  color: #333;
+  border: 1px solid #466c6d;
+}
+.changeNav .login {
+  color: rgb(30, 153, 235) !important;
+  border: 1px solid rgb(30, 153, 235);
 }
 
 @media (max-width: 1100px) {

@@ -28,7 +28,11 @@
             </el-menu>
           </div>
           <div class="right">
-            <el-button type="info">登录</el-button>
+            <el-button type="info">
+              <svg class="icon" aria-hidden="true" style="width:50px;height:30px;">
+                <use xlink:href="#icon-kefuyouxian"></use>
+              </svg>
+            </el-button>
           </div>
         </div>
       </el-header>
@@ -38,18 +42,14 @@
 </template>
 <script>
 export default {
-  components: {
-    
-  },
-  data(){
+  components: {},
+  data() {
     return {
-      activeIndex:"/home/data-import"
-    }
+      activeIndex: "/home/data-import"
+    };
   },
   //TODO:修改active
-  methods:{
-
-  }
+  methods: {}
 };
 </script>
 <style scoped>
@@ -84,7 +84,7 @@ body,
 #home {
   height: 100%;
 }
-.el-menu-item{
+.el-menu-item {
   padding: 0 20px;
 }
 body > .el-container {
@@ -95,5 +95,12 @@ body > .el-container {
   padding-left: 20px;
   font-weight: 500;
   color: #fff;
+}
+.el-header {
+  padding: 0;
+}
+/* 导航下面有element默认的1px的白线*/
+.el-menu--horizontal {
+  border-bottom: 0;
 }
 </style>
