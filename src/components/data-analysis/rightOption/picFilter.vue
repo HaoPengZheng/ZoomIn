@@ -2,8 +2,8 @@
 <div>
 
 
+<el-button @click="dialogVisible = true" class="btn-style"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bi1"></use></svg>新建筛选</el-button>
 
-    <el-button type="text" @click="dialogVisible = true">临时按钮</el-button>
 
     <el-dialog
     title="图内筛选器"
@@ -62,5 +62,9 @@ import Bus from '../Bus.js'
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-
+    .btn-style{
+        width:100%;
+        text-align: left;
+        border: 0px
+    }
 </style>

@@ -207,7 +207,7 @@ import dropFilterItem from './dropFilterItem'
     font-size: 13px
 }
 .box-style {
-    background-color: #f5f7fa;
+    background-color: #fff;
     color: #909399;
     height: 100%;
 }

@@ -1,9 +1,10 @@
 <template>
-<div id="rightBoard" style="height:500px">
+<div id="rightBoard" style="height:500px;position:relaitve;">
+  <!-- <el-button style="margin-top:300px;position:absolute; z-index:1;margin-left:-150px">123</el-button> -->
 <el-scrollbar>
-    <div style="margin:10px;">
+    <div style="margin:10px;" class="rightBoardBtn">
     
-    <el-button  type="success" plain style="width:100%" @click="nextClick">下一步</el-button>
+    <el-button  type="success" plain style="width:100%;" @click="nextClick">下一步</el-button>
       <!-- <el-button  class="nextBtn" @click="nextClick">下一步</el-button> -->
     <el-collapse  v-model="activeNames" class="rightBoard">
       <el-collapse-item title="图表标题" name="1">
@@ -12,7 +13,7 @@
       <el-collapse-item title="模型选择" name="2">
         <modelType/>
       </el-collapse-item>
-      <el-collapse-item title="模型2选择" name="3"  v-show="featureConfigurationFlag">
+      <el-collapse-item title="模型2选择" name="3"  v-show="false">
         <modelType/>
       </el-collapse-item>
       <el-collapse-item title="坐标轴设置" name="4">
@@ -125,5 +126,8 @@ html {
 }
 .rightBoard .el-collapse-item__arrow{
   float: left;
+}
+.rightBoardBtn .el-button--success .is-plain{
+          background-color: #000;
 }
 </style>

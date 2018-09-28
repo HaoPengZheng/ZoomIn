@@ -25,8 +25,8 @@
 
                 <!-- 数值框 -->
                 <div class="el-input el-input-group el-input-group--prepend">
-                    <div class="el-input-group__prepend" style="border-left: 1px solid #dcdfe6">数值<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wellnum"></use></svg></div>
-                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                    <div class="el-input-group__prepend" style="border-left: 0px solid #dcdfe6">数值<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wellnum"></use></svg></div>
+                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left;margin-top:2px" @drop='colDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         
                         <el-tag v-for="(item,index) in dropCol" :key="index" 
                             closable
@@ -46,8 +46,8 @@
 
         <el-row>
                 <div class="el-input el-input-group el-input-group--prepend" v-show="axisFlag">
-                    <div class="el-input-group__prepend" style="border-left: 1px solid #dcdfe6">次轴<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wellnum"></use></svg></div>
-                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='colAxisDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                    <div class="el-input-group__prepend" style="border-left: 0px solid #dcdfe6">次轴<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wellnum"></use></svg></div>
+                    <div style="border-bottom: 0px solid #D0D0D0;height: 40px;text-align: left;margin-top:2px" @drop='colAxisDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         
                         <el-tag v-for="(item,index) in dropAxisCol" :key="index" 
                             closable
@@ -84,6 +84,11 @@ import Bus from './Bus.js'
             addIconFlag:true
         }
     },
+    mounted(){
+        Bus.$on('yAixsFail',(e)=>{
+            this.dropCol.pop()
+        })
+    },
     methods:{
             drag:function(ev){
                 ev.dataTransfer.setData("ID", ev.target.innerText);//拖动元素的ID
@@ -96,9 +101,9 @@ import Bus from './Bus.js'
                         this.dropRow.push(data)
                         //console.log(this.dropRow.length)
                         //判定是否超过要求的范围
-                        if(this.dropRow.length > 1){
+                        if(this.dropRow.length > 2){
                             this.$message({
-                                message: '只允许有一个维度',
+                                message: '只允许有两个维度',
                                 showClose: true,
                                 type: 'warning',
                                 duration:1000
@@ -227,7 +232,7 @@ import Bus from './Bus.js'
     font-size: 13px
 }
 .box-style {
-    background-color: #f5f7fa;
+    background-color: #fff;
     color: #909399;
     height: 100%;
 }
@@ -243,8 +248,7 @@ import Bus from './Bus.js'
 }
 .el-input-group__prepend{
     border: 0px solid;
-    border-bottom: 1px solid #dcdfe6; 
-    border-right: 1px solid #dcdfe6 
+    border-bottom: 0px solid #dcdfe6; 
 }
 [v-cloak]{
     display:none;

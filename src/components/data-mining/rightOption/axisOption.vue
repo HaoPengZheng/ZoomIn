@@ -12,12 +12,12 @@
 
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">标题</div>
-                <el-input v-model="xAxisInput" class="axisOptionStyle" placeholder="请输入X轴" suffix-icon="el-icon-edit" @blur='titleBlur'></el-input>
+                <el-input v-model="xAxisInput" class="axisOptionStyle" placeholder="请输入X轴" suffix-icon="el-icon-edit"></el-input>
                 </div>
 
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">单位</div>
-                <el-input v-model="xAxisUnit" class="axisOptionStyle" placeholder="请输入X轴" suffix-icon="el-icon-edit" @blur='titleBlur'></el-input>
+                <el-input v-model="xAxisUnit" class="axisOptionStyle" placeholder="请输入X轴" suffix-icon="el-icon-edit"></el-input>
                 </div>
 
         </el-submenu>
@@ -32,12 +32,12 @@
             
                 <div class="el-input el-input-group el-input-group--prepend ">
                 <div class="el-input-group__prepend">标题</div>
-                <el-input class="axisOptionStyle" v-model="yAxisInput" placeholder="请输入Y轴" suffix-icon="el-icon-edit" @blur='titleBlur'></el-input>
+                <el-input class="axisOptionStyle" v-model="yAxisInput" placeholder="请输入Y轴" suffix-icon="el-icon-edit"></el-input>
                 </div>
 
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">单位</div>
-                <el-input  class="axisOptionStyle" v-model="yAxisUnit" placeholder="请输入Y轴" suffix-icon="el-icon-edit" @blur='titleBlur'></el-input>
+                <el-input  class="axisOptionStyle" v-model="yAxisUnit" placeholder="请输入Y轴" suffix-icon="el-icon-edit"></el-input>
                 </div>
             
 

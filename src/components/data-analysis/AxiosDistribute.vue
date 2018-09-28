@@ -46,7 +46,7 @@ export default {
             Bus.$emit('AxiosDataEcharts', response.data.data);
         })
         .catch(response => {
-          alert("获取数据失败");
+          //alert("获取数据失败");
         });
 
       //2.随机生成图表标题

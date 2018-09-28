@@ -1,11 +1,14 @@
 <template>
 	<div>
-		<el-card class="box-card cardStyle" id="echartsCard">
+		<el-card class="box-card cardStyle" id="echartsCard"  shadow="never">
 
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
-				
+
+				<!-- 未显示图表时 -->
+				<div class="echarts-font" id="font-position" v-show="!tableVisible" v-loading="loading">当前图表无数据</div>
+				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
+
 				<!-- 表格部分 -->
-				<p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p>
 				<el-table
 				:data="tableData"
 				stripe border
@@ -80,7 +83,8 @@ export default {
 					name : '',
 		            type : 'value'
 				}],
-		chartId:1
+		chartId:1,
+		loading:false
     }
   },
   mounted(){
@@ -90,6 +94,21 @@ export default {
 // 2.拖动到框上的时候求和
 // 3.每一步PATCH
 
+Bus.$on('leftChange',(e)=>{
+	if(e){
+		document.getElementById("myChart").style.width= this.winWidth*0.87 + "px";
+		document.getElementById("echartsCard").style.width= this.winWidth*0.898 + "px";
+		this.myChart.dispose();
+		this.drawLine();
+	}
+	else{
+		document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
+		document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
+		this.myChart.dispose();
+		this.drawLine();
+	}
+
+})
 		//0.从AxiosDistribute过来的图表ID
 		Bus.$on('chartID',(e)=>{
 			this.chartId = e
@@ -120,6 +139,8 @@ export default {
 
 		//1.监听Y轴传值
 		Bus.$on('coldata', (e) => {
+			//打开加载条
+			this.loading = true
 			//获得拖到y轴上的节点字段数组
 			this.yAxisItemName.push(e)
 			//拼x轴字符串
@@ -151,11 +172,13 @@ export default {
 				}
 			)
 			.then(r => {
-				console.log(r.data.data)//完整数据
-				console.log(Object.values(JSON.parse(r.data.data)))//表头
-				Object.values(JSON.parse(r.data.data)).forEach((element) => {
-				console.log(Object.keys(element))//去重的X轴的值
-
+				console.log(r.data.data)
+				//r.data.data 								完整数据
+				//Object.values(JSON.parse(r.data.data)) 	表头
+				//Object.keys(element)						去重的X轴的值
+				let element = JSON.parse(r.data.data)[e]	//对应的y轴的值
+				this.Xdata = []//每次循环清空X轴，否则重叠
+				this.seriesDataItem = [] //清空serIDataItem否则重叠
 				//给X轴赋值,Xdata为echarts的X轴的值
 		　　　　for(let i=0;i<Object.keys(element).length;i++){
 					this.Xdata.push(Object.keys(element)[i])  
@@ -163,35 +186,49 @@ export default {
 				//给Y轴赋值
 		　　　　for(let i=0;i<Object.keys(element).length;i++){
 					this.seriesDataItem.push(element[Object.keys(element)[i]])  
-				}							
+				}
+				
+				console.log(this.seriesDataItem)					
 				this.seriesData.push({
-					name:e,
+					name:this.yAxisItemName[this.yAxisItemName.length-1],
 					type:'bar',
 					data:this.seriesDataItem
 				})
-				this.seriesDataItem = [] //清空serIDataItem否则重叠
-							
-				//!!!!!!!!!!!!!!!!!!!!!!!!!!每次都清空数据，再赋值
-				console.log(this.seriesData)
-
-				});//循环赋值结束
-
+				
+				//打开dataZoom，X轴大于10时
+				if(Object.keys(element).length>10){
+					this.dataZoom = {
+						type: 'slider',
+						show: true,
+						xAxisIndex: [0],
+						start: 0,
+						end: 30
+					}
+				}
+				this.loading = false
 				this.drawLine();
 
 			})
 			.catch(response => {
-				alert("求和失败");
+				this.loading = false
+				this.yAxisItemName.pop()
+				Bus.$emit('yAixsFail','fail');
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
 			});
 
 			//表格显示
-			if(this.Xdata.length<1){
-				this.tableVisible = true
-					for(let j =0 ;j < 15;j++){
-					this.tableData[j] = this.echartAxiosData[j];
-					}
-					this.fields.push(e)
-			}
-			else{this.drawLine();}
+			// if(this.Xdata.length<1){
+			// 	this.tableVisible = true
+			// 		for(let j =0 ;j < 15;j++){
+			// 		this.tableData[j] = this.echartAxiosData[j];
+			// 		}
+			// 		this.fields.push(e)
+			// }
+			this.drawLine();
 
 		})
 
@@ -236,18 +273,20 @@ export default {
 	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
        Bus.$on('rowdataRemove', (e) => {
 			this.Xdata = [];
-			//this.Xdata.splice(e, 1);
+			//this.Xdata.splice(e, 1);这种写法是错的，Xdata是18个学校的名字
 			this.tableVisible = false
-			if(this.myChart)this.myChart.dispose()
+			this.myChart.dispose()
 			this.drawLine();
 	   })
 
 
-		//2.监听移除事件(还没有PATCH)
+		//2.监听y轴移除事件(还没有PATCH)
        Bus.$on('coldataRemove', (e) => {
 			this.seriesData.splice(e, 1);
+			this.yAxisItemName.splice(e, 1);
+			
 			this.tableVisible = false
-			if(this.myChart)this.myChart.dispose()
+			this.myChart.dispose()
 			this.drawLine();
 	   })
 		
@@ -481,14 +520,7 @@ export default {
 				trigger: 'axis',
 				axisPointer : {type : 'shadow'}
 			},
-			dataZoom: [
-				{
-					type: 'slider',
-					show: true,
-					xAxisIndex: [0],
-					start: 0,
-					end: 2
-				}],
+			dataZoom: this.dataZoom,
 		    legend: {
 		        data:this.yAxisItemName  //拖到y轴的节点来创建图例
 		    },
@@ -496,8 +528,11 @@ export default {
 		    xAxis : [
 		        {
 		            type : 'category',
-		            data : this.Xdata
-		        }
+					data : this.Xdata,
+					axisLabel :{
+					interval:0 
+				}
+				}
 		    ],
 		    yAxis : this.chartYAxis,
 		    series : this.seriesData	
@@ -549,14 +584,15 @@ export default {
 </script>
 <style>
 .cardStyle{
-	
-	margin: 10px;
+	border: 0px;
+	margin: 15px;
 	margin-top: 20px;
 	
 }
 .echarts-font {
 	font-family: '新宋体';
-	margin:auto;
+	font-size: 10px;
+	position: absolute;left: 45%; 
 
 }
 .dropdowmMenuStyle {

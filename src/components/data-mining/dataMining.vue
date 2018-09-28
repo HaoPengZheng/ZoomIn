@@ -1,18 +1,21 @@
 <template>
   <div id="app">
-    <el-row>
-    
-    <el-col :span="spanParms[0]" style="padding:30px;">
+    <el-row style="margin-top:1px;">
+    <el-col :span="spanParms[0]" style="padding:20px;background:#fff" >
       <div><table-info style="margin-bottom: 30px"></table-info></div>
+      <el-button @click="btnClick" style="float:right;margin-right:-20px;">
+        <icon name="angle-right" v-show="iconFlag"></icon>
+        <icon name="angle-left" v-show="!iconFlag"></icon>
+      </el-button>
       <drag></drag>
     </el-col>
     
     <el-col :span="spanParms[1]">
-      <div class="app-border">
+      <div class="app-border" >
         <!-- 由于导航栏的问题，临时下降1px -->
-        <el-row style="margin-top:1px"> 
-          <el-col :span="24"><div><drop></drop></div></el-col>
-          <el-col :span="24"><div style="margin-top:5px"><model-parms></model-parms></div></el-col>
+        <el-row style="margin-top:1px;" > 
+          <el-col :span="24"><div style="margin-left:15px;margin-right:20px"><drop></drop></div></el-col>
+          <el-col :span="24"><div style="margin-top:5px;margin-left:15px"><model-parms></model-parms></div></el-col>
         </el-row>
 
         <el-row>
@@ -47,7 +50,6 @@ export default {
     drag:drag,
     drop:drop,
     echarts:echarts,
-    navigator:navigator,
     rightBoard:rightBoard,
     AxiosDistribute,
     dropFilter,
@@ -58,11 +60,23 @@ export default {
     return{
       isCollapse: true,
       spanParms:[3,17,4],
-      hackReset:true
+      hackReset:true,
+      leftFlag:true,
+      iconFlag:true
     }
   },
   mounted(){
-    this.spanParms=[1,22,1]
+
+    
+  },
+  methods:{
+    btnClick(){
+      Bus.$emit('leftChange',this.leftFlag)
+       if(this.leftFlag)this.spanParms=[1,22,1]
+       else this.spanParms=[3,17,4]
+       this.leftFlag = !this.leftFlag
+       this.iconFlag = !this.iconFlag
+    }
   }
 }
 </script>
@@ -80,17 +94,21 @@ export default {
 }
 
 .app-border{
-  border-left: 1px;
-  border-right: 1px;
+  border-left: 0px;
+  border-right: 0px;
   border-left-style: solid;
   border-right-style: solid;
   border-color: #D0D0D0;
-
-  /* box-shadow:-2px 0 3px -1px #888888;
-  box-shadow:2px 0 3px -1px #888888; */
-
+  box-shadow:0px -10px 10px 7px rgb(224, 224, 224)  inset;
+  /* #F0F2F3 */
+  /* rgb(224, 224, 224) */
 }
-
+.dataMing-border-left{
+  border-right: 1px;
+  border-right-style: solid;
+  border-color: #D0D0D0;
+  box-shadow:-2px 0 1px -1px #888888;
+}
 /* 顶替dataProcessing冲突的样式 */
 .el-row {
   margin-bottom: 0px;
@@ -98,4 +116,5 @@ export default {
 .el-col {
   border-radius: 0px;
 }
+
 </style>

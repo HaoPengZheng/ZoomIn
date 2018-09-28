@@ -5,8 +5,8 @@
             <el-col :span="24" >
                 <!-- 字段框 -->
                 <div class="el-input el-input-group el-input-group--prepend" style="margin-left:1px;">
-                    <div class="el-input-group__prepend" style="border: 1px solid #dcdfe6" >筛选<svg class="icon" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg></div>
-                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='filterDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
+                    <div class="el-input-group__prepend" style="border: 0px solid #dcdfe6" >筛选<svg class="icon" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg></div>
+                    <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left;margin-top:-4px" @drop='filterDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         <el-tag v-for="(item,index) in dropFilter" :key="index" 
                             closable
                             :disable-transitions="false"
@@ -207,7 +207,7 @@ import dropFilterItem from './dropFilterItem'
     font-size: 13px
 }
 .box-style {
-    background-color: #f5f7fa;
+    background-color: #fff;
     color: #909399;
     height: 100%;
 }
