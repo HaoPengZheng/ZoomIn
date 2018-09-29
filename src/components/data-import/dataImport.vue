@@ -43,6 +43,7 @@ export default {
     };
   },
   created: function() {
+    this.$store.commit('changeIndex',{index:"dataImport"})
     // this.$axios
     //   .get("http://120.79.146.91:8000/taskinfo/", {
     //     headers: {

@@ -41,6 +41,9 @@ export default {
     Left,
     MyChart
   },
+  created:function(){
+    this.$store.commit('changeIndex',{index:"taskRelease"});
+  },
   data() {
     return {
       taskId: "",
@@ -275,7 +278,6 @@ export default {
       }
     };
   },
-  created: function() {},
   methods: {
     fetchTaskById: function() {
       this.$axios.post("");

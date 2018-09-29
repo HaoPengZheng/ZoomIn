@@ -45,11 +45,14 @@ export default {
   components: {},
   data() {
     return {
-      activeIndex: "/home/data-import"
+
     };
   },
-  //TODO:修改active
-  methods: {}
+  computed:{
+    activeIndex:function(){
+      return this.$store.getters.activeIndex;
+    }
+  },
 };
 </script>
 <style scoped>

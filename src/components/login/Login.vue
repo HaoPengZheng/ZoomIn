@@ -55,7 +55,9 @@ export default {
           promise.then(response => {
             this.$message({
               message: "登录成功！",
-              type: "success"
+              type: "success",
+              showClose: true,
+              duration: 1500
             });
             let token = response.token;
             localStorage.setItem("token", token);

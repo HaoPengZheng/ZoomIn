@@ -135,6 +135,8 @@ export default {
   },
 
   created: function() {
+    //保存当前页面menu的状态
+    this.$store.commit('changeIndex',{index:"dataProcessing"})
     //this.$route.params.id接受参数
     this.dataSetId = this.$route.params.dataSetId;
     this.fetch();

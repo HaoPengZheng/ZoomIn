@@ -17,17 +17,19 @@ import './icon/icon.css'
 import './assets/icons/zhp-icon/iconfont.js'
 import './assets/icons/zhp-icon/iconfont.css'
 import GeminiScrollbar from 'vue-gemini-scrollbar'
-
 // 自定义公共方法
 import Utils from './components/common/common.js'
-
 // 滚动条插件
 import vuescroll from 'vuescroll/dist/vuescroll-native';
 // 导入css文件
 import 'vuescroll/dist/vuescroll.css';
-
+//封装axios方法
 import {post,toDelete,get,patch,put} from './api/http.js'
+//引入VueX
+import store from './store/store.js';   
+
 //定义全局变量
+Vue.prototype.$store = store;
 Vue.prototype.$post=post;
 Vue.prototype.$get=get;
 Vue.prototype.$patch=patch;
@@ -42,8 +44,6 @@ Vue.prototype.$qs = qs
 //这是啥？
 Vue.component('icon', Icon)
 
-const root = document.createElement('div')
-document.body.appendChild(root)
 Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(GeminiScrollbar)
@@ -51,6 +51,9 @@ Vue.use(vuescroll)
 
 
 Vue.config.productionTip = false
+
+const root = document.createElement('div')
+document.body.appendChild(root)
 
 /* eslint-disable no-new */
 new Vue({

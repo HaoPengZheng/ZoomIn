@@ -24,6 +24,7 @@
     "vue-gemini-scrollbar": "^2.0.0",
     "vue-router": "^3.0.1",
     "vuescroll": "^4.7.4",
+    "vuex": "^3.0.1",
     "xlsx": "^0.13.0"
   },
   "devDependencies": {
