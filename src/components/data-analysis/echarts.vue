@@ -37,7 +37,7 @@
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
 				<!-- 未显示图表时 -->
 				<div class="echarts-font" id="font-position" v-show="!tableVisible" v-loading="loading">当前图表无数据</div>
-				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
+				<!-- <img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible"> -->
 				
 				<!-- 表格部分 -->
 				<!-- <p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p> -->
