@@ -230,7 +230,10 @@ export default {
       alert(row);
     },
     changeHeaderName: function(e) {
+      // 阻止触发父事件
+      e.stopPropagation();
       this.$emit("changeHeaderName", e);
+      return false;
     }
   }
 };
