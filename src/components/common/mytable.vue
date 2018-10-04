@@ -3,7 +3,7 @@
     <!--  cell-mouse-enter 和 mouseleave.native 控制鼠标离开时重置拖拽状态-->
     <el-table :data="data" :border="option.border" :height="option.height" v-loading="loading" :style="{ width: parseInt(option.width)+'px' }" :cell-class-name="cellClassName" :header-cell-class-name="headerCellClassName" @cell-mouse-enter="handleMouseLeave" @mouseleave.native="handleMouseLeave">
       <slot name="fixed"></slot>
-      <el-table-column  sortable v-for="(col, index) in tableHeader" v-if="keyVisibilitys[index]" :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
+      <el-table-column sortable v-for="(col, index) in tableHeader" v-if="keyVisibilitys[index]" :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
       </el-table-column>
     </el-table>
   </div>
@@ -96,7 +96,7 @@ export default {
               })
             ]
           ),
-          // 添加 <a> 用于显示表头 label  
+          // 添加 <a> 用于显示表头 label
           createElement("a", column.label),
           // 添加一个修改标题的按钮
           createElement(
@@ -105,6 +105,9 @@ export default {
               style: "color:red;float:right; ",
               on: {
                 click: this.changeHeaderName
+              },
+              attrs: {
+                titie: "修改名称和类型"
               }
             },
             [
@@ -192,6 +195,14 @@ export default {
         } else {
           tempData.push(this.tableHeader[i]);
         }
+        if (
+          typeof tempData[i] == "undefined" ||
+          typeof tempData[i] == undefined ||
+          tempData[i] == ""
+        ) {
+          console.log("错误的拖拽方式。");
+          return;
+        }
       }
       this.tableHeader = tempData;
     },
@@ -253,16 +264,17 @@ th .cell {
 }
 .thead-cell {
   width: 80%;
-  height:50px;
-  margin-right:10px;
+  height: 50px;
+  margin-right: 10px;
 }
-.thead-cell a{
+.thead-cell a {
   line-height: 56px;
 }
-.caret-wrapper{
+.caret-wrapper {
   float: right;
   margin-top: 11px;
   margin-right: 5px;
+  position: absolute !important;
 }
 </style>
 

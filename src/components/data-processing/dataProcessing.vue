@@ -4,7 +4,7 @@
     </Left>
     <el-container>
       <el-main>
-        <el-tabs v-model="activeName"  style="padding:0 50px">
+        <el-tabs v-model="activeName" style="padding:0 50px">
           <el-tab-pane label="数据预览" name="first">
             <div>
               <el-row :gutter="20" style="text-align:left;padding-left:20px;margin-bottom: 0px;">
@@ -44,7 +44,7 @@
           <el-tab-pane label="字段设置" name="second">
             <div>
               <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
-                <el-button type="text" >
+                <el-button type="text">
                   批量修改
                   <!-- <i class="el-icon-arrow-down"></i> -->
                 </el-button>
@@ -123,7 +123,7 @@ export default {
       dialogVisible: false,
       changeColumnIndex: 0,
       tableKeysType: ["#", "T", "d", "#", "T", "d", "#", "#"],
-      keyVisibilitys: [true, true, true, true, true, true,true,true],
+      keyVisibilitys: [true, true, true, true, true, true, true, true],
       newColumnName: "",
       newColumnType: "",
       tableOption: {
@@ -136,11 +136,14 @@ export default {
 
   created: function() {
     //保存当前页面menu的状态
-    this.$store.commit('changeIndex',{index:"dataProcessing"})
+    this.$store.commit("changeIndex", { index: "dataProcessing" });
     //this.$route.params.id接受参数
     this.dataSetId = this.$route.params.dataSetId;
-    this.fetch();
-    this.fetchAllDataSet();
+    let query = this.fetchAllDataSet();
+    query.then(response => {
+      this.dataSetList = response;
+        this.fetch();
+    });
   },
   methods: {
     // 初始化数据，拉取表格数据，
@@ -148,15 +151,12 @@ export default {
     // 返回json
     fetch: function() {
       if (typeof this.dataSetId == "undefined") {
-        alert("undefind");
-        this.dataSetId = 1;
+        this.dataSetId = this.dataSetList[0].id;
+        alert(this.dataSetId);
       }
-      this.$post(
-        "/task/dataProcessing/showDataSet1",
-        {
-          data_set_id: this.dataSetId
-        }
-      )
+      this.$post("/task/dataProcessing/showDataSet1", {
+        data_set_id: this.dataSetId
+      })
         .then(response => {
           this.tableData = response.data.slice(0, 100);
           console.log(this.tableData);
@@ -164,28 +164,23 @@ export default {
           console.log(this.tableKeys);
           this.loading = false;
           if (this.tableKeys.length > 0) {
-            this.$post(
-              "/task/dataProcessing/showDtypes",
-              {
-                data_set_id: this.dataSetId
-              }
-            )
-              .then(response => {
-                // 用来存储字段类型
-                var tableKeysTypes = [];
-                // 将后端传回的字符串转换为Object
-                var types = this.converterStringToType(response.data);
-                // 匹配正确的key-value
-                this.tableKeys.forEach(tablekey => {
-                  tablekey = tablekey.trim();
-                  console.log(types[tablekey]);
-                  tableKeysTypes.push(types[tablekey]);
-                });
-                this.tableKeysType = tableKeysTypes;
-                console.log("now table keys type is ");
-                console.log(this.tableKeysType);
-              })
-      
+            this.$post("/task/dataProcessing/showDtypes", {
+              data_set_id: this.dataSetId
+            }).then(response => {
+              // 用来存储字段类型
+              var tableKeysTypes = [];
+              // 将后端传回的字符串转换为Object
+              var types = this.converterStringToType(response.data);
+              // 匹配正确的key-value
+              this.tableKeys.forEach(tablekey => {
+                tablekey = tablekey.trim();
+                console.log(types[tablekey]);
+                tableKeysTypes.push(types[tablekey]);
+              });
+              this.tableKeysType = tableKeysTypes;
+              console.log("now table keys type is ");
+              console.log(this.tableKeysType);
+            });
           }
         })
         .catch(response => {
@@ -254,9 +249,7 @@ export default {
       this.tableKeysType = newTypes;
     },
     fetchAllDataSet: function() {
-      this.$get("/dataSet/").then(response => {
-        this.dataSetList = response;
-      });
+      return this.$get("/dataSet/");
     },
     showDataSet: function(dataSetId) {
       // TODO 是否保存？

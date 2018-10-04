@@ -3,12 +3,12 @@
     <div class="application-header-box">
       <div class="application-header ">新建任务</div>
     </div>
-    <el-row :gutter="30">
-      <el-col :xs="8" :sm="8" :md="8" :lg="5" :offset="2" style="padding-left:45px;">
+    <el-row :gutter="50">
+      <el-col :xs="8" :sm="8" :md="8" :lg="5" :offset="2" style="padding-left:45px;margin-right:10px;">
         <img src="../../assets/data-import/excel.png" @click="showNewTaskDialog('excel')" class="input-img" ondragstart="return false;">
       </el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="5">
-        <img src="../../assets/data-import/csv.png" @click="showNewTaskDialog('csv')" class="input-img" ondragstart="return false;">
+        <el-col :xs="8" :sm="8" :md="8" :lg="5">
+          <img src="../../assets/data-import/csv.png" @click="showNewTaskDialog('csv')" class="input-img" ondragstart="return false;">
       </el-col>
 
     </el-row>
@@ -21,10 +21,10 @@
         <el-form-item label="数据源">
           <input type="file" ref="obj" @change="importf()" id="excel-input" :accept="accept" />
         </el-form-item>
-        <el-form-item label="任务描述">
-          <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="newTaskModel.describe">
-          </el-input>
-        </el-form-item>
+          <el-form-item label="任务描述">
+            <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="newTaskModel.describe">
+            </el-input>
+          </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="newTaskDialogVisable = false">取 消</el-button>
@@ -87,13 +87,10 @@ export default {
         });
       } else {
         // 新建任务
-        let query = this.$post(
-          "/taskinfo/",
-          {
-            task_name: this.newTaskModel.name,
-            task_desc: this.newTaskModel.describe
-          }
-        );
+        let query = this.$post("/taskinfo/", {
+          task_name: this.newTaskModel.name,
+          task_desc: this.newTaskModel.describe
+        });
         query.then(response => {
           console.log(response);
           this.taskid = response.data.id;
@@ -163,56 +160,32 @@ export default {
     createTask: function() {
       this.tablePreviewVisable = false;
       alert(this.tablejsons);
-      // let query = this.$post("/dataSet/",this.$qs.stringify({
-      //       task: this.taskid,
-      //       title: "数据集名",
-      //       step1: "1",
-      //       step2: "2",
-      //       step3: "3",
-      //       stepX1: "x1",
-      //       title: this.filename,
-      //       row_num: (this.titleIndex - 2).toString(),
-      //       data_set: JSON.stringify(this.tablejsons)
-      //     }));
-      // query.then(response => {
-      //   console.log(response);
-      //   var dataSetId = response.data.id;
-      //   //创建完成之后，跳转到数据处理页面，传任务ID
-      //   this.$router.push({
-      //     name: "data-processing",
-      //     params: { taskId: this.taskid, dataSetId: dataSetId }
-      //   });
-      // });
-      this.$post(
-          "/dataSet/",
-          {
-            task: this.taskid,
-            title: "数据集名",
-            step1: "1",
-            step2: "2",
-            step3: "3",
-            stepX1: "x1",
-            title: this.filename,
-            row_num: (this.titleIndex - 2).toString(),
-            data_set: this.tablejsons
-          },
-        )
-        .then(response => {
-          console.log(response);
-          var dataSetId = response.data.id;
-          //创建完成之后，跳转到数据处理页面，传任务ID
-          this.$router.push({
-            name: "data-processing",
-            params: { taskId: this.taskid, dataSetId: dataSetId }
-          });
-        })
+      this.$post("/dataSet/", {
+        task: this.taskid,
+        title: "数据集名",
+        step1: "1",
+        step2: "2",
+        step3: "3",
+        stepX1: "x1",
+        title: this.filename,
+        row_num: (this.titleIndex - 2).toString(),
+        data_set: this.tablejsons
+      }).then(response => {
+        console.log(response);
+        var dataSetId = response.data.id;
+        //创建完成之后，跳转到数据处理页面，传任务ID
+        this.$router.push({
+          name: "data-processing",
+          params: { taskId: this.taskid, dataSetId: dataSetId }
+        });
+      });
     }
   }
 };
 </script>
 <style  >
 .warp {
-  min-width: 600px;
+  min-width: 800px;
 }
 .el-main {
   line-height: 40px;

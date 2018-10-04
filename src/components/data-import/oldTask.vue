@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="warp">
     <div class="application-header-box">
       <div class="application-header ">历史任务</div>
       <!-- 搜索框 -->
@@ -88,7 +88,7 @@ export default {
     calculateTaskCount: function() {
       const threeCountWidth = 1600;
       const twoCountWidth = 1200;
-      const oneContWidth = 600;
+      const oneContWidth = 800;
       let width = this.clientWidth;
       if (width > threeCountWidth) {
         this.taskCarouselCount = 4;
@@ -100,8 +100,8 @@ export default {
         this.taskCarouselCount = 2;
         this.renderSpan = 8;
       } else {
-        this.taskCarouselCount = 1;
-        this.renderSpan = 16;
+        this.taskCarouselCount = 2;
+        this.renderSpan = 8;
       }
     },
     featchTask: function() {
@@ -289,6 +289,9 @@ export default {
 </script>
 
 <style>
+.warp{
+  min-width:800px;
+}
 .el-main {
   line-height: 40px;
 }

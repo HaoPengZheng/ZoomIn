@@ -13,7 +13,7 @@
           <i class="el-icon-plus"></i>
         </el-button>
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
-        <el-menu default-active="1" :collapse="isShrink">
+        <el-menu default-active="0" :collapse="isShrink">
           <el-menu-item :index="index.toString()" v-for="(dataSet,index) in dataSetList" :key="index">
             <a @click="showDataSet(dataSet.id)">
               <i class="el-icon-document" style=""></i>
