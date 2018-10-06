@@ -57,6 +57,7 @@ export default {
   data() {
     return {
       expression: "",
+      newFieldType:"#",
       ops: {
         vuescroll: {},
         scrollPanel: {},

@@ -19,21 +19,18 @@ export default {
         { value: "T", label: "文本类型" },
         { value: "d", label: "时间类型" }
       ],
+      type:"",
     };
   },
   props: {
     value: "",
-    size:"",
-    placeholder:"",
+    size: "",
+    placeholder: ""
   },
-  created:function(){
+  created: function() {
     this.type = this.value;
   },
-  computed: {
-    type: function() {
-      return this.value;
-    }
-  }
+
 };
 </script>
 <style>

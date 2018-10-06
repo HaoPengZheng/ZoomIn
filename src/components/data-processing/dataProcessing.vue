@@ -142,7 +142,7 @@ export default {
     let query = this.fetchAllDataSet();
     query.then(response => {
       this.dataSetList = response;
-        this.fetch();
+      this.fetch();
     });
   },
   methods: {
@@ -187,6 +187,7 @@ export default {
           alert("获取数据失败");
         });
     },
+    //条件筛选显示
     showFiltrate: function() {
       if (this.filtrateVisable === false) {
         this.filtrateVisable = true;
@@ -198,7 +199,6 @@ export default {
       this.changeColumnIndex = e.target.id;
       this.newColumnName = this.tableKeys[this.changeColumnIndex];
       this.newColumnType = this.tableKeysType[this.changeColumnIndex];
-
       this.dialogVisible = true;
     },
     //更新列名的方法
@@ -279,6 +279,7 @@ export default {
       this.tableKeysType = tableKeysTypes;
       this.keyVisibilitys = keyVisibilitys;
     },
+
     batchTableKey: function(oldTableKeys, newTableKeys) {
       let newData = [];
       this.tableData.forEach(data => {
@@ -296,6 +297,7 @@ export default {
     addNewField: function() {
       this.addFieldDialogVisible = true;
     },
+    //新增字段如何在表格中正确的标识呢
     addField: function(fieldName, fieldType, expression) {
       let tableData = this.tableData;
       fieldName = "新增字段";
@@ -325,6 +327,8 @@ export default {
       console.log(this.tableData);
       this.addFieldDialogVisible = false;
     },
+    //数据处理后进入下一步、
+    //todo:若不保存处理，应该删除处理的结果。。也就是用处理前的dataset
     saveAndGoDataAnalysis: function() {
       var c = confirm("是否保存处理结果？");
       if (c) {
@@ -334,6 +338,7 @@ export default {
         });
       }
     },
+    //用来处理数据类型返回值的一个方法
     converterStringToType: function(str) {
       if (str.startsWith("{")) {
         str = str.substring(1, str.length - 1);
