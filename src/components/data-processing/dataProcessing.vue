@@ -254,6 +254,7 @@ export default {
     showDataSet: function(dataSetId) {
       // TODO 是否保存？
       this.dataSetId = dataSetId;
+      this.tableLoading = true;
       this.fetch();
     },
     dealwithNull: function() {

@@ -37,7 +37,6 @@ export default {
   },
   data() {
     return {
-      loading: false,
       tableHeader: this.header,
       dragState: {
         start: -2, // 起始元素的 index
