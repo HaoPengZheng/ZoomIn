@@ -1,7 +1,7 @@
 <template>
   <div class="w-table" :class="{'w-table_moving': dragState.dragging}">
     <!--  cell-mouse-enter 和 mouseleave.native 控制鼠标离开时重置拖拽状态-->
-    <el-table :data="data" :border="option.border" :height="option.height" v-loading="loading" :style="{ width: parseInt(option.width)+'px' }" :cell-class-name="cellClassName" :header-cell-class-name="headerCellClassName" @cell-mouse-enter="handleMouseLeave" @mouseleave.native="handleMouseLeave">
+    <el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :data="data" :border="option.border" :height="option.height" :style="{ width: parseInt(option.width)+'px' }" :cell-class-name="cellClassName" :header-cell-class-name="headerCellClassName" @cell-mouse-enter="handleMouseLeave" @mouseleave.native="handleMouseLeave">
       <slot name="fixed"></slot>
       <el-table-column sortable v-for="(col, index) in tableHeader" v-if="keyVisibilitys[index]" :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
       </el-table-column>
@@ -32,7 +32,8 @@ export default {
     types: {
       type: Array
     },
-    keyVisibilitys: Array
+    keyVisibilitys: Array,
+    loading: Boolean
   },
   data() {
     return {

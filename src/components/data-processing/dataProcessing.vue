@@ -33,7 +33,7 @@
                   </div>
                 </el-row>
                 <div style="padding-top:30px;width:100%;margin:0 auto">
-                  <wTable :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                  <wTable  :loading="tableLoading" :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
                   </wTable>
@@ -106,14 +106,14 @@ export default {
     wTable,
     BatchOperation,
     NewFieldForm,
-    typeSelect
+    typeSelect,
+    
   },
   data() {
     return {
       taskId: 1,
       dataSetId: Number,
       dataSetList: [],
-      loading: true,
       tableData: [],
       tableKeys: [],
       show: true,
@@ -130,7 +130,8 @@ export default {
         border: true,
         maxHeight: 500
       },
-      addFieldDialogVisible: false
+      addFieldDialogVisible: false,
+      tableLoading:true,
     };
   },
 
@@ -152,7 +153,6 @@ export default {
     fetch: function() {
       if (typeof this.dataSetId == "undefined") {
         this.dataSetId = this.dataSetList[0].id;
-        alert(this.dataSetId);
       }
       this.$post("/task/dataProcessing/showDataSet1", {
         data_set_id: this.dataSetId
@@ -162,7 +162,6 @@ export default {
           console.log(this.tableData);
           this.tableKeys = Object.keys(this.tableData[0]);
           console.log(this.tableKeys);
-          this.loading = false;
           if (this.tableKeys.length > 0) {
             this.$post("/task/dataProcessing/showDtypes", {
               data_set_id: this.dataSetId
@@ -180,6 +179,7 @@ export default {
               this.tableKeysType = tableKeysTypes;
               console.log("now table keys type is ");
               console.log(this.tableKeysType);
+              this.tableLoading = false;
             });
           }
         })
