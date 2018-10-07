@@ -9,6 +9,7 @@ import DataProcessing from '@/components/data-processing/DataProcessing'
 import TaskDetail from '@/components/data-import/taskDetail'
 import TaskRelease from '@/components/task-release/TaskRelease.vue'
 import dataAnalysis from '@/components/data-analysis/dataAnalysis'
+import dataMining from '@/components/data-mining/dataMining'
 import Welcome from '@/components/welcome/WelcomePage.vue'
 Vue.use(Router)
 const router = new Router({
@@ -51,6 +52,13 @@ const router = new Router({
             path: 'data-analysis',
             name: 'data-analysis',
             component: dataAnalysis,
+            meta: {
+                requireAuth: true
+            },
+        },{
+            path: 'data-mining',
+            name: 'data-mining',
+            component: dataMining,
             meta: {
                 requireAuth: true
             },
