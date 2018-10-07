@@ -5,7 +5,7 @@
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
 
 				<!-- 未显示图表时 -->
-				<div class="echarts-font" id="font-position" v-show="!tableVisible" v-loading="loading">当前图表无数据</div>
+				<div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>
 				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
 
 				<!-- 表格部分 -->
@@ -83,8 +83,7 @@ export default {
 					name : '',
 		            type : 'value'
 				}],
-		chartId:1,
-		loading:false
+		chartId:1
     }
   },
   mounted(){
@@ -94,7 +93,7 @@ export default {
 // 2.拖动到框上的时候求和
 // 3.每一步PATCH
 
-Bus.$on('leftChange',(e)=>{
+Bus.$on('wtf',(e)=>{
 	if(e){
 		document.getElementById("myChart").style.width= this.winWidth*0.87 + "px";
 		document.getElementById("echartsCard").style.width= this.winWidth*0.898 + "px";
@@ -139,8 +138,6 @@ Bus.$on('leftChange',(e)=>{
 
 		//1.监听Y轴传值
 		Bus.$on('coldata', (e) => {
-			//打开加载条
-			this.loading = true
 			//获得拖到y轴上的节点字段数组
 			this.yAxisItemName.push(e)
 			//拼x轴字符串
@@ -172,7 +169,6 @@ Bus.$on('leftChange',(e)=>{
 				}
 			)
 			.then(r => {
-				console.log(r.data.data)
 				//r.data.data 								完整数据
 				//Object.values(JSON.parse(r.data.data)) 	表头
 				//Object.keys(element)						去重的X轴的值
@@ -205,12 +201,11 @@ Bus.$on('leftChange',(e)=>{
 						end: 30
 					}
 				}
-				this.loading = false
+
 				this.drawLine();
 
 			})
 			.catch(response => {
-				this.loading = false
 				this.yAxisItemName.pop()
 				Bus.$emit('yAixsFail','fail');
 				this.$message({
@@ -221,14 +216,14 @@ Bus.$on('leftChange',(e)=>{
 			});
 
 			//表格显示
-			// if(this.Xdata.length<1){
-			// 	this.tableVisible = true
-			// 		for(let j =0 ;j < 15;j++){
-			// 		this.tableData[j] = this.echartAxiosData[j];
-			// 		}
-			// 		this.fields.push(e)
-			// }
-			this.drawLine();
+			if(this.Xdata.length<1){
+				this.tableVisible = true
+					for(let j =0 ;j < 15;j++){
+					this.tableData[j] = this.echartAxiosData[j];
+					}
+					this.fields.push(e)
+			}
+			else{this.drawLine();}
 
 		})
 
@@ -591,8 +586,9 @@ Bus.$on('leftChange',(e)=>{
 }
 .echarts-font {
 	font-family: '新宋体';
-	font-size: 10px;
-	position: absolute;left: 45%; 
+font-size: 20px;
+position: absolute;
+left: 45%; 
 
 }
 .dropdowmMenuStyle {
