@@ -19,7 +19,7 @@
               <el-menu-item index="/home/data-analysis">
                 数据分析
               </el-menu-item>
-              <el-menu-item index="/home/data-analysis">
+              <el-menu-item index="/home/data-mining">
                 数据挖掘
               </el-menu-item>
               <el-menu-item index="/home/task-release">
