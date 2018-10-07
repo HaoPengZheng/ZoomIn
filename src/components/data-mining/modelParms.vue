@@ -24,6 +24,7 @@
             </el-col>
         </el-row>
 
+
     <!-- 非线性回归部分 -->
         <el-row v-show="!modelParmsFlag">
             <el-col :span="10" style="text-align:left">
