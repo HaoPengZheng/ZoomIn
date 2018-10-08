@@ -41,7 +41,7 @@
                       </template>
                     </EmptyTask>
                   </div>
-                  <wTable v-show="!IsEmptyDataSet"  :loading="tableLoading" :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                  <wTable v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
                   </wTable>
@@ -70,7 +70,7 @@
       </el-main>
     </el-container>
 
-    <el-dialog title="修改" :visible.sync="dialogVisible" width="30%">
+    <el-dialog title="修改列名/类型" :visible.sync="dialogVisible" width="30%">
       <el-form ref="form" label-width="80px">
         <el-form-item label="字段类型">
           <typeSelect v-model="newColumnType" :placeholder="`请选择`"></typeSelect>
@@ -81,7 +81,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="renewColumnName(e)">确 定</el-button>
+        <el-button type="primary" @click="renewColumnName()">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -107,7 +107,8 @@ import wTable from "../common/mytable.vue";
 import BatchOperation from "./BatchOperation.vue";
 import NewFieldForm from "./NewFieldForm.vue";
 import typeSelect from "../common/typeSelect.vue";
-import EmptyTask from "../common/EmptyTask"
+import EmptyTask from "../common/EmptyTask";
+import { TYPECONVERTER } from "../common/common.js";
 export default {
   components: {
     Left,
@@ -171,10 +172,10 @@ export default {
         }
         this.dataSetId = this.dataSetList[0].id;
       }
-      if(this.IsEmptyDataSet){
+      if (this.IsEmptyDataSet) {
         return;
       }
-      this.$post("/task/dataProcessing/showDataSet1", {
+      this.$post("/task/dataProcessing/showDataSet3", {
         data_set_id: this.dataSetId
       })
         .then(response => {
@@ -223,6 +224,7 @@ export default {
     },
     //更新列名的方法
     renewColumnName: function() {
+      //判断是否有改内容
       if (
         this.tableKeysType[this.changeColumnIndex] == this.newColumnType &&
         this.tableKeys[this.changeColumnIndex] == this.newColumnName
@@ -230,6 +232,7 @@ export default {
         alert("什么都没有改");
         return;
       }
+      //判断是否有重复列名
       if (
         this.tableKeys.indexOf(this.newColumnName) >= 0 &&
         this.tableKeysType[this.changeColumnIndex] == this.newColumnType
@@ -238,29 +241,52 @@ export default {
         return;
       }
       let oldKey = this.tableKeys[this.changeColumnIndex]; //旧的键值
-      this.$set(this.tableKeys, this.changeColumnIndex, this.newColumnName);
-      //set方法。数组更新，但是试图不更新的问题，遇到类似的可以使用vue.set为解决方案
-      this.$set(this.tableKeysType, this.changeColumnIndex, this.newColumnType);
-
-      // 为data重新赋值
-      let newData = [];
-      for (var i = 0; i < this.tableData.length; i++) {
-        let objs = this.tableData[i];
-        var o = new Object();
-        for (var obj in objs) {
-          if (obj == oldKey) {
-            o[this.newColumnName] = objs[obj];
-          } else {
-            o[obj] = objs[obj];
+      //发送请求
+      let query = this.$post("/task/dataProcessing/resetColumns_name_type", {
+        data_set_id: this.dataSetId,
+        type_field: [
+          {
+            field: oldKey,
+            type: TYPECONVERTER.converterSymbolToType(this.newColumnType)
           }
+        ],
+        reset_field: [
+          {
+            original_col: oldKey,
+            new_col: this.newColumnName
+          }
+        ]
+      });
+      query.then(response => {
+        this.$set(this.tableKeys, this.changeColumnIndex, this.newColumnName);
+        //set方法。数组更新，但是试图不更新的问题，遇到类似的可以使用vue.set为解决方案
+        this.$set(
+          this.tableKeysType,
+          this.changeColumnIndex,
+          this.newColumnType
+        );
+        alert(TYPECONVERTER.converterSymbolToType(this.newColumnType));
+        alert(this.newColumnType);
+        // 为data重新赋值
+        let newData = [];
+        for (var i = 0; i < this.tableData.length; i++) {
+          let objs = this.tableData[i];
+          var o = new Object();
+          for (var obj in objs) {
+            if (obj == oldKey) {
+              o[this.newColumnName] = objs[obj];
+            } else {
+              o[obj] = objs[obj];
+            }
+          }
+          console.log(o);
+          newData.push(o);
         }
-        console.log(o);
-        newData.push(o);
-      }
-      this.tableData = newData;
-      this.tableKeys = Object.keys(this.tableData[0]);
-      this.newColumnName = "";
-      this.dialogVisible = false;
+        this.tableData = newData;
+        this.tableKeys = Object.keys(this.tableData[0]);
+        this.newColumnName = "";
+        this.dialogVisible = false;
+      });
     },
     updateTableKeys: function(newKeys) {
       this.tableKeys = newKeys;
