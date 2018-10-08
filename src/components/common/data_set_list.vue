@@ -2,7 +2,7 @@
   <el-aside :style="{width:width+'px'}">
     <div class="aside-warp">
       <div style="overflow:scroll;width:100%;height:100%;">
-        <el-select v-show="!isShrink" multiple filterable remote reserve-keyword placeholder="搜索数据集" style="padding:5px;">
+        <el-select v-model="dataSetName" v-show="!isShrink" multiple filterable  reserve-keyword placeholder="搜索数据集" style="padding:5px;">
           <el-option value="default">
           </el-option>
           <!-- :remote-method="remoteMethod" :loading="loading" -->
@@ -67,7 +67,8 @@ export default {
       width: 275,
       isShrink: false,
       toggleTitle: "隐藏侧边栏",
-      uploadDataSetDialogVisible: false
+      uploadDataSetDialogVisible: false,
+     dataSetName:"",
     };
   },
   created: function() {

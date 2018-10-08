@@ -11,7 +11,10 @@
       </div>
     </div>
     <div style="padding:0 40px;">
-      <el-carousel indicator-position="none">
+      <div v-show="IsEmptyTask">
+        <EmptyTask></EmptyTask>
+      </div>
+      <el-carousel indicator-position="none" v-show="!IsEmptyTask">
         <el-carousel-item v-for="(tasks,index) in newTaskList" :key="index" interval=5000>
           <el-col :span="renderSpan" v-for="(task,index) in tasks" :key="index" :offset="index==0?2:1">
             <Task index :taskName="task.task_name" :createTime="task.add_time.substring(0,10)" :taskid="task.id" v-on:deleteTask="deleteTask" v-on:editTask="editTask">
@@ -50,9 +53,11 @@
 </template>
 <script>
 import Task from "./Task.vue";
+import EmptyTask from "../common/EmptyTask"
 export default {
   components: {
-    Task
+    Task,
+    EmptyTask
   },
   data() {
     return {
@@ -69,7 +74,8 @@ export default {
       queryName: "",
       clientWidth: document.body.clientWidth,
       taskCarouselCount: 4,
-      renderSpan: 4
+      renderSpan: 4,
+      IsEmptyTask: false
     };
   },
   created: function() {
@@ -129,6 +135,11 @@ export default {
       //   });
     },
     dealTask: function() {
+      //如果任务列表为空，不执行后面的步骤
+      if (this.taskList.length == 0) {
+        this.IsEmptyTask = true;
+        return;
+      }
       let tasks = []; //临时存储task
       this.newTaskList = []; //用来渲染的taskList
       let taskCount = this.taskCarouselCount; // 每一个轮播的task个数
@@ -144,9 +155,7 @@ export default {
       }
     },
     deleteTask: function(id) {
-      let query = this.$toDelete(
-        "/taskinfo/" + id + "/"
-      );
+      let query = this.$toDelete("/taskinfo/" + id + "/");
       query.then(response => {
         this.$message({
           message: "删除成功",
@@ -182,9 +191,7 @@ export default {
     },
     editTask: function(taskid) {
       this.editTaskId = taskid;
-      let query = this.$get(
-        "/taskinfo/" + taskid + "/"
-      );
+      let query = this.$get("/taskinfo/" + taskid + "/");
       query.then(response => {
         this.taskModel.name = response.task_name;
         this.taskModel.describe = response.task_desc;
@@ -207,14 +214,11 @@ export default {
     updateTask: function() {
       this.editDialogVisible = false;
       //更新接口
-      let query = this.$put(
-        "/taskinfo/" + this.editTaskId + "/",
-        {
-          task_name: this.taskModel.name,
+      let query = this.$put("/taskinfo/" + this.editTaskId + "/", {
+        task_name: this.taskModel.name,
 
-          task_desc: this.taskModel.describes
-        }
-      );
+        task_desc: this.taskModel.describes
+      });
       query.then(response => {
         console.log(response);
         this.$message.success({
@@ -289,8 +293,8 @@ export default {
 </script>
 
 <style>
-.warp{
-  min-width:800px;
+.warp {
+  min-width: 800px;
 }
 .el-main {
   line-height: 40px;

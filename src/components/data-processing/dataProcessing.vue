@@ -33,7 +33,15 @@
                   </div>
                 </el-row>
                 <div style="padding-top:30px;width:100%;margin:0 auto">
-                  <wTable  :loading="tableLoading" :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                  <div v-if="IsEmptyDataSet">
+                    <EmptyTask>
+                      <template slot="404Message">
+                        <p>数据集列表空空如也！</p>
+                        <p>请重新新建任务，再进行数据处理！</p>
+                      </template>
+                    </EmptyTask>
+                  </div>
+                  <wTable v-show="!IsEmptyDataSet"  :loading="tableLoading" :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
                   </wTable>
@@ -99,6 +107,7 @@ import wTable from "../common/mytable.vue";
 import BatchOperation from "./BatchOperation.vue";
 import NewFieldForm from "./NewFieldForm.vue";
 import typeSelect from "../common/typeSelect.vue";
+import EmptyTask from "../common/EmptyTask"
 export default {
   components: {
     Left,
@@ -107,7 +116,7 @@ export default {
     BatchOperation,
     NewFieldForm,
     typeSelect,
-    
+    EmptyTask
   },
   data() {
     return {
@@ -131,7 +140,8 @@ export default {
         maxHeight: 500
       },
       addFieldDialogVisible: false,
-      tableLoading:true,
+      tableLoading: true,
+      IsEmptyDataSet: false
     };
   },
 
@@ -152,7 +162,17 @@ export default {
     // 返回json
     fetch: function() {
       if (typeof this.dataSetId == "undefined") {
+        if (
+          this.dataSetList.length == 0 ||
+          this.dataSetList[0].id == "undefined"
+        ) {
+          this.IsEmptyDataSet = true;
+          return;
+        }
         this.dataSetId = this.dataSetList[0].id;
+      }
+      if(this.IsEmptyDataSet){
+        return;
       }
       this.$post("/task/dataProcessing/showDataSet1", {
         data_set_id: this.dataSetId
