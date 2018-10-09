@@ -156,7 +156,7 @@ export default {
       keyVisibilitys: [],
       tableKeysTypeObject: Object,
       keyDesc: Object,
-      originKeyObject:Object,
+      originKeyObject: Object
     };
   },
   computed: {
@@ -198,7 +198,7 @@ export default {
           }
           this.tableKeysTypeObject[key] = tablePropertyObject[key].keyType;
           this.keyDesc[key] = tablePropertyObject[key].keyDesc;
-          this.originKeyObject[key] =tablePropertyObject[key].originKey;
+          this.originKeyObject[key] = tablePropertyObject[key].originKey;
         }
       }
     }
@@ -287,7 +287,7 @@ export default {
               console.log(`字段源列名`);
               console.log(response);
               this.originKeyObject = JsonParse.looseJsonParse(response.data);
-    console.log(this.originKeyObject);
+              console.log(this.originKeyObject);
             });
           }
         })
@@ -329,6 +329,8 @@ export default {
       }
       let oldKey = this.tableKeys[this.changeColumnIndex]; //旧的键值
       this.tableKeysTypeObject[this.newColumnName] = this.newColumnType;
+      this.originKeyObject[this.newColumnName] = this.originKeyObject[oldKey];
+      this.keyDesc[this.newColumnName] = this.keyDesc[oldKey];
       //发送修改请求。
       let query = this.$post("/task/dataProcessing/resetColumns_name_type", {
         data_set_id: this.dataSetId,
