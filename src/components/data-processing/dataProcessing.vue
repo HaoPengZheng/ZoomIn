@@ -154,8 +154,9 @@ export default {
       newColumnType: "",
 
       keyVisibilitys: [],
-      tableKeysTypeObject: {},
-      keyDesc: Object
+      tableKeysTypeObject: Object,
+      keyDesc: Object,
+      originKeyObject:Object,
     };
   },
   computed: {
@@ -169,18 +170,16 @@ export default {
         });
         return tableKeysTypes;
       },
-      set:function(){
-
-      }
+      set: function() {}
     },
     tablePropertys: {
       get: function() {
         var tablePropertys = {};
         for (var i = 0; i < this.tableKeys.length; i++) {
-          let key = this.tableKeys[i];
+          let key = this.tableKeys[i].trim();
           tablePropertys[key] = new tableProperty(
             this.keyVisibilitys[i],
-            key,
+            this.originKeyObject[key],
             key,
             this.tableKeysTypeObject[key],
             this.keyDesc[key]
@@ -192,11 +191,14 @@ export default {
       set: function(tablePropertyObject) {
         this.tableKeys = Object.keys(tablePropertyObject);
         for (let key in tablePropertyObject) {
-          if(!TYPECONVERTER.symbols.includes(tablePropertyObject[key].keyType)){
+          if (
+            !TYPECONVERTER.symbols.includes(tablePropertyObject[key].keyType)
+          ) {
             tablePropertyObject[key].keyType = tablePropertyObject[key].keyType;
           }
           this.tableKeysTypeObject[key] = tablePropertyObject[key].keyType;
           this.keyDesc[key] = tablePropertyObject[key].keyDesc;
+          this.originKeyObject[key] =tablePropertyObject[key].originKey;
         }
       }
     }
@@ -258,9 +260,9 @@ export default {
               this.tableKeysTypeObject = JsonParse.looseJsonParse(
                 response.data
               );
-              for(let key in  this.tableKeysTypeObject){
-                if( this.tableKeysTypeObject[key]=="int64"){
-                   this.tableKeysTypeObject[key]="float64";
+              for (let key in this.tableKeysTypeObject) {
+                if (this.tableKeysTypeObject[key] == "int64") {
+                  this.tableKeysTypeObject[key] = "float64";
                 }
               }
               console.log("now table keys type is ");
@@ -277,8 +279,15 @@ export default {
               console.log(`字段描述返回`);
               console.log(response);
               this.keyDesc = JsonParse.looseJsonParse(response.data);
-
               console.log(this.keyDesc);
+            });
+            this.$post("/task/dataProcessing/showOriginColumnsName", {
+              data_set_id: this.dataSetId
+            }).then(response => {
+              console.log(`字段源列名`);
+              console.log(response);
+              this.originKeyObject = JsonParse.looseJsonParse(response.data);
+    console.log(this.originKeyObject);
             });
           }
         })
@@ -399,7 +408,7 @@ export default {
       let newTableKeys = [];
       let desc_field = [];
       let type_field = [];
-      let reset_field= [];
+      let reset_field = [];
       for (let key in oldTablePropertysObject) {
         let newKey = oldTablePropertysObject[key].tableKey;
         newTableKeys.push(newKey);
@@ -410,12 +419,12 @@ export default {
         let typeObject = {
           field: key,
           type: this.tablePropertys[newKey].keyType
-        }
-        
+        };
+
         let resetObject = {
-          original_col:key,
-          new_col:newKey
-        }
+          original_col: key,
+          new_col: newKey
+        };
         desc_field.push(keyFieldObject);
         type_field.push(typeObject);
         reset_field.push(resetObject);
@@ -425,7 +434,7 @@ export default {
         desc_field,
         type_field,
         reset_field
-      }).then(response=>{
+      }).then(response => {
         this.batchTableKey(oldTableKeys, newTableKeys);
       });
     },
