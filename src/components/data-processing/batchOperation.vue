@@ -6,7 +6,7 @@
         <i v-show="showEdit" class="el-icon-document "></i>{{showEdit?" 保存 ":" 编辑 "}}</el-button>
     </div>
 
-    <el-table align="center" :data="tablePropertys" border style="width: 100%">
+    <el-table align="center" :data="tablePropertysForTable" border style="width: 100%">
       <el-table-column align="center" prop="keyVisibility" label="显示" width="180">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.keyVisibility" :disabled="!showEdit">
@@ -31,9 +31,9 @@
             <svg class="icon" aria-hidden="true" style="margin-right:20px">
               <use :xlink:href="$utils.showTypesUi(scope.row.keyType)"></use>
             </svg>
-            {{convertTypeForText(scope.row.keyType)}}
+            {{TYPECONVERTER.convertTypeForText(scope.row.keyType)}}
           </span>
-          <typeSelect v-model="scope.row.keyType" :placeholder="`请选择字段类型`" v-show="showEdit" :size="`mini`" ></typeSelect>
+          <typeSelect v-model="scope.row.keyType" :placeholder="scope.row.keyType" v-show="showEdit" :size="`mini`" ></typeSelect>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="keyDesc" label="描述">
@@ -49,6 +49,7 @@
 
 <script>
 import typeSelect from "../common/typeSelect.vue";
+import {TYPECONVERTER} from "../common/common.js";
 export default {
   components:{
     typeSelect
@@ -56,24 +57,17 @@ export default {
   data() {
     return {
       showEdit: false,
+      TYPECONVERTER:TYPECONVERTER
     };
   },
   props: {
-    tableKeys: Array,
-    tableKeysTypes: Array,
-    keyVisibilitys: Array
+    tablePropertys:Object,
   },
   computed: {
-    tablePropertys: function() {
+    tablePropertysForTable: function() {
       var tablePropertys = [];
-      for (var i = 0; i < this.tableKeys.length; i++) {
-        var tableProperty = {
-          keyVisibility: this.keyVisibilitys[i],
-          originKey: this.tableKeys[i],
-          tableKey: this.tableKeys[i],
-          keyType: this.tableKeysTypes[i],
-          keyDesc: "属性描述"
-        };
+      for (let key in this.tablePropertys) {
+        var tableProperty = this.tablePropertys[key];
         tablePropertys.push(tableProperty);
       }
       console.log(tablePropertys);
@@ -87,42 +81,21 @@ export default {
       }
       this.showEdit = !this.showEdit;
     },
-    convertTypeForText: function(type) {
-      const numberTypeText = "数值类型";
-      const textTypeText = "字符类型";
-      const dateTypeText = "时间类型";
-      if (type == "#") {
-        return numberTypeText;
-      } else if (type == "T") {
-        return textTypeText;
-      } else {
-        return dateTypeText;
-      }
-    },
     updateTableProperty: function() {
-      console.log(this.tablePropertys);
-      let newTableKeys = [];
-      let newTableKeysTypes = [];
-      let newKeyVisibilitys = [];
-      this.tablePropertys.forEach(tableProperty => {
-        newTableKeys.push(tableProperty.tableKey);
-        newTableKeysTypes.push(tableProperty.keyType);
-        newKeyVisibilitys.push(tableProperty.keyVisibility);
-      });
+      console.log(this.tablePropertysForTable);
       this.$emit(
         "updateTableProperty",
-        this.tableKeys,
-        this.tableKeysTypes,
-        this.keyVisibilitys,
-        newTableKeys,
-        newTableKeysTypes,
-        newKeyVisibilitys
+        this.tablePropertys,
+        this.tablePropertysForTable
       );
     }
   }
 };
 </script>
 <style scoped>
+.cell{
+  line-height: 40px!important;
+}
 .margin-20 {
   margin: 20px;
 }

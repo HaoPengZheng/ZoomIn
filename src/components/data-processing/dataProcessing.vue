@@ -61,7 +61,7 @@
                 </el-button>
               </el-row>
               <el-row>
-                <BatchOperation :tableKeys="tableKeys" :tableKeysTypes="tableKeysType" :keyVisibilitys="keyVisibilitys" v-on:updateTableProperty="updateTableProperty"></BatchOperation>
+                <BatchOperation :tablePropertys="tablePropertys" v-on:updateTableProperty="updateTableProperty"></BatchOperation>
               </el-row>
             </div>
           </el-tab-pane>
@@ -108,7 +108,14 @@ import BatchOperation from "./BatchOperation.vue";
 import NewFieldForm from "./NewFieldForm.vue";
 import typeSelect from "../common/typeSelect.vue";
 import EmptyTask from "../common/EmptyTask";
-import { TYPECONVERTER } from "../common/common.js";
+import { TYPECONVERTER, JsonParse } from "../common/common.js";
+function tableProperty(keyVisibility, originKey, tableKey, keyType, keyDesc) {
+  this.keyVisibility = keyVisibility;
+  this.originKey = originKey;
+  this.tableKey = tableKey;
+  this.keyType = keyType;
+  this.keyDesc = keyDesc;
+}
 export default {
   components: {
     Left,
@@ -121,34 +128,83 @@ export default {
   },
   data() {
     return {
-      taskId: 1,
-      dataSetId: Number,
-      dataSetList: [],
-      tableData: [],
-      tableKeys: [],
-      show: true,
+      dataSetId: Number, //数据集id
+      dataSetList: [], //左边数据集列表
+      tableData: [], //表格数据
+      tableKeys: [], //表格的表头
+
+      //条件过滤选项
       filtrateType: "1",
       filtrateVisable: false,
+
+      //UI显示
       activeName: "first",
       dialogVisible: false,
-      changeColumnIndex: 0,
-      tableKeysType: ["#", "T", "d", "#", "T", "d", "#", "#"],
-      keyVisibilitys: [true, true, true, true, true, true, true, true],
-      newColumnName: "",
-      newColumnType: "",
+      addFieldDialogVisible: false,
+      IsEmptyDataSet: false,
+      tableLoading: true,
       tableOption: {
         border: true,
         maxHeight: 500
       },
-      addFieldDialogVisible: false,
-      tableLoading: true,
-      IsEmptyDataSet: false
+
+      //修改列名
+      changeColumnIndex: 0,
+      newColumnName: "",
+      newColumnType: "",
+
+      keyVisibilitys: [],
+      tableKeysTypeObject: {},
+      keyDesc: Object
     };
   },
+  computed: {
+    tableKeysType: {
+      get: function() {
+        var tableKeysTypes = [];
+        // 匹配正确的key-value
+        this.tableKeys.forEach(tablekey => {
+          tablekey = tablekey.trim();
+          tableKeysTypes.push(this.tableKeysTypeObject[tablekey]);
+        });
+        return tableKeysTypes;
+      },
+      set:function(){
 
+      }
+    },
+    tablePropertys: {
+      get: function() {
+        var tablePropertys = {};
+        for (var i = 0; i < this.tableKeys.length; i++) {
+          let key = this.tableKeys[i];
+          tablePropertys[key] = new tableProperty(
+            this.keyVisibilitys[i],
+            key,
+            key,
+            this.tableKeysTypeObject[key],
+            this.keyDesc[key]
+          );
+        }
+        console.log(tablePropertys);
+        return tablePropertys;
+      },
+      set: function(tablePropertyObject) {
+        this.tableKeys = Object.keys(tablePropertyObject);
+        for (let key in tablePropertyObject) {
+          if(!TYPECONVERTER.symbols.includes(tablePropertyObject[key].keyType)){
+            tablePropertyObject[key].keyType = tablePropertyObject[key].keyType;
+          }
+          this.tableKeysTypeObject[key] = tablePropertyObject[key].keyType;
+          this.keyDesc[key] = tablePropertyObject[key].keyDesc;
+        }
+      }
+    }
+  },
   created: function() {
     //保存当前页面menu的状态
     this.$store.commit("changeIndex", { index: "dataProcessing" });
+
     //this.$route.params.id接受参数
     this.dataSetId = this.$route.params.dataSetId;
     let query = this.fetchAllDataSet();
@@ -157,11 +213,13 @@ export default {
       this.fetch();
     });
   },
+
   methods: {
     // 初始化数据，拉取表格数据，
     // 参数，data_set_id
     // 返回json
     fetch: function() {
+      //如果不是router传过来的dataSetId
       if (typeof this.dataSetId == "undefined") {
         if (
           this.dataSetList.length == 0 ||
@@ -170,11 +228,18 @@ export default {
           this.IsEmptyDataSet = true;
           return;
         }
-        this.dataSetId = this.dataSetList[0].id;
+        if (typeof this.$store.getters.lastActiveDataSetId == Number) {
+          this.dataSetId = this.$store.getters.lastActiveDataSetId;
+        } else {
+          this.dataSetId = this.dataSetList[0].id;
+        }
       }
       if (this.IsEmptyDataSet) {
         return;
       }
+      this.$store.commit("changeDataProcessingActiveDataSetId", {
+        dataSetId: this.dataSetId
+      });
       this.$post("/task/dataProcessing/showDataSet3", {
         data_set_id: this.dataSetId
       })
@@ -190,17 +255,30 @@ export default {
               // 用来存储字段类型
               var tableKeysTypes = [];
               // 将后端传回的字符串转换为Object
-              var types = this.converterStringToType(response.data);
-              // 匹配正确的key-value
-              this.tableKeys.forEach(tablekey => {
-                tablekey = tablekey.trim();
-                console.log(types[tablekey]);
-                tableKeysTypes.push(types[tablekey]);
-              });
-              this.tableKeysType = tableKeysTypes;
+              this.tableKeysTypeObject = JsonParse.looseJsonParse(
+                response.data
+              );
+              for(let key in  this.tableKeysTypeObject){
+                if( this.tableKeysTypeObject[key]=="int64"){
+                   this.tableKeysTypeObject[key]="float64";
+                }
+              }
               console.log("now table keys type is ");
               console.log(this.tableKeysType);
+              this.keyVisibilitys = new Array(this.tableKeys.length);
+              for (let index = 0; index < this.keyVisibilitys.length; index++) {
+                this.keyVisibilitys[index] = true;
+              }
               this.tableLoading = false;
+            });
+            this.$post("/task/dataProcessing/showDesc", {
+              data_set_id: this.dataSetId
+            }).then(response => {
+              console.log(`字段描述返回`);
+              console.log(response);
+              this.keyDesc = JsonParse.looseJsonParse(response.data);
+
+              console.log(this.keyDesc);
             });
           }
         })
@@ -241,7 +319,8 @@ export default {
         return;
       }
       let oldKey = this.tableKeys[this.changeColumnIndex]; //旧的键值
-      //发送请求
+      this.tableKeysTypeObject[this.newColumnName] = this.newColumnType;
+      //发送修改请求。
       let query = this.$post("/task/dataProcessing/resetColumns_name_type", {
         data_set_id: this.dataSetId,
         type_field: [
@@ -265,8 +344,6 @@ export default {
           this.changeColumnIndex,
           this.newColumnType
         );
-        alert(TYPECONVERTER.converterSymbolToType(this.newColumnType));
-        alert(this.newColumnType);
         // 为data重新赋值
         let newData = [];
         for (var i = 0; i < this.tableData.length; i++) {
@@ -312,19 +389,45 @@ export default {
       }
     },
     updateTableProperty: function(
-      oldTableKeys,
-      oldTableKeysTypes,
-      oldKeyVisibilitys,
-      tableKeys,
-      tableKeysTypes,
-      keyVisibilitys
+      oldTablePropertysObject,
+      newTablePropertysArray
     ) {
-      this.batchTableKey(oldTableKeys, tableKeys);
-      this.tableKeys = [];
-      this.tableKeys = tableKeys;
-      this.tableKeysType = [];
-      this.tableKeysType = tableKeysTypes;
-      this.keyVisibilitys = keyVisibilitys;
+      this.tablePropertys = this.converterPropertyArrayToObject(
+        newTablePropertysArray
+      );
+      let oldTableKeys = Object.keys(oldTablePropertysObject);
+      let newTableKeys = [];
+      let desc_field = [];
+      let type_field = [];
+      let reset_field= [];
+      for (let key in oldTablePropertysObject) {
+        let newKey = oldTablePropertysObject[key].tableKey;
+        newTableKeys.push(newKey);
+        let keyFieldObject = {
+          field: key,
+          desc: this.tablePropertys[newKey].keyDesc
+        };
+        let typeObject = {
+          field: key,
+          type: this.tablePropertys[newKey].keyType
+        }
+        
+        let resetObject = {
+          original_col:key,
+          new_col:newKey
+        }
+        desc_field.push(keyFieldObject);
+        type_field.push(typeObject);
+        reset_field.push(resetObject);
+      }
+      this.$post("/task/dataProcessing/resetColumns_name_type_desc", {
+        data_set_id: this.dataSetId,
+        desc_field,
+        type_field,
+        reset_field
+      }).then(response=>{
+        this.batchTableKey(oldTableKeys, newTableKeys);
+      });
     },
 
     batchTableKey: function(oldTableKeys, newTableKeys) {
@@ -385,6 +488,14 @@ export default {
         });
       }
     },
+    converterPropertyArrayToObject: function(propertyArray) {
+      let propertyObject = {};
+      propertyArray.forEach(function(property, index) {
+        propertyObject[property.tableKey] = property;
+      });
+      return propertyObject;
+    },
+
     //用来处理数据类型返回值的一个方法
     converterStringToType: function(str) {
       if (str.startsWith("{")) {
@@ -408,11 +519,18 @@ export default {
         types[key] = value;
       });
       return types;
+    },
+    converterDescObjectToArray: function(obj) {
+      let descArray = new Array();
+      for (let key in obj) {
+        descArray.push(obj[key]);
+      }
+      return descArray;
     }
   }
 };
 </script>
-  <style >
+<style scoped>
 thead {
   line-height: 40px;
 }

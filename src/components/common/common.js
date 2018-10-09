@@ -1,18 +1,22 @@
+
+
 let UIUtils ={
   showTypesUi: function(type) {
-    if (type == "T") {
+    if (type == "object") {
       return "#icon-wenzi";
     }
-    if (type == "#") {
+    if (type == "float64" || type == "int64") {
       return "#icon-shuzi";
     }
-    if(type == "d"){
+    if(type == "datetime64[ns]"){
       return "#icon-icon-time"
     }
   }
 }
 
 export const TYPECONVERTER = {
+  symbols:["#","T","d"],
+  types:["float64","object","datetime64[ns]"],
   converterSymbolToType:function(symbol){
     let type = "";
     if(symbol == "T"){
@@ -24,9 +28,9 @@ export const TYPECONVERTER = {
     }
     return type;
   },
-  converterTypeToMssage:function(type){
+  converterTypeToSymbol:function(type){
     let symbol = "";
-    if (type == "'object'") {
+    if (type == "object") {
       symbol = "T";
     } else if (type == "datetime64[ns]") {
       symbol = "d";
@@ -34,6 +38,28 @@ export const TYPECONVERTER = {
       symbol = "#";
     }
     return symbol;
+  },
+  convertSmybolForText: function(smybol) {
+    const numberTypeText = "数值类型";
+    const textTypeText = "字符类型";
+    const dateTypeText = "时间类型";
+    if (smybol == "#") {
+      return numberTypeText;
+    } else if (smybol == "T") {
+      return textTypeText;
+    } else {
+      return dateTypeText;
+    }
+  },
+  convertTypeForText:function(type){
+    let symbol = this.converterTypeToSymbol(type);
+    return this.convertSmybolForText(symbol);
   }
+}
+
+export const JsonParse = {
+  looseJsonParse:function looseJsonParse(obj){
+    return Function('"use strict";return (' + obj + ')')();
+  }  
 }
 export default UIUtils;

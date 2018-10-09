@@ -238,14 +238,16 @@ export default {
   }
 };
 </script>
-<style>
+<style scoped>
 th {
   padding: 0px !important;
 }
 th .cell {
   padding: 0px !important;
 }
+</style>
 
+<style >
 .darg_start {
   background-color: #eee !important;
   cursor: move;
@@ -281,7 +283,7 @@ th .cell {
 }
 </style>
 
-<style lang="scss">
+<style lang="scss" >
 .w-table {
   .el-table .darg_start {
     background-color: #f3f3f3;
