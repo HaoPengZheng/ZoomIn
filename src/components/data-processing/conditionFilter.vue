@@ -22,6 +22,7 @@ export default {
     ConditionItem
   },
   props: {
+    dataSetId: Number,
     keys: Array,
     keyTypes: Array
   },
@@ -61,8 +62,10 @@ export default {
       });
     },
     removeItem: function(item) {
+      let removeIndex = this.itemCount.indexOf(item);//确定删除的是哪一项
+      this.filterData.splice(removeIndex,1);
       if (this.itemCount.length > 1) {
-        this.itemCount.splice(this.itemCount.indexOf(item), 1);
+        this.itemCount.splice(removeIndex, 1);
       } else {
         this.$message({
           message: "再删就没了！",
@@ -92,27 +95,23 @@ export default {
     },
     //确定过滤数据
     sendfilterData: function() {
-      alert("发送过滤请求");
-      this.$axios
-        .post(
-          "http://120.79.146.91:8000/task/dataProcessing/filters",
-          {
-            data_set_id: "26",
-            logical_type: this.conditionType,
-            filter: this.filterData
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
+      this.$post(
+        "task/dataProcessing/filters",
+        {
+          data_set_id: this.dataSetId,
+          logical_type: this.conditionType,
+          filter: this.filterData
+        },
+        {
+          headers: {
+            "Content-Type": "application/json"
           }
-        )
-        .then(response => {
-          console.log(response);
+        }
+      ).then(response => {
+          // 重新拉取过滤后的数据
+          alert("// 重新拉取过滤后的数据");
+          this.$emit("refresh");
         })
-        .catch(response => {
-          alert("error");
-        });
     }
   }
 };

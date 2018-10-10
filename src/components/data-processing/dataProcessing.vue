@@ -5,10 +5,10 @@
     <el-container>
       <el-main>
         <el-tabs v-model="activeName" style="padding:0 50px">
+
           <el-tab-pane label="数据预览" name="first">
             <div>
               <el-row :gutter="20" style="text-align:left;padding-left:20px;margin-bottom: 0px;">
-
                 <el-button type="text" @click="showFiltrate">
                   数据筛选
                   <i class="el-icon-arrow-down"></i>
@@ -26,7 +26,7 @@
                 </div>
                 <el-row>
                   <div v-if="filtrateType=='1'&&filtrateVisable">
-                    <ConditionFilter :keys="tableKeys" :keyTypes="tableKeysType"></ConditionFilter>
+                    <ConditionFilter :dataSetId="dataSetId" :keys="tableKeys" :keyTypes="tableKeysType" v-on:refresh="refreshData"></ConditionFilter>
                   </div>
                   <div v-if="filtrateType=='2'&&filtrateVisable">
                     语句筛选内容
@@ -65,8 +65,8 @@
               </el-row>
             </div>
           </el-tab-pane>
-        </el-tabs>
 
+        </el-tabs>
       </el-main>
     </el-container>
 
@@ -92,6 +92,7 @@
         <el-button type="primary" @click="addField">确 定</el-button>
       </span>
     </el-dialog>
+
   </el-container>
 </template>
   <script>
@@ -265,8 +266,6 @@ export default {
                   this.tableKeysTypeObject[key] = "float64";
                 }
               }
-              console.log("now table keys type is ");
-              console.log(this.tableKeysType);
               this.keyVisibilitys = new Array(this.tableKeys.length);
               for (let index = 0; index < this.keyVisibilitys.length; index++) {
                 this.keyVisibilitys[index] = true;
@@ -276,18 +275,12 @@ export default {
             this.$post("/task/dataProcessing/showDesc", {
               data_set_id: this.dataSetId
             }).then(response => {
-              console.log(`字段描述返回`);
-              console.log(response);
               this.keyDesc = JsonParse.looseJsonParse(response.data);
-              console.log(this.keyDesc);
             });
             this.$post("/task/dataProcessing/showOriginColumnsName", {
               data_set_id: this.dataSetId
             }).then(response => {
-              console.log(`字段源列名`);
-              console.log(response);
               this.originKeyObject = JsonParse.looseJsonParse(response.data);
-              console.log(this.originKeyObject);
             });
           }
         })
@@ -367,7 +360,6 @@ export default {
               o[obj] = objs[obj];
             }
           }
-          console.log(o);
           newData.push(o);
         }
         this.tableData = newData;
@@ -506,37 +498,11 @@ export default {
       });
       return propertyObject;
     },
-
-    //用来处理数据类型返回值的一个方法
-    converterStringToType: function(str) {
-      if (str.startsWith("{")) {
-        str = str.substring(1, str.length - 1);
-      }
-      var typeArr = str.split(",");
-      var types = {};
-      typeArr.forEach((typeString, index) => {
-        var key = typeString.split(":")[0].trim();
-        if (key.startsWith("'")) {
-          key = key.substring(1, key.length - 1);
-        }
-        var value = typeString.split(":")[1].trim();
-        if (value == "'object'") {
-          value = "T";
-        } else if (value == "datetime64[ns]") {
-          value = "d";
-        } else {
-          value = "#";
-        }
-        types[key] = value;
-      });
-      return types;
-    },
-    converterDescObjectToArray: function(obj) {
-      let descArray = new Array();
-      for (let key in obj) {
-        descArray.push(obj[key]);
-      }
-      return descArray;
+    //重新拉取数据集
+    refreshData:function(){
+      //重新拉取
+      alert("走你")
+      this.fetch();
     }
   }
 };

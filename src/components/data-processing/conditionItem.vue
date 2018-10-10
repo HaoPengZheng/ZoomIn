@@ -44,7 +44,7 @@ export default {
       operator: "",
       numberOperatorOption: [
         {
-          value: "=",
+          value: "==",
           label: "等于"
         },
         {
@@ -85,7 +85,7 @@ export default {
   methods: {
     keychange: function() {
       this.updateItem();
-      if (this.getKeyType() == "#") {
+      if (this.getKeyType() == "float64") {
         this.operatorOption = this.numberOperatorOption;
       } else {
         this.operatorOption = this.textOperatorOption;
@@ -94,7 +94,7 @@ export default {
     updateItem: function() {
       //更新条件过滤的选项
       let field_type = "1";
-      if (this.getKeyType() == "#") {
+      if (this.getKeyType() == "float64") {
         field_type = "0";
       }
       this.$emit(

@@ -16,6 +16,7 @@ axios.interceptors.request.use(
     config.headers = {
       'Authorization': "JWT " + token
     }
+    console.log(config.headers);
     return config;
   },
   error => {
