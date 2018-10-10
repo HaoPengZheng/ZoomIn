@@ -63,7 +63,8 @@ export default {
     },
     removeItem: function(item) {
       let removeIndex = this.itemCount.indexOf(item);//确定删除的是哪一项
-      this.filterData.splice(removeIndex,1);
+       this.filterData.splice(removeIndex,1);
+       console.log(this.filterData);
       if (this.itemCount.length > 1) {
         this.itemCount.splice(removeIndex, 1);
       } else {

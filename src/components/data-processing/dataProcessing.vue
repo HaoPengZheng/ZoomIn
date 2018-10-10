@@ -501,7 +501,6 @@ export default {
     //重新拉取数据集
     refreshData: function() {
       //重新拉取
-      alert("走你");
       this.fetch();
     }
   }

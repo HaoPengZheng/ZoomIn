@@ -159,7 +159,6 @@ export default {
     },
     createTask: function() {
       this.tablePreviewVisable = false;
-      alert(this.tablejsons);
       this.$post("/dataSet/", {
         task: this.taskid,
         title: "数据集名",
