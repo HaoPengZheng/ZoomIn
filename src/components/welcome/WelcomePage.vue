@@ -43,7 +43,7 @@ import FeatureList from "./FeatureList.vue";
 import WelcomeFooter from "./WelcomeFooter.vue";
 const featureTextLists = [
   {
-    title: "整合各类数据，全面分析业务",
+    title: "整合各类数据",
     content: [
       "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
       "Zoomin 学业分析系统分析成绩、教研成果不再求人"
