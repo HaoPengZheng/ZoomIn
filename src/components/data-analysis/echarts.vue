@@ -37,7 +37,7 @@
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
 				<!-- 未显示图表时 -->
 				<div class="echarts-font" id="font-position" v-show="!tableVisible" v-loading="loading">当前图表无数据</div>
-				<!-- <img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible"> -->
+				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
 				
 				<!-- 表格部分 -->
 				<!-- <p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p> -->
@@ -97,14 +97,22 @@ export default {
 	  tableVisible:false,
 	  chartYAxis:[{
 					name : '',
-		            type : 'value'
+					type : 'value',
+					axisLine:{
+                        lineStyle:{
+                            width:1,
+						},
+						symbol:['none','arrow']
+                    },					
 				}],
 		chartId:1,
 		picFilterFlag:false,
 		numberFilterItemType:['等于','大于','小于','不大于','不小于'],	//图内筛选器-数值-可选类型
 		numberFilterSelectValue:'等于',  							  //图内筛选器-数值-选择的类型
 		numberFilterInput:''	,									  //图内筛选器-数值-填写的数值
-		loading:false
+		loading:false,
+		responseData:[],
+		deleteJsonKeyArray:[]
     }
   },
   mounted(){
@@ -251,11 +259,13 @@ Bus.$on('leftChange',(e)=>{
 				}
 			)
 			.then(r => {
-				console.log(r.data.data)
+				this.responseData = r.data.data;
+				// console.log("y:"+this.echartAxiosData[0])
+				// console.log("r:"+r.data.data)
 				let str1 = r.data.data
 				let str2 = str1.replace(/\["|\"]/g,"")
 				let str3 = str2.replace(/\","/g,"·")
-				console.log(str3)
+				//console.log(str3)
 				//r.data.data 								完整数据
 				//Object.values(JSON.parse(r.data.data)) 	表头
 				//Object.keys(element)						去重的X轴的值
@@ -272,11 +282,19 @@ Bus.$on('leftChange',(e)=>{
 					this.seriesDataItem.push(element[Object.keys(element)[i]])  
 				}
 				
-				console.log(this.seriesDataItem)					
+				//console.log(this.seriesDataItem)					
 				this.seriesData.push({
 					name:this.yAxisItemName[this.yAxisItemName.length-1],
 					type:'bar',
-					data:this.seriesDataItem
+					data:this.seriesDataItem,
+					itemStyle: {
+						normal: {
+							barBorderRadius: 10,
+
+							shadowColor: 'rgba(0, 0, 0, 0.4)',
+							shadowBlur: 20
+						}
+					}
 				})
 				
 				//打开dataZoom，X轴大于10时
@@ -375,13 +393,20 @@ Bus.$on('leftChange',(e)=>{
 	   })
 		
 		//3.监听图表类型改变(还没有PATCH)
+		//大工程，图表之间切换，建议每次都重新生成
 		Bus.$on('typeChange',(e)=>{
-			for(var i = 0;i<this.option.series.length;i++){
-				this.option.series[i].type = e; //可以改类型，不能改标题，重新drawLine也没用
-				if(e === 'scatter')this.option.series[i].symbolSize = 20
+			if(e=='pie'){
+				this.pieDrawLine()
 			}
+			if(e=='bar'){
+				this.drawLine()
+			}
+			// for(var i = 0;i<this.option.series.length;i++){
+			// 	this.option.series[i].type = e; //可以改类型，不能改标题，重新drawLine也没用
+			// 	if(e === 'scatter')this.option.series[i].symbolSize = 20
+			// }
 			
-			this.drawLine();
+			// this.drawLine();
 		})
 
 		//3.监听图表风格(不PATCH)
@@ -524,23 +549,37 @@ Bus.$on('leftChange',(e)=>{
 				default:
 					break;
 			}
-			
-			this.echartAxiosData = Enumerable.from(this.echartAxiosData).where(sql).toArray();//this.echartAxiosData没用this，以后可能有问题
 
-    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-                this.seriesDataItem.push(this.echartAxiosData[i][dropName])  //根据传进来的字段，给X轴赋值
-            }
+			//responseDataJSON是原数据
+			//jsonFirstKeys 是 Y轴数值 RANK,RANK_H
+			//jsonSecKeys是学校名称
+			//deleteJsonKeyArray是被删掉的学校名称
 
-			for(let j=0;j<this.seriesData.length;j++){
-				if(this.seriesData[j].name == dropName){
-					this.seriesData[j] = {
-						name:dropName,
-						type:'bar',
-						data:this.seriesDataItem
-					}
+			let responseDataJSON = JSON.parse(this.responseData)
+			let jsonFirstKeys = Object.keys(responseDataJSON)
+			let jsonSecKeys = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
+
+			console.log("原始数据："+responseDataJSON)
+
+			for(let j=0;j<Object.keys(responseDataJSON[dropName]).length;j++){
+				if(responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]>30000){
+					console.log([Object.keys(responseDataJSON[dropName])[j]])
+					this.deleteJsonKeyArray.push([Object.keys(responseDataJSON[dropName])[j]])
+					delete responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]
+					j--
 				}
 			}
-	 		this.seriesDataItem = [] //清空serIDataItem否则重叠
+
+			for(let arrayItem=0;arrayItem<this.deleteJsonKeyArray.length;arrayItem++){
+				for(let k=0;k<jsonFirstKeys.length;k++){
+					delete responseDataJSON[Object.keys(responseDataJSON)[k]][this.deleteJsonKeyArray[arrayItem]]
+				}
+			}
+
+			console.log(responseDataJSON)
+
+			this.Xdata =  Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
+			console.log(this.Xdata)
 			this.myChart.dispose()
 			this.drawLine()
 		})
@@ -556,7 +595,8 @@ Bus.$on('leftChange',(e)=>{
 					this.seriesData[j] = {
 						name:dropName,
 						type:'bar',
-						data:this.seriesDataItem
+						data:this.seriesDataItem,
+
 					}
 				}
 			}
@@ -616,6 +656,12 @@ Bus.$on('leftChange',(e)=>{
 		        {
 		            type : 'category',
 					data : this.Xdata,
+					axisLine:{
+                        lineStyle:{
+                            width:1,//X轴宽度
+						},
+						symbol:['none','arrow']
+                    },
 					axisLabel :{
 					interval:0 
 				}
@@ -625,6 +671,104 @@ Bus.$on('leftChange',(e)=>{
 		    series : this.seriesData	
 		};
 
+        this.myChart.setOption(this.option,true);
+		Bus.$emit('chartsOption',this.option)
+		console.log(this.seriesData)
+	},
+	pieDrawLine(pieType){
+		if(pieType='ndge'){
+			//填入样式
+		}
+		let pieData = [];
+		let pieValue = this.seriesData[0]['data'];
+		// console.log(this.seriesData)
+		// console.log(this.seriesData[0])
+		// console.log(this.seriesData[0]['data'])
+		// console.log(this.Xdata.length)
+		for (let i = 0; i < this.Xdata.length; i++) {
+			let pieDataItem = {
+				value:pieValue[i],
+				name:this.Xdata[i]
+			}
+			pieData.push(pieDataItem)
+		}
+		console.log(pieData)
+		
+		let dom = this.$refs.myChart;
+      	this.myChart = this.$echarts.init(dom,this.chartStyle);
+        this.option ={
+		backgroundColor: '#FFF',
+		title: {
+			text: 'Customized Pie',
+			left: 'left',
+			top: 20,
+			textStyle: {
+				color: '#E5E5E5'
+			}
+		},
+
+		tooltip : {
+			trigger: 'item',
+			formatter: "{a} <br/>{b} : {c} ({d}%)"
+		},
+		legend: {
+			x : 'center',
+			y : 'bottom',
+			data:this.Xdata,
+			textStyle :{
+				color:'#5A616A'
+			}
+		},
+		visualMap: {
+			show: false,
+			min: 0,//此处配置颜色渐变范围
+			max: Math.max.apply(null,pieValue)*1.2,
+			inRange: {
+				colorLightness: [0, 1]
+			}
+		},
+		series : [
+			{
+				name:'访问来源',
+				type:'pie',
+				radius : '75%',
+				center: ['50%', '50%'],
+				data:pieData.sort(function (a, b) { return a.value - b.value; }),
+				roseType: 'radius',
+				label: {
+					normal: {
+						textStyle: {
+							color: '#AAAAAA'
+						}
+					}
+				},
+				labelLine: {
+					normal: {
+						lineStyle: {
+							color: '#AAAAAA'
+						},
+						smooth: 0.2,
+						length: 10,
+						length2: 20
+					}
+				},
+				itemStyle: {
+					normal: {
+						color: '#c23531',
+						shadowBlur: 200,
+						shadowColor: 'rgba(0, 0, 0, 0.5)'
+					}
+				},
+
+				animationType: 'scale',
+				animationEasing: 'elasticOut',
+				animationDelay: function (idx) {
+					return Math.random() * 200;
+				}
+			}
+		]
+	};
+		
         this.myChart.setOption(this.option,true);
 		Bus.$emit('chartsOption',this.option)
 	},

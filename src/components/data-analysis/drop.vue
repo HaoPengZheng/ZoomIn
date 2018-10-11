@@ -1,6 +1,6 @@
 <template>
     <div  id="dragCon" >
-    <div class='people-content'>
+    <div class='people-content analysisDropStyle'>
         <el-row> 
 
             <el-col :span="12" >
@@ -246,7 +246,8 @@ import Bus from './Bus.js'
     box-sizing: border-box;
     white-space: nowrap;
 }
-.el-input-group__prepend{
+.analysisDropStyle .el-input-group__prepend{
+    background-color: #ffffff;
     border: 0px solid;
     border-bottom: 0px solid #dcdfe6; 
 }

@@ -44,6 +44,7 @@ export default {
         .then(response => {
             Bus.$emit('AxiosDataDragItem', response.data.data[0]);
             Bus.$emit('AxiosDataEcharts', response.data.data);
+            console.log(response)
         })
         .catch(response => {
           //alert("获取数据失败");
@@ -81,7 +82,15 @@ export default {
           //alert("获取数据失败");
         });
 
-
+    this.$get("/dataSet/").then(r=>{
+      console.log(r)
+      for (let i = 0; i < r.length; i++) {
+        if(r[i].id == 4){
+          Bus.$emit('taskTitle',r[i].title)
+          break;
+        }
+      }
+    })
 
 
 

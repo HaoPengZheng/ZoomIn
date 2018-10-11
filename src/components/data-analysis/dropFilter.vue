@@ -1,6 +1,6 @@
 <template>
     <div  id="dragCon" >
-    <div class='people-content'>
+    <div class='people-content analysisDropFilterStyle'>
         <el-row>
             <el-col :span="24" >
                 <!-- 字段框 -->
@@ -220,6 +220,11 @@ import dropFilterItem from './dropFilterItem'
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
     white-space: nowrap;
+}
+.analysisDropFilterStyle .el-input-group__prepend{
+    background-color: #ffffff;
+    border: 0px solid;
+    border-bottom: 0px solid #dcdfe6; 
 }
 [v-cloak]{
     display:none;

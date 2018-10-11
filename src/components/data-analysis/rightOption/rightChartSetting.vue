@@ -1,36 +1,64 @@
 <template>
 <div class="font">
-<el-row>
-<el-col :span="2">&nbsp;</el-col>
 
+<el-row>
 <el-col :span="5">
     <el-tooltip class="item" effect="dark" content="柱状图" placement="top">
 	<div @click="barClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-tiaoxingtu-xianxing"></use></svg></div>
     </el-tooltip>
 </el-col>
+</el-row>
 
+<el-row>&nbsp;</el-row>
+
+<el-row>
 <el-col :span="5">
     <el-tooltip class="item" effect="dark" content="折线图" placement="top">
       <div @click="lineClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhexiantu-xianxing"></use></svg></div>
     </el-tooltip>
 </el-col>
+</el-row>
 
-<el-col :span="5">
-    <el-tooltip class="item" effect="dark" content="饼图" placement="top">
-      <div @click="pieClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bingtu-xianxing"></use></svg></div>
-    </el-tooltip>
-</el-col>
+<el-row>&nbsp;</el-row>
 
+<el-row>
 <el-col :span="5">
     <el-tooltip class="item" effect="dark" content="散点图" placement="top">
       <div @click="scatterClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-scatterplot_active"></use></svg></div>
     </el-tooltip>
 </el-col>
-
 </el-row>
+
 <el-row>&nbsp;</el-row>
-<el-row>&nbsp;</el-row>
-<el-row>&nbsp;</el-row>
+
+<el-row>
+<el-col :span="6">
+    <el-tooltip class="item" effect="dark" content="普通饼图" placement="top">
+      <div @click="pieClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bingtu1"></use></svg></div>
+    </el-tooltip>
+</el-col>
+<el-col :span="6">
+    <el-tooltip class="item" effect="dark" content="半径饼图" placement="top">
+      <div @click="pieClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zujian-cengjibingtu-copy"></use></svg></div>
+    </el-tooltip>
+</el-col>
+<el-col :span="6">
+    <el-tooltip class="item" effect="dark" content="面积饼图" placement="top">
+      <div @click="pieClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zujian-meiguitu"></use></svg></div>
+    </el-tooltip>
+</el-col>
+<el-col :span="6">
+    <el-tooltip class="item" effect="dark" content="南丁格尔图" placement="top">
+      <div @click="pieClick"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-meiguitu1"></use></svg></div>
+    </el-tooltip>
+</el-col>
+</el-row>
+
+
+
+
+
+
 
 </div>
 </template>
@@ -40,7 +68,7 @@ import Bus from '../Bus.js'
     export default {
     data() {
         return {
-        input: ''
+        input: '',
         }
     },
     methods:{
