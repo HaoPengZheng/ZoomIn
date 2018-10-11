@@ -7,7 +7,7 @@
         </el-option>
       </el-select>
     </el-row>
-    <el-row :gutter="10" style="    margin-bottom: -10px;">
+    <el-row :gutter="10" style="margin-bottom: -10px;">
       <ConditionItem :ref="'item'+index" :keys="keys" v-for="(value,index) in itemCount" :key="value.index" :keyTypes="keyTypes" :end="index+1==itemCount.length" :count="itemCount.length" :item="value" v-on:addItem="addItem" v-on:removeItem="removeItem" v-on:updateItemData="updateItemData" v-on:filterData="sendfilterData"></ConditionItem>
     </el-row>
 
@@ -16,7 +16,13 @@
 
 <script>
 import ConditionItem from "./ConditionItem.vue";
-
+class FilterItemData {
+  constructor(field_name, filter_method, filter_obj) {
+    this.field_name = field_name;
+    this.filter_method = filter_method;
+    this.filter_obj = filter_obj;
+  }
+}
 export default {
   components: {
     ConditionItem
@@ -46,12 +52,6 @@ export default {
         }
       ],
       filterData: [],
-      filterItem: {
-        key: "",
-        operator: "",
-        val: ""
-      },
-      filterPost: Object
     };
   },
   methods: {
@@ -62,9 +62,9 @@ export default {
       });
     },
     removeItem: function(item) {
-      let removeIndex = this.itemCount.indexOf(item);//确定删除的是哪一项
-       this.filterData.splice(removeIndex,1);
-       console.log(this.filterData);
+      let removeIndex = this.itemCount.indexOf(item); //确定删除的是哪一项
+      this.filterData.splice(removeIndex, 1);
+      console.log(this.filterData);
       if (this.itemCount.length > 1) {
         this.itemCount.splice(removeIndex, 1);
       } else {
@@ -76,23 +76,17 @@ export default {
     },
     //更新数据
     updateItemData: function(field_type, index, key, operator, val) {
-      let filterItem = new Object();
+      let filterItem = new FilterItemData(key, operator, val);
       filterItem.field_type = parseInt(field_type);
       if (!isNaN(key)) {
         key = key.toString();
       }
-      filterItem.field_name = key;
-      filterItem.filter_method = operator;
-      filterItem.filter_obj = val;
       if (this.filterData.length < index) {
         this.filterData.push(filterItem);
       } else {
         this.filterData[index - 1] = filterItem;
       }
       console.log(this.filterData);
-      this.filterPost.data_set_id = "24";
-      this.filterPost.logical_type = this.conditionType;
-      this.filterPost.filter = this.filterData;
     },
     //确定过滤数据
     sendfilterData: function() {
@@ -109,10 +103,20 @@ export default {
           }
         }
       ).then(response => {
-          // 重新拉取过滤后的数据
-          alert("// 重新拉取过滤后的数据");
-          this.$emit("refresh");
-        })
+        // 重新拉取过滤后的数据
+        this.$emit("refresh");
+        this.initFilter();
+      });
+    },
+    initFilter: function() {
+      this.itemCount = [
+        {
+          value: "",
+          index: 1
+        }
+      ];
+      this.$refs.item0[0].init();
+      this.filterData = [new FilterItemData()];
     }
   }
 };

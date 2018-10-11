@@ -83,6 +83,12 @@ export default {
     };
   },
   methods: {
+    //发送过滤请求后的初始化方法。
+    init:function(){
+      this.conditionKey = "";
+      this.operator = "";
+      this.val = "";
+    },
     keychange: function() {
       this.updateItem();
       if (this.getKeyType() == "float64") {
@@ -113,7 +119,6 @@ export default {
   },
   watch: {
     // 更新表头时同时更新键值，有可优化的余地，涉及知识点，深度拷贝。
-
     keys: {
       deep: true,
       immediate: true,
