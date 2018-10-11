@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <el-row style="margin-top:1px;">
-    <el-col :span="spanParms[0]" style="padding:20px;background:#fff" >
+    <el-col :span="spanParms[0]" class="leftBoardStyle" >
       <div><table-info style="margin-bottom: 30px"></table-info></div>
-      <el-button @click="btnClick" style="float:right;margin-right:-20px;">
-        <icon name="angle-right" v-show="iconFlag"></icon>
-        <icon name="angle-left" v-show="!iconFlag"></icon>
+      <el-button @click="btnClick" class="sizeBtn" id="sizeBtn">
+        <icon name="angle-left" v-show="iconFlag"></icon>
+        <icon name="angle-right" v-show="!iconFlag"></icon>
       </el-button>
       <drag></drag>
     </el-col>
@@ -66,8 +66,7 @@ export default {
     }
   },
   mounted(){
-
-    
+    document.getElementById("sizeBtn").style.marginTop = document.getElementById("app").offsetHeight/4+'px';
   },
   methods:{
     btnClick(){
@@ -116,5 +115,16 @@ export default {
 .el-col {
   border-radius: 0px;
 }
-
+.sizeBtn{
+  width: 1px;
+  position:absolute;
+  right:0px;
+  margin-top:30px;
+  border: 0px
+}
+.leftBoardStyle{
+  padding:20px;
+  background:#fff;
+  position: relative;
+}
 </style>

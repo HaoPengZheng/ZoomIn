@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-row v-show="modelParmsFlag">
+        <el-row v-show="modelParmsFlag"  class="modelParmsStyle">
             <el-col :span="12" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">数据划分比例</div>
@@ -85,6 +85,11 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
+.modelParmsStyle .el-input-group__prepend{
+    background-color: #ffffff;
+    border: 0px solid;
+    /* border-bottom: 1px solid #dcdfe6;  */
 
+}
 </style>

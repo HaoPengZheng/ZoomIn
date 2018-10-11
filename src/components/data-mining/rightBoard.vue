@@ -1,9 +1,12 @@
 <template>
 <div id="rightBoard" style="height:500px;position:relaitve;">
-  <!-- <el-button style="margin-top:300px;position:absolute; z-index:1;margin-left:-150px">123</el-button> -->
+  <!-- <el-button @click="btnClick" class="sizeBtn" id="sizeBtn">
+        <icon name="angle-left" v-show="iconFlag"></icon>
+        <icon name="angle-right" v-show="!iconFlag"></icon>
+  </el-button> -->
+  <!-- 这里按钮还没有添加事件 -->
 <el-scrollbar>
     <div style="margin:10px;" class="rightBoardBtn">
-    
     <el-button  type="success" plain style="width:100%;" @click="nextClick">下一步</el-button>
       <!-- <el-button  class="nextBtn" @click="nextClick">下一步</el-button> -->
     <el-collapse  v-model="activeNames" class="rightBoard">
@@ -130,4 +133,5 @@ html {
 .rightBoardBtn .el-button--success .is-plain{
           background-color: #000;
 }
+
 </style>

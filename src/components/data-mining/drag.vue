@@ -6,13 +6,13 @@
                     <div style="margin-top:130px" v-if="loadingUsergroupList"><div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div></div>
                     <div class='select-ul' v-if="dragFlag">
                         <ul  style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
-                            <li  class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)' style="margin-top: 5px;list-style-type:none; ">
-                                <svg class="icon" aria-hidden="true" style="margin-right:20px"><use xlink:href="#icon-wenzi"></use></svg>{{textField}}
+                            <li  class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)' style="list-style-type:none; ">
+                                <svg class="icon" aria-hidden="true" style="margin-right:15px"><use xlink:href="#icon-wenzi"></use></svg>{{textField}}
                             </li>
                         </ul>
                         <ul  style="display:table;text-align: left;" v-for="(numberField) in numberFields" :key="numberField">
-                            <li  class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)' style="margin-top: 5px;list-style-type:none; ">
-                                <svg class="icon" aria-hidden="true" style="margin-right:20px"><use xlink:href="#icon-wellnum"></use></svg>{{numberField}}
+                            <li  class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)' style="list-style-type:none; ">
+                                <svg class="icon" aria-hidden="true" style="margin-right:15px"><use xlink:href="#icon-wellnum"></use></svg>{{numberField}}
                             </li>
                         </ul>
                     </div> <!-- 拖动的标签 -->
@@ -90,7 +90,7 @@ import Bus from './Bus.js'
 
 <style scoped>
 .select-ul {
-  padding: 30px;
+  padding: 5px;
   text-align: center;
   
   cursor:pointer;
@@ -108,7 +108,7 @@ import Bus from './Bus.js'
   padding: 6px 20px;
   color: #5bc0de;
   width: 120px; */
-  margin: 5px
+  border: 0px
 }
  .cursored{
   cursor: default;
