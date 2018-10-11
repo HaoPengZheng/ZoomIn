@@ -28,6 +28,7 @@ import {post,toDelete,get,patch,put} from './api/http.js'
 //引入VueX
 import store from './store/store.js';   
 
+
 //定义全局变量
 Vue.prototype.$store = store;
 Vue.prototype.$post=post;
