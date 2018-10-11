@@ -161,12 +161,11 @@ export default {
       this.tablePreviewVisable = false;
       this.$post("/dataSet/", {
         task: this.taskid,
-        title: "数据集名",
         step1: "1",
         step2: "2",
         step3: "3",
         stepX1: "x1",
-        title: this.filename,
+        title: this.newTaskModel.name+"-"+this.filename,
         row_num: (this.titleIndex - 2).toString(),
         data_set: this.tablejsons
       }).then(response => {
