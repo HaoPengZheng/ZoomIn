@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui';
-import qs from 'qs'
-const defaultErrorMessage = {
+
+let defaultErrorMessage = {
   message: "出错了",
   type: "error",
   showClose: true,
@@ -38,6 +38,17 @@ axios.interceptors.response.use(
   }
 )
 
+function useDefaultErrorMessage(isUseDefaultErrorMessage){
+  if(isUseDefaultErrorMessage==true){
+    Message({
+      message: "出错了",
+      type: "error",
+      showClose: true,
+      duration: 1500
+    });
+  }
+}
+
 /**
  * 封装get方法
  * @param url
@@ -67,15 +78,14 @@ export function get(url, params = {}) {
  * @returns {Promise}
  */
 
-export function post(url, data = {}, errormessage = defaultErrorMessage) {
+export function post(url, data = {}, isUseDefaultErrorMessage=true) {
   return new Promise((resolve, reject) => {
     axios.post(url, data)
       .then(response => {
         resolve(response.data);
       }, err => {
-        console.log(err)
-        console.log("???")
-        this.$message(errormessage);
+        console.log(isUseDefaultErrorMessage);
+        useDefaultErrorMessage(isUseDefaultErrorMessage);
         reject(err)
       })
   })
@@ -107,7 +117,6 @@ export function patch(url, data = {}) {
 */
 
 export function put(url, data = {}) {
-  data = qs.stringify(data);
   return new Promise((resolve, reject) => {
     axios.put(url, data)
       .then(response => {
@@ -125,13 +134,15 @@ export function put(url, data = {}) {
 * @returns {Promise}
 */
 
-export function toDelete(url, data = {}, errormessage = defaultErrorMessage) {
+export function toDelete(url, data = {},isUseDefaultErrorMessage=true) {
   return new Promise((resolve, reject) => {
     axios.delete(url, data)
       .then(response => {
         resolve(response.data);
       }, err => {
-        this.$message(errormessage);
+        if(useDefaultErrorMessage == true){
+          useDefaultErrorMessage(isUseDefaultErrorMessage);
+        }
         reject(err)
       })
   })

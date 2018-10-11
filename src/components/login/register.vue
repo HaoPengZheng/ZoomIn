@@ -47,19 +47,23 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let query = this.$post(
-            "/users/",
-            this.loginForm,
-            {
-              headers: {
-                "Content-Type": "application/json"
-              }
+          this.$post("/users/", this.loginForm, {
+            headers: {
+              "Content-Type": "application/json"
             }
-          );
-          query.then(response => {
-            console.log(response);
-            this.$router.push({ path: "/" });
-          });
+          })
+            .then(response => {
+              console.log(response);
+              this.$router.push({ path: "/" });
+            })
+            .catch(err => {
+              this.$message({
+                message: err.response.data.username[0],
+                type: "error",
+                showClose: true,
+                duration: 1500
+              });
+            });
         } else {
           alert("请按提示正确提交表单");
         }

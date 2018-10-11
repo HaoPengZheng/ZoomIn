@@ -46,11 +46,7 @@ export default {
         if (valid) {
           let promise = this.$post(
             "/login/",
-            this.loginForm,
-            {
-              message:"登录失败!",
-              type:"error"
-            }
+            this.loginForm
           );
           promise.then(response => {
             this.$message({
