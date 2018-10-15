@@ -375,33 +375,39 @@ export default {
         alert("已存在名为:" + this.newColumnName + "的列名");
         return;
       }
-
       //可以抽出新方法来
       let oldKey = this.tableKeys[this.changeColumnIndex]; //旧的键值
       this.tableKeysTypeObject[this.newColumnName] = this.newColumnType;
+
       this.originKeyObject[this.newColumnName] = this.originKeyObject[oldKey];
-      delete this.originKeyObject[oldKey];
+
       this.keyDesc[this.newColumnName] = this.keyDesc[oldKey];
-      delete this.keyDesc[oldKey];
+
       this.keyVisibilitysObject[this.newColumnName] = this.keyVisibilitysObject[
         oldKey
       ];
-      delete this.keyVisibilitysObject[oldKey];
+
       this.tablePropertys[this.newColumnName] = new tableProperty(
         true,
         this.originKeyObject[oldKey],
         this.newColumnName,
+        this.newColumnType,
         this.keyDesc[oldKey]
       );
       delete this.tablePropertys[oldKey];
-
+      if (oldKey != this.newColumnName) {
+        delete this.tableKeysTypeObject[oldKey];
+        delete this.originKeyObject[oldKey];
+        delete this.keyDesc[oldKey];
+        delete this.keyVisibilitysObject[oldKey];
+      }
       //发送修改请求。
       let query = this.$post("/task/dataProcessing/resetColumns_name_type", {
         data_set_id: this.dataSetId,
         type_field: [
           {
             field: oldKey,
-            type: TYPECONVERTER.converterSymbolToType(this.newColumnType)
+            type: this.newColumnType
           }
         ],
         reset_field: [

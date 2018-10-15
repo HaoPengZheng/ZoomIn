@@ -29,9 +29,7 @@ export default {
       },
       type: Object
     },
-    types: {
-      type: Object
-    },
+    types:"",
     loading: Boolean
   },
   data() {
