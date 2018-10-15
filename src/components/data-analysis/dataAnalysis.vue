@@ -1,14 +1,30 @@
 <template>
   <div id="app">
     <el-row>
-    
-    <el-col :span="spanParms[0]" style="padding:20px;"><div> 
-      <table-info style="margin-bottom: 30px"></table-info></div>
-      <el-button @click="btnClick" style="float:right;margin-right:-20px;">
-        <icon name="angle-right" v-show="iconFlag"></icon>
-        <icon name="angle-left" v-show="!iconFlag"></icon>
+    <el-col :span="spanParms[0]" class="leftBoardStyle">
+
+      <el-card style="margin-bottom:20px;">
+        <div slot="header" class="clearfix">
+          <span style="font-family:微软雅黑;font-size:14px;">工作表信息</span>
+          <el-button style="float: right; padding: 3px 0" type="text"><i class="el-icon-setting"></i></el-button>
+        </div>
+          <table-info></table-info>
+      </el-card>
+
+      <el-button @click="btnClick" class="sizeBtn" id="sizeBtn">
+        <icon name="angle-left" v-show="iconFlag"></icon>
+        <icon name="angle-right" v-show="!iconFlag"></icon>
       </el-button>
-      <drag ></drag>
+
+      <el-card id="analysisDrag">
+        <div slot="header" class="clearfix">
+          <span style="font-family:微软雅黑;font-size:14px;">维度数值</span>
+          <el-button style="float: right; padding: 3px 0" type="text"><i class="el-icon-setting"></i></el-button>
+        </div>
+        <drag></drag>
+      </el-card>
+
+
     </el-col>
     
     <el-col :span="spanParms[1]">
@@ -72,6 +88,11 @@ export default {
        this.leftFlag = !this.leftFlag
        this.iconFlag = !this.iconFlag
     }    
+  },
+  mounted(){
+    document.getElementById("sizeBtn").style.marginTop = document.getElementById("app").offsetHeight/4+'px';
+    document.getElementById("analysisDrag").style.height = document.getElementById("app").offsetHeight/1.3+'px';
+    
   }
 }
 </script>
@@ -93,10 +114,11 @@ export default {
   border-right: 0px;
   border-left-style: solid;
   border-right-style: solid;
-  border-color: #D0D0D0;
-  box-shadow:0px -10px 10px 7px rgb(224, 224, 224)  inset;
+  border-color: #888888;
+  /* box-shadow:0px -5px 10px 4px #D0D0D0  inset; */
+  /* 第三个阴影宽度 */
   /* box-shadow:-2px 0 3px -1px #888888;
-  box-shadow:2px 0 3px -1px #888888; */
+  box-shadow:2px 0 3px -1px #888888; #D0D0D0*/
 
 }
 
@@ -106,5 +128,17 @@ export default {
 }
 .el-col {
   border-radius: 0px;
+}
+.sizeBtn{
+  width: 1px;
+  position:absolute;
+  right:0px;
+  margin-top:30px;
+  border: 0px
+}
+.leftBoardStyle{
+  padding:10px;
+  background:#fff;
+  position: relative;
 }
 </style>

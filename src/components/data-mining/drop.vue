@@ -1,6 +1,6 @@
 <template>
     <div  id="dragCon" >
-    <div class='people-content'>
+    <div class='people-content miningDropStyle'>
         <el-row> 
             <el-col :span="12" >
                 <!-- 字段框 -->
@@ -179,7 +179,7 @@ import Bus from './Bus.js'
     }
 </script>
 
-<style scoped>
+<style>
 .select-item-drop {
   border:1px solid #5bc0de;
   display: inline-block;
@@ -245,8 +245,8 @@ import Bus from './Bus.js'
     box-sizing: border-box;
     white-space: nowrap;
 }
-.el-input-group__prepend{
-    /* background-color: #ffffff; */
+.miningDropStyle .el-input-group__prepend{
+    background-color: #fff;
     border: 0px solid;
     /* border-bottom: 1px solid #dcdfe6;  */
 

@@ -1,12 +1,12 @@
 <template>
 	<div>
-		<el-card class="box-card cardStyle" id="echartsCard"  shadow="never">
+		<el-card class="box-card miningCardStyle" id="echartsCard"  shadow="never">
 
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
 
 				<!-- 未显示图表时 -->
 				<div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>
-				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
+				<img :src="picPath" style="width:90%;height:90%;margin:40px;">
 
 				<!-- 表格部分 -->
 				<el-table
@@ -53,6 +53,8 @@ import  'echarts/theme/dark.js'
 import  'echarts/theme/infographic.js'
 import  'echarts/theme/shine.js'
 import  'echarts/theme/roma.js'
+import bg from '@/assets/chartBg.png'
+import bg2 from '@/assets/logo.png'
 var Enumerable = require('linq');
 export default {
   name: 'echarts',
@@ -79,14 +81,14 @@ export default {
 	  dropdownArray:[],
 	  dropdownItemArray:[],//图内筛选器的选项
 	  tableVisible:false,
-	  chartYAxis:[{
-					name : '',
-		            type : 'value'
-				}],
-		chartId:1
+	  chartYAxis:[{name : '',type : 'value'}],
+	  chartId:1,
+	  picPath:bg
+
     }
   },
   mounted(){
+	  
 
 	this.autoDivSize();//根据浏览器尺寸设置echarts的宽高
 //1.页面加载时创建图表或者PATCH图表（得到id,data_set）data_set：任务id，title随机生成
@@ -150,17 +152,28 @@ Bus.$on('wtf',(e)=>{
 			for (let i = 1; i < this.xAxisItem.length; i++) {
 				xAxisString = xAxisString + ',' + this.xAxisItem[i] 
 			}
-
+console.log("xxx:"+xAxisString)
+console.log(yAxisString)
 			//发送求和请求
 			this.$axios
 			.post(
-			"http://120.79.146.91:8000/task/chart/sum",
+			"http://120.79.146.91:8000/dataMining/regression/",
 				{
-					chart_id:this.chartId,
+					//chart_id:this.chartId,
+					// chart_type:1,
+					// x_axis:xAxisString,
+					// y_axis:yAxisString,
 					data_set:4,//应该是data_set_id?到时换成this.$router.parms
-					chart_type:1,
-					x_axis:xAxisString,
-					y_axis:yAxisString
+					title : Math.floor(Math.random()*(1000000-1+1)+1),
+					desc: "zzzzz3",
+					category: 12,
+					xlabel: xAxisString,
+					ylabel: yAxisString,
+					x_axis: xAxisString,
+					y_axis: yAxisString,
+					test_size: 0.2,
+					mth_power: 4,
+					error_type : 3
 				},
 				{
 					headers: {
@@ -169,61 +182,19 @@ Bus.$on('wtf',(e)=>{
 				}
 			)
 			.then(r => {
-				//r.data.data 								完整数据
-				//Object.values(JSON.parse(r.data.data)) 	表头
-				//Object.keys(element)						去重的X轴的值
-				let element = JSON.parse(r.data.data)[e]	//对应的y轴的值
-				this.Xdata = []//每次循环清空X轴，否则重叠
-				this.seriesDataItem = [] //清空serIDataItem否则重叠
-				//给X轴赋值,Xdata为echarts的X轴的值
-		　　　　for(let i=0;i<Object.keys(element).length;i++){
-					this.Xdata.push(Object.keys(element)[i])  
-				}
-				//给Y轴赋值
-		　　　　for(let i=0;i<Object.keys(element).length;i++){
-					this.seriesDataItem.push(element[Object.keys(element)[i]])  
-				}
-				
-				console.log(this.seriesDataItem)					
-				this.seriesData.push({
-					name:this.yAxisItemName[this.yAxisItemName.length-1],
-					type:'bar',
-					data:this.seriesDataItem
-				})
-				
-				//打开dataZoom，X轴大于10时
-				if(Object.keys(element).length>10){
-					this.dataZoom = {
-						type: 'slider',
-						show: true,
-						xAxisIndex: [0],
-						start: 0,
-						end: 30
-					}
-				}
-
-				this.drawLine();
-
+				console.log(r)
+			 	this.$message({
+					message: r.data.message,
+					type: 'success'
+				});
+				console.log(r.data.data[0])
+				this.picPath = r.data.data[0];
+				alert(this.picPath)
 			})
 			.catch(response => {
-				this.yAxisItemName.pop()
-				Bus.$emit('yAixsFail','fail');
-				this.$message({
-				message: '操作失败，请重试',
-				type: 'warning',
-                duration:1000
-				});
+				console.log(response)
 			});
 
-			//表格显示
-			if(this.Xdata.length<1){
-				this.tableVisible = true
-					for(let j =0 ;j < 15;j++){
-					this.tableData[j] = this.echartAxiosData[j];
-					}
-					this.fields.push(e)
-			}
-			else{this.drawLine();}
 
 		})
 
@@ -578,7 +549,7 @@ Bus.$on('wtf',(e)=>{
 }
 </script>
 <style>
-.cardStyle{
+.miningCardStyle{
 	border: 0px;
 	margin: 15px;
 	margin-top: 20px;
@@ -586,9 +557,9 @@ Bus.$on('wtf',(e)=>{
 }
 .echarts-font {
 	font-family: '新宋体';
-font-size: 20px;
-position: absolute;
-left: 45%; 
+	font-size: 20px;
+	position: absolute;
+	left: 45%; 
 
 }
 .dropdowmMenuStyle {

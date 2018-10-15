@@ -1,9 +1,9 @@
 <template>
     <div>
-        <el-card shadow="hover">
+        <span>
              <img src="@/assets/data-import/excel.png" style="height:30%;width:30%" @click="dialogTableVisible = true">
-             <div @click="dialogTableVisible = true">工作表信息</div>
-        </el-card>
+             <div @click="dialogTableVisible = true">{{taskTitle}}</div>
+        </span>
        
         <el-dialog title="工作表信息" :visible.sync="dialogTableVisible">
 
@@ -35,20 +35,21 @@ import Bus from './Bus.js'
         dialogTableVisible: false,
         tableData: [],
         fields:[],
-        dateString:''
+        dateString:'',
+        taskTitle:''
       };
     },
     mounted(){
 
         Bus.$on('AxiosDataEcharts', (e) => {
-
           let jsonObj = e
-
-          for(var i =0 ;i < 30;i++){
-              this.tableData[i] = jsonObj[i];
-          }
+          for(var i =0 ;i < 30;i++){this.tableData[i] = jsonObj[i];}
           this.fields = Object.keys(jsonObj[0])
         })
+
+        Bus.$on('taskTitle',(e)=>{
+          this.taskTitle = e
+        })        
         
     },
     methods: {

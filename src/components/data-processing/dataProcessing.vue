@@ -570,7 +570,7 @@ export default {
       var c = confirm("是否保存处理结果？");
       if (c) {
         this.$router.push({
-          name: "data-analysis",
+          name: "data-mining",
           params: { dataSetId: this.dataSetId }
         });
       }
