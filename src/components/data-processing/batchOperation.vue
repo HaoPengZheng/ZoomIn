@@ -69,8 +69,7 @@ export default {
       for (let key in this.tablePropertys) {
         var tableProperty = this.tablePropertys[key];
         tablePropertys.push(tableProperty);
-      }
-      console.log(tablePropertys);
+      };
       return tablePropertys;
     }
   },
@@ -82,7 +81,6 @@ export default {
       this.showEdit = !this.showEdit;
     },
     updateTableProperty: function() {
-      console.log(this.tablePropertysForTable);
       this.$emit(
         "updateTableProperty",
         this.tablePropertys,

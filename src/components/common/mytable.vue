@@ -3,7 +3,7 @@
     <!--  cell-mouse-enter 和 mouseleave.native 控制鼠标离开时重置拖拽状态-->
     <el-table v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :data="data" :border="option.border" :height="option.height" :style="{ width: parseInt(option.width)+'px' }" :cell-class-name="cellClassName" :header-cell-class-name="headerCellClassName" @cell-mouse-enter="handleMouseLeave" @mouseleave.native="handleMouseLeave">
       <slot name="fixed"></slot>
-      <el-table-column sortable v-for="(col, index) in tableHeader" v-if="keyVisibilitys[index]" :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
+      <el-table-column sortable v-for="(col, index) in tableHeader" :key="index" :prop="col" :label="col" :column-key="index.toString()" :render-header="renderHeader">
       </el-table-column>
     </el-table>
   </div>
@@ -32,7 +32,6 @@ export default {
     types: {
       type: Array
     },
-    keyVisibilitys: Array,
     loading: Boolean
   },
   data() {
@@ -47,17 +46,33 @@ export default {
       }
     };
   },
+  computed: {},
   watch: {
-    header: {
+    data: {
       handler(val, oldVal) {
-        this.tableHeader = val;
-        this.$emit("updateTableKeys", this.tableHeader);
+        console.log(val);
+        console.log(oldVal);
+        let keys = Object.keys(val[0]);
+        let tempHeader = [];
+        this.tableHeader = keys;
       }
     },
-    tableHeader: {
+    header: {
       handler(val, oldVal) {
-        this.$emit("updateTableKeys", this.tableHeader);
-        this.$emit("updateTableTypes", this.types);
+        let tempHeader = [];
+        let keys = Object.keys(this.data[0]);
+        console.log(keys);
+        if (keys.length == 0) {
+          tempHeader = val;
+        } else {
+          val.forEach(item => {
+            if (keys.includes(item)) {
+              tempHeader.push(item);
+            }
+          });
+        }
+
+        this.tableHeader = tempHeader;
       }
     }
   },
@@ -113,7 +128,7 @@ export default {
             [
               createElement("i", {
                 attrs: {
-                  id: $index - 1
+                  id: Object.keys(this.data[0])[$index - 1]
                 },
                 class: "el-icon-edit"
               })

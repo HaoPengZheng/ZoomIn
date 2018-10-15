@@ -41,7 +41,7 @@ export const TYPECONVERTER = {
   },
   convertSmybolForText: function(smybol) {
     const numberTypeText = "数值类型";
-    const textTypeText = "字符类型";
+    const textTypeText = "文本类型";
     const dateTypeText = "时间类型";
     if (smybol == "#") {
       return numberTypeText;

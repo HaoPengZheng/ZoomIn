@@ -16,7 +16,7 @@
           <h5 style="text-align:center">函数</h5>
           <vue-scroll :ops="ops">
             <div class='your-content'>
-              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
+              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" >
                 <el-menu-item index="1">
                   <i class="el-icon-menu"></i>
                   <span slot="title" @click="chooseFunction('add')">add</span>
@@ -29,8 +29,8 @@
           <h5 style="text-align:center">字段</h5>
           <vue-scroll :ops="ops">
             <div class='your-content'>
-              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose">
-                <el-menu-item :index="index" v-for="(field,index) in fields " :key="index">
+              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo" >
+                <el-menu-item :index="index.toString()" v-for="(field,index) in fields " :key="index">
                   <span slot="title">
                     <a @click="chooseField(field)">
                       <svg class="icon" aria-hidden="true" style="margin-right:20px">
@@ -57,7 +57,8 @@ export default {
   data() {
     return {
       expression: "",
-      newFieldType:"#",
+      newFieldType:"",
+      newFieldName:"",
       ops: {
         vuescroll: {},
         scrollPanel: {},
@@ -76,8 +77,8 @@ export default {
     };
   },
   props: {
-    fields: [],
-    types: []
+    fields :Array,
+    types:Array
   },
   methods: {
     chooseField: function(field) {

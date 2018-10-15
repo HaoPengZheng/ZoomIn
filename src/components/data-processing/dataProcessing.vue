@@ -41,7 +41,7 @@
                       </template>
                     </EmptyTask>
                   </div>
-                  <wTable v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                  <wTable v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tempTableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
                   </wTable>
@@ -110,13 +110,33 @@ import NewFieldForm from "./NewFieldForm.vue";
 import typeSelect from "../common/typeSelect.vue";
 import EmptyTask from "../common/EmptyTask";
 import { TYPECONVERTER, JsonParse } from "../common/common.js";
-function tableProperty(keyVisibility, originKey, tableKey, keyType, keyDesc) {
+function tableProperty(
+  keyVisibility,
+  originKey,
+  tableKey,
+  keyType,
+  keyDesc,
+  isNew = false
+) {
   this.keyVisibility = keyVisibility;
   this.originKey = originKey;
   this.tableKey = tableKey;
   this.keyType = keyType;
   this.keyDesc = keyDesc;
+  this.isNew = isNew;
 }
+
+function deepCopy(obj) {
+  if (typeof obj != "object") {
+    return obj;
+  }
+  var newobj = {};
+  for (var attr in obj) {
+    newobj[attr] = deepCopy(obj[attr]);
+  }
+  return newobj;
+}
+
 export default {
   components: {
     Left,
@@ -154,13 +174,44 @@ export default {
       newColumnName: "",
       newColumnType: "",
 
-      keyVisibilitys: [],
+      keyVisibilitysObject: Object,
       tableKeysTypeObject: Object,
       keyDesc: Object,
       originKeyObject: Object
     };
   },
   computed: {
+    tempTableData: {
+      get: function() {
+        var tempTableData = [];
+        for (let i = 0; i < this.tableData.length; i++) {
+          let obj = this.tableData[i];
+          if (typeof obj == "object") {
+            var newobj = {};
+            for (let attr in obj) {
+              if (this.keyVisibilitysObject[attr]) {
+                newobj[attr] = obj[attr];
+              }
+            }
+            tempTableData.push(newobj);
+          }
+        }
+        return tempTableData;
+      },
+      set: function() {}
+    },
+    keyVisibilitys: {
+      get: function() {
+        var keyVisibilitys = [];
+        // 匹配正确的key-value
+        this.tableKeys.forEach(tablekey => {
+          tablekey = tablekey.trim();
+          keyVisibilitys.push(this.keyVisibilitysObject[tablekey]);
+        });
+        return keyVisibilitys;
+      },
+      set: function() {}
+    },
     tableKeysType: {
       get: function() {
         var tableKeysTypes = [];
@@ -186,7 +237,6 @@ export default {
             this.keyDesc[key]
           );
         }
-        console.log(tablePropertys);
         return tablePropertys;
       },
       set: function(tablePropertyObject) {
@@ -200,6 +250,8 @@ export default {
           this.tableKeysTypeObject[key] = tablePropertyObject[key].keyType;
           this.keyDesc[key] = tablePropertyObject[key].keyDesc;
           this.originKeyObject[key] = tablePropertyObject[key].originKey;
+          this.keyVisibilitysObject[key] =
+            tablePropertyObject[key].keyVisibility;
         }
       }
     }
@@ -261,10 +313,12 @@ export default {
               this.tableKeysTypeObject = JsonParse.looseJsonParse(
                 response.data
               );
+              this.keyVisibilitysObject = deepCopy(this.tableKeysTypeObject);
               for (let key in this.tableKeysTypeObject) {
                 if (this.tableKeysTypeObject[key] == "int64") {
                   this.tableKeysTypeObject[key] = "float64";
                 }
+                this.keyVisibilitysObject[key] = true;
               }
               this.keyVisibilitys = new Array(this.tableKeys.length);
               for (let index = 0; index < this.keyVisibilitys.length; index++) {
@@ -297,7 +351,8 @@ export default {
       }
     },
     changeHeaderName: function(e) {
-      this.changeColumnIndex = e.target.id;
+      var changeKey = e.target.id;
+      this.changeColumnIndex = this.tableKeys.indexOf(changeKey);
       this.newColumnName = this.tableKeys[this.changeColumnIndex];
       this.newColumnType = this.tableKeysType[this.changeColumnIndex];
       this.dialogVisible = true;
@@ -320,10 +375,26 @@ export default {
         alert("已存在名为:" + this.newColumnName + "的列名");
         return;
       }
+
+      //可以抽出新方法来
       let oldKey = this.tableKeys[this.changeColumnIndex]; //旧的键值
       this.tableKeysTypeObject[this.newColumnName] = this.newColumnType;
       this.originKeyObject[this.newColumnName] = this.originKeyObject[oldKey];
+      delete this.originKeyObject[oldKey];
       this.keyDesc[this.newColumnName] = this.keyDesc[oldKey];
+      delete this.keyDesc[oldKey];
+      this.keyVisibilitysObject[this.newColumnName] = this.keyVisibilitysObject[
+        oldKey
+      ];
+      delete this.keyVisibilitysObject[oldKey];
+      this.tablePropertys[this.newColumnName] = new tableProperty(
+        true,
+        this.originKeyObject[oldKey],
+        this.newColumnName,
+        this.keyDesc[oldKey]
+      );
+      delete this.tablePropertys[oldKey];
+
       //发送修改请求。
       let query = this.$post("/task/dataProcessing/resetColumns_name_type", {
         data_set_id: this.dataSetId,
@@ -442,7 +513,6 @@ export default {
         }
         newData.push(obj);
       });
-      console.log(newData);
       this.tableData = newData;
     },
 
@@ -454,30 +524,38 @@ export default {
     addField: function(fieldName, fieldType, expression) {
       let tableData = this.tableData;
       fieldName = "新增字段";
-      fieldType = "#";
+      fieldType = "object";
       tableData.forEach(data => {
-        var xxcj;
-        var zcj;
-        var value;
-        console.log(data);
-        for (var key in data) {
-          if (key == "笔试成绩") {
-            xxcj = data[key];
-          }
-          if (key == "总成绩") {
-            zcj = data[key];
-          }
-          value = xxcj + zcj;
-        }
+        // var xxcj;
+        // var zcj;
+        // var value;
 
-        data[fieldName] = value;
+        // for (var key in data) {
+        //   if (key == "笔试成绩") {
+        //     xxcj = data[key];
+        //   }
+        //   if (key == "总成绩") {
+        //     zcj = data[key];
+        //   }
+        //   value = xxcj + zcj;
+        // }
+
+        data[fieldName] = 1;
       });
       this.tableData = [];
+      let property = new tableProperty(
+        true,
+        null,
+        fieldName,
+        fieldType,
+        "",
+        true
+      );
+      let newPropertys = deepCopy(this.tablePropertys);
+      newPropertys[fieldName] = property;
+      this.tablePropertys = newPropertys;
+      console.log(this.tablePropertys);
       this.tableData = tableData;
-      this.tableKeys.push(fieldName);
-      this.tableKeysType.push(fieldType);
-      this.keyVisibilitys.push(true);
-      console.log(this.tableData);
       this.addFieldDialogVisible = false;
     },
     //数据处理后进入下一步、
