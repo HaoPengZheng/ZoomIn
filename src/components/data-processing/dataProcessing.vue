@@ -41,7 +41,7 @@
                       </template>
                     </EmptyTask>
                   </div>
-                  <wTable v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tempTableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysType" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                  <wTable v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tempTableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysTypeObject" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
                   </wTable>

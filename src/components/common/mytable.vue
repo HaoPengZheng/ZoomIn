@@ -30,7 +30,7 @@ export default {
       type: Object
     },
     types: {
-      type: Array
+      type: Object
     },
     loading: Boolean
   },
@@ -78,7 +78,7 @@ export default {
   },
   methods: {
     renderHeader: function(createElement, { column, $index }) {
-      var typeUIicon = this.$utils.showTypesUi(this.types[$index - 1]);
+      var typeUIicon = this.$utils.showTypesUi(this.types[column.label]);
       return createElement(
         "div",
         {
