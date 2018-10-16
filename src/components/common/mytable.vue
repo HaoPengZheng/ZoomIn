@@ -48,8 +48,7 @@ export default {
   watch: {
     data: {
       handler(val, oldVal) {
-        console.log(val);
-        console.log(oldVal);
+
         let keys = Object.keys(val[0]);
         let tempHeader = [];
         this.tableHeader = keys;
@@ -59,7 +58,6 @@ export default {
       handler(val, oldVal) {
         let tempHeader = [];
         let keys = Object.keys(this.data[0]);
-        console.log(keys);
         if (keys.length == 0) {
           tempHeader = val;
         } else {

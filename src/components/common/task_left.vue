@@ -218,7 +218,6 @@ export default {
           )
           .then(response => {
             this.taskid = response.data.id;
-            console.log(response.data.id);
             this.tablePreviewVisable = true;
             this.newTaskDialogVisable = false;
           })
