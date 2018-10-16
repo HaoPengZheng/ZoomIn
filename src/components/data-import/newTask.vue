@@ -7,24 +7,25 @@
       <el-col :xs="8" :sm="8" :md="8" :lg="5" :offset="2" style="padding-left:45px;margin-right:10px;">
         <img src="../../assets/data-import/excel.png" @click="showNewTaskDialog('excel')" class="input-img" ondragstart="return false;">
       </el-col>
-        <el-col :xs="8" :sm="8" :md="8" :lg="5">
-          <img src="../../assets/data-import/csv.png" @click="showNewTaskDialog('csv')" class="input-img" ondragstart="return false;">
+      <el-col :xs="8" :sm="8" :md="8" :lg="5">
+        <img src="../../assets/data-import/csv.png" @click="showNewTaskDialog('csv')" class="input-img" ondragstart="return false;">
       </el-col>
 
     </el-row>
     <!-- 新建任务的模态框 -->
     <el-dialog :visible.sync="newTaskDialogVisable" width="30%" title="新建任务" center>
-      <el-form ref="form" label-width="80px" label-position="left">
-        <el-form-item label="任务名称">
+      <el-form :model="newTaskModel" ref="newTask" status-icon :rules="rules2" label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
+        <el-form-item label="任务名称" prop="name">
           <el-input type="text" v-model="newTaskModel.name"></el-input>
         </el-form-item>
         <el-form-item label="数据源">
           <input type="file" ref="obj" @change="importf()" id="excel-input" :accept="accept" />
         </el-form-item>
-          <el-form-item label="任务描述">
-            <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="newTaskModel.describe">
-            </el-input>
-          </el-form-item>
+        <el-form-item label="任务描述">
+          <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="newTaskModel.describe">
+          </el-input>
+          <i class="el-icon-info tip-text"> 快捷键Ctrl+Enter进入下一步</i>
+        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="newTaskDialogVisable = false">取 消</el-button>
@@ -32,11 +33,11 @@
       </span>
     </el-dialog>
     <!-- 数据预览模态框 -->
-    <el-dialog :visible.sync="tablePreviewVisable" width="50%" title="数据预览" top="5vh">
+    <el-dialog :visible.sync="tablePreviewVisable" width="50%" title="数据预览" top="5vh" >
       <previewTable :json="tablejsons" v-on:setTitleIndex="setTitleIndex"></previewTable>
       <span slot="footer" class="dialog-footer">
         <el-button @click="tablePreviewVisable = false">取 消</el-button>
-        <el-button type="primary" @click="createTask">创建任务</el-button>
+        <el-button type="primary" @click="createTask" >创建任务</el-button>
       </span>
     </el-dialog>
   </div>
@@ -53,6 +54,16 @@ export default {
     PreviewTable
   },
   data() {
+    var validateName = (rule, value, callback) => {
+      if (value == "" || typeof value == "undefined") {
+        callback(new Error("任务名不能为空！"));
+      } else {
+        if (value.length > 15) {
+          callback(new Error("任务名不能超过15个字符！"));
+        }
+        callback();
+      }
+    };
     return {
       newTaskDialogVisable: false,
       tablePreviewVisable: false,
@@ -65,10 +76,21 @@ export default {
       titleIndex: 1,
       accept:
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel",
-      taskid: 0
+      taskid: 0,
+      newTaskRules: {},
+      rules2: {
+        name: [{ validator: validateName, trigger: "blur" }]
+      }
     };
   },
   methods: {
+    submitTask: function(e) {
+      // key.Code === 13表示回车键
+      if (e.keyCode === 13 && e.ctrlKey) {
+        //逻辑处理
+        this.newTask();
+      }
+    },
     showNewTaskDialog(fileType) {
       if (fileType == "csv") {
         this.accept = ".csv";
@@ -79,25 +101,29 @@ export default {
       this.newTaskDialogVisable = true;
     },
     newTask: function() {
-      if (this.$refs.obj.value == "") {
-        this.$message({
-          message: "请选择数据源！",
-          type: "warning",
-          duration: 1500
-        });
-      } else {
-        // 新建任务
-        let query = this.$post("/taskinfo/", {
-          task_name: this.newTaskModel.name,
-          task_desc: this.newTaskModel.describe
-        });
-        query.then(response => {
-          console.log(response);
-          this.taskid = response.data.id;
-          this.tablePreviewVisable = true;
-          this.newTaskDialogVisable = false;
-        });
-      }
+      this.$refs.newTask.validate(vaild => {
+        if (vaild) {
+          if (this.$refs.obj.value == "") {
+            this.$message({
+              message: "请选择数据源！",
+              type: "warning",
+              duration: 1500
+            });
+          } else {
+            // 新建任务
+            let query = this.$post("/taskinfo/", {
+              task_name: this.newTaskModel.name,
+              task_desc: this.newTaskModel.describe
+            });
+            query.then(response => {
+              console.log(response);
+              this.taskid = response.data.id;
+              this.tablePreviewVisable = true;
+              this.newTaskDialogVisable = false;
+            });
+          }
+        }
+      });
     },
     importf() {
       //导入
@@ -165,7 +191,7 @@ export default {
         step2: "2",
         step3: "3",
         stepX1: "x1",
-        title: this.newTaskModel.name+"-"+this.filename,
+        title: this.newTaskModel.name + "-" + this.filename,
         row_num: (this.titleIndex - 2).toString(),
         data_set: this.tablejsons
       }).then(response => {
@@ -181,7 +207,11 @@ export default {
   }
 };
 </script>
-<style  >
+<style >
+.tip-text {
+  color: #999;
+  font-size: 15px;
+}
 .warp {
   min-width: 800px;
 }
