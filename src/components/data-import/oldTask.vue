@@ -53,7 +53,7 @@
 </template>
 <script>
 import Task from "./Task.vue";
-import EmptyTask from "../common/EmptyTask"
+import EmptyTask from "../common/EmptyTask";
 export default {
   components: {
     Task,
@@ -136,10 +136,7 @@ export default {
     },
     dealTask: function() {
       //如果任务列表为空，不执行后面的步骤
-      if (this.taskList.length == 0) {
-        this.IsEmptyTask = true;
-        return;
-      }
+
       let tasks = []; //临时存储task
       this.newTaskList = []; //用来渲染的taskList
       let taskCount = this.taskCarouselCount; // 每一个轮播的task个数
@@ -152,6 +149,11 @@ export default {
       }
       if (tasks.length > 0) {
         this.newTaskList.push(tasks);
+      }
+      if (this.newTaskList.length == 0) {
+        this.IsEmptyTask = true;
+      } else {
+        this.IsEmptyTask = false;
       }
     },
     deleteTask: function(id) {
