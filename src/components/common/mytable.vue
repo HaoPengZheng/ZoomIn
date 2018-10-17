@@ -124,7 +124,7 @@ export default {
             [
               createElement("i", {
                 attrs: {
-                  id: Object.keys(this.data[0])[$index - 1]
+                  id: column.label
                 },
                 class: "el-icon-edit"
               })
