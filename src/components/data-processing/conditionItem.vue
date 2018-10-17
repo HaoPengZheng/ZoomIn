@@ -70,7 +70,7 @@ export default {
           label: "包含"
         },
         {
-          value: "noContains",
+          value: "notContains",
           label: "不包含"
         },
         {

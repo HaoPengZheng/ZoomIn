@@ -41,6 +41,7 @@
                       </template>
                     </EmptyTask>
                   </div>
+                  <div class="items-text">当前显示<span class="emphasize-number">{{showItem}}</span>条,该数据集一共有<span class="emphasize-number">{{allItems}}</span>条数据</div>
                   <wTable v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tempTableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysTypeObject" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
@@ -153,6 +154,7 @@ export default {
       dataSetList: [], //左边数据集列表
       tableData: [], //表格数据
       tableKeys: [], //表格的表头
+      allItems: 0, //所有的条目数
 
       //条件过滤选项
       filtrateType: "1",
@@ -254,6 +256,11 @@ export default {
             tablePropertyObject[key].keyVisibility;
         }
       }
+    },
+    showItem: {
+      get: function() {
+        return this.tableData.length;
+      }
     }
   },
   created: function() {
@@ -299,6 +306,7 @@ export default {
         data_set_id: this.dataSetId
       })
         .then(response => {
+          this.allItems = response.data.length;
           this.tableData = response.data.slice(0, 100);
           console.log(this.tableData);
           this.tableKeys = Object.keys(this.tableData[0]);
@@ -610,5 +618,16 @@ thead {
 }
 .bg-purple-light {
   background: #e5e9f2;
+}
+.items-text {
+  padding: 10px 0;
+  text-align: right;
+  color: #666;
+  font-size: 15px;
+  letter-spacing:1px;
+  font-family: "Arial", "Microsoft YaHei", "黑体", "宋体", sans-serif;
+}
+.emphasize-number {
+  color: red;
 }
 </style>
