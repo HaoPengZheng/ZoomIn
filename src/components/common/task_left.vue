@@ -290,7 +290,7 @@ export default {
           JSON.stringify(this.tablejsons) +
           "}"
       );
-
+// (this.titleIndex - 2).toString(),
       this.$axios
         .post(
           "http://120.79.146.91:8000/dataSet/",
@@ -300,7 +300,7 @@ export default {
             step1: "1",
             step2: "2",
             step3: "3",
-            row_num: (this.titleIndex - 2).toString(),
+            row_num: (this.titleIndex - 1).toString(),
             data_set: this.tablejsons
           },
           {

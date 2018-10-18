@@ -192,7 +192,7 @@ export default {
         step3: "3",
         stepX1: "x1",
         title: this.newTaskModel.name + "-" + this.filename,
-        row_num: (this.titleIndex - 2).toString(),
+        row_num: (this.titleIndex - 1).toString(),
         data_set: this.tablejsons
       }).then(response => {
         console.log(response);
