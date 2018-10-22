@@ -33,11 +33,11 @@
       </span>
     </el-dialog>
     <!-- 数据预览模态框 -->
-    <el-dialog :visible.sync="tablePreviewVisable" width="50%" title="数据预览" top="5vh" >
+    <el-dialog :visible.sync="tablePreviewVisable" width="50%" title="数据预览" top="5vh">
       <previewTable :json="tablejsons" v-on:setTitleIndex="setTitleIndex"></previewTable>
       <span slot="footer" class="dialog-footer">
         <el-button @click="tablePreviewVisable = false">取 消</el-button>
-        <el-button type="primary" @click="createTask" >创建任务</el-button>
+        <el-button type="primary" @click="createTask">创建任务</el-button>
       </span>
     </el-dialog>
   </div>
@@ -87,7 +87,6 @@ export default {
     submitTask: function(e) {
       // key.Code === 13表示回车键
       if (e.keyCode === 13 && e.ctrlKey) {
-        //逻辑处理
         this.newTask();
       }
     },
@@ -111,6 +110,12 @@ export default {
             });
           } else {
             // 新建任务
+            const loading = this.$loading({
+              lock: true,
+              text: "新建任务中...",
+              spinner: "el-icon-loading",
+              background: "rgba(0, 0, 0, 0.7)"
+            });
             let query = this.$post("/taskinfo/", {
               task_name: this.newTaskModel.name,
               task_desc: this.newTaskModel.describe
@@ -120,6 +125,7 @@ export default {
               this.taskid = response.data.id;
               this.tablePreviewVisable = true;
               this.newTaskDialogVisable = false;
+              loading.close();
             });
           }
         }
@@ -128,12 +134,10 @@ export default {
     importf() {
       //导入
       let obj = this.$refs.obj;
-
       this.filename = obj.value.substring(
         obj.value.lastIndexOf("\\") + 1,
         obj.value.lastIndexOf(".")
       );
-
       if (!obj.files) {
         return;
       }
@@ -154,11 +158,13 @@ export default {
         }
         //wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
         //wb.Sheets[Sheet名]获取第一个Sheet的数据
-        var jsons = JSON.stringify(
-          XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
+        _this.tablejsons = XLSX.utils.sheet_to_json(
+          wb.Sheets[wb.SheetNames[0]],
+          {
+            blankRows: false,
+            defval: ""
+          }
         );
-        console.log(jsons);
-        _this.tablejsons = JSON.parse(jsons);
       };
 
       if (rABS) {
@@ -185,6 +191,12 @@ export default {
     },
     createTask: function() {
       this.tablePreviewVisable = false;
+      const loading = this.$loading({
+        lock: true,
+        text: "任务数据上传中...",
+        spinner: "el-icon-loading",
+        background: "rgba(0, 0, 0, 0.7)"
+      });
       this.$post("/dataSet/", {
         task: this.taskid,
         step1: "1",
@@ -194,15 +206,20 @@ export default {
         title: this.newTaskModel.name + "-" + this.filename,
         row_num: (this.titleIndex - 1).toString(),
         data_set: this.tablejsons
-      }).then(response => {
-        console.log(response);
-        var dataSetId = response.data.id;
-        //创建完成之后，跳转到数据处理页面，传任务ID
-        this.$router.push({
-          name: "data-processing",
-          params: { taskId: this.taskid, dataSetId: dataSetId }
+      })
+        .then(response => {
+          console.log(response);
+          var dataSetId = response.data.id;
+          //创建完成之后，跳转到数据处理页面，传任务ID
+          loading.close();
+          this.$router.push({
+            name: "data-processing",
+            params: { taskId: this.taskid, dataSetId: dataSetId }
+          });
+        })
+        .catch(err => {
+          loading.close();
         });
-      });
     }
   }
 };

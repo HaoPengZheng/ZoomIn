@@ -2,19 +2,16 @@
   <el-aside :style="{width:width+'px'}">
     <div class="aside-warp">
       <div style="overflow:scroll;width:100%;height:100%;">
-        <el-select v-model="dataSetName" v-show="!isShrink" multiple filterable  reserve-keyword placeholder="搜索数据集" style="padding:5px;">
-          <el-option value="default">
+        <el-select v-model="dataSetName" v-show="!isShrink" filterable  reserve-keyword placeholder="搜索数据集" style="padding:5px 3px">
+           <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.title">
           </el-option>
-          <!-- :remote-method="remoteMethod" :loading="loading" -->
-          <!-- <el-option v-for="item in options4" :key="item.value" :label="item.label" :value="item.value">
-          </el-option> -->
         </el-select>
         <el-button v-show="!isShrink" @click="uploadDataSetDialogVisible = true" type="text" style="font-size:16px">
           <i class="el-icon-plus"></i>
         </el-button>
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
-        <el-menu default-active="0" :collapse="isShrink">
-          <el-menu-item :index="index.toString()" v-for="(dataSet,index) in dataSetList" :key="index">
+        <el-menu :default-active="`${dataSetId}`" :collapse="isShrink">
+          <el-menu-item :index="`${dataSet.id}`" v-for="(dataSet) in dataSetList" :key="dataSet.id">
             <a @click="showDataSet(dataSet.id)">
               <i class="el-icon-document" style=""></i>
               <span slot="title" style="padding-right:80px">{{dataSet.title}}</span>
@@ -60,7 +57,8 @@
 <script>
 export default {
   props: {
-    dataSetList: Array
+    dataSetList: Array,
+    dataSetId:""
   },
   data() {
     return {
@@ -68,8 +66,12 @@ export default {
       isShrink: false,
       toggleTitle: "隐藏侧边栏",
       uploadDataSetDialogVisible: false,
-     dataSetName:"",
+      dataSetName:"",
     };
+  },
+  props:{
+    dataSetList:"",
+    dataSetId:"",
   },
   created: function() {
   },

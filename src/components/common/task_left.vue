@@ -1,10 +1,8 @@
 <template>
   <el-aside :style="{width:width+'px'}">
     <div class="aside-warp">
-
       <div style="overflow-y:scroll;width:100%;height:100%;">
-        <!-- :remote-method="remoteMethod" :loading="loading" -->
-        <el-select v-show="!isShrink" value-key="id" filterable reserve-keyword placeholder="搜索任务" style="padding:5px;" v-model="taskQueryName" @change="change(taskQueryName)">
+        <el-select v-show="!isShrink" value-key="id" filterable reserve-keyword placeholder="搜索任务" style="padding:5px 3px" v-model="taskQueryName" @change="change(taskQueryName)">
           <el-option v-for="item in allTaskInfo" :key="item.id" :label="item.task_name" :value="item">
           </el-option>
         </el-select>
@@ -30,7 +28,6 @@
           </el-menu-item>
         </el-menu>
       </div>
-
       <a @click="shrink" :title="toggleTitle">
         <template v-if="isShrink === false">
           <icon name="angle-left" class="shrink"></icon>
@@ -281,16 +278,6 @@ export default {
     },
     createTask: function() {
       this.tablePreviewVisable = false;
-      alert(
-        "{'title':'" +
-          (this.titleIndex - 1) +
-          ",'name:'" +
-          this.newTaskModel.name +
-          ",'json:'" +
-          JSON.stringify(this.tablejsons) +
-          "}"
-      );
-// (this.titleIndex - 2).toString(),
       this.$axios
         .post(
           "http://120.79.146.91:8000/dataSet/",

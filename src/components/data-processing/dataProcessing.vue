@@ -1,6 +1,6 @@
   <template>
   <el-container>
-    <Left :dataSetList="dataSetList" v-on:showDataSet="showDataSet">
+    <Left :dataSetList="dataSetList" v-on:showDataSet="showDataSet" :dataSetId="dataSetId">
     </Left>
     <el-container>
       <el-main>
@@ -15,6 +15,9 @@
                 </el-button>
                 <el-button type="text" @click="addNewField">
                   新增字段
+                </el-button>
+                <el-button type="text" @click="dealwithNull">
+                  空值处理
                 </el-button>
                 <el-button type="primary" style="float:right;margin-right:20px" @click="saveAndGoDataAnalysis">下一步</el-button>
               </el-row>
@@ -51,20 +54,9 @@
             </div>
           </el-tab-pane>
           <el-tab-pane label="字段设置" name="second">
-            <div>
-              <el-row :gutter="20" style="text-align:left;padding-left:20px;    margin-bottom: 0px;">
-                <el-button type="text">
-                  批量修改
-                  <!-- <i class="el-icon-arrow-down"></i> -->
-                </el-button>
-                <el-button type="text" @click="dealwithNull">
-                  空值处理
-                </el-button>
-              </el-row>
-              <el-row>
-                <BatchOperation :tablePropertys="tablePropertys" v-on:updateTableProperty="updateTableProperty"></BatchOperation>
-              </el-row>
-            </div>
+            <el-row>
+              <BatchOperation :tablePropertys="tablePropertys" v-on:updateTableProperty="updateTableProperty"></BatchOperation>
+            </el-row>
           </el-tab-pane>
 
         </el-tabs>
@@ -471,9 +463,24 @@ export default {
     dealwithNull: function() {
       var c = confirm("是否删除所有空值的行？");
       if (c) {
-        alert("删除成功");
+        this.$post(
+          "/task/dataProcessing/dropnan",
+          {
+            data_set_id: this.dataSetId
+          },
+          false
+        ).then(() => {
+          this.$message({
+            type: "success",
+            message: "删除成功!"
+          });
+          this.refreshData();
+        });
       } else {
-        alert("取消失败");
+        this.$message({
+          type: "info",
+          message: "已取消删除"
+        });
       }
     },
     updateTableProperty: function(
@@ -593,7 +600,7 @@ export default {
     //重新拉取数据集
     refreshData: function() {
       //重新拉取
-      this.fetch();
+      this.fetch()
     }
   }
 };
@@ -624,7 +631,7 @@ thead {
   text-align: right;
   color: #666;
   font-size: 15px;
-  letter-spacing:1px;
+  letter-spacing: 1px;
   font-family: "Arial", "Microsoft YaHei", "黑体", "宋体", sans-serif;
 }
 .emphasize-number {
