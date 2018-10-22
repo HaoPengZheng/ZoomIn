@@ -61,7 +61,6 @@ export default {
   computed: {
     setTitle: function() {
       let title = Object.keys(this.json[0]);
-      console.log(title);
       this.tableTitle = title;
     }
   }

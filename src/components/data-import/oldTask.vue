@@ -113,7 +113,6 @@ export default {
     featchTask: function() {
       let query = this.$get("/taskinfo/");
       query.then(response => {
-        console.log(response);
         this.originList = response;
         this.taskList = response;
         this.dealTask();
@@ -128,7 +127,6 @@ export default {
       //     this.originList = response.data;
       //     this.taskList = response.data;
       //     this.dealTask();
-      //     console.log(response);
       //   })
       //   .catch(response => {
       //     alert("error");
@@ -222,7 +220,6 @@ export default {
         task_desc: this.taskModel.describes
       });
       query.then(response => {
-        console.log(response);
         this.$message.success({
           message: "保存成功",
           showClose: true,
@@ -246,7 +243,6 @@ export default {
       //     }
       //   )
       //   .then(response => {
-      //     console.log(response);
       //     this.$message.success({
       //       message: "保存成功",
       //       showClose: true,
@@ -260,7 +256,6 @@ export default {
       //       showClose: true,
       //       duration: 1000
       //     });
-      //     console.log(err.response);
       //   });
     },
     filterTask: function() {

@@ -208,7 +208,6 @@ export default {
         data_set: this.tablejsons
       })
         .then(response => {
-          console.log(response);
           var dataSetId = response.data.id;
           //创建完成之后，跳转到数据处理页面，传任务ID
           loading.close();

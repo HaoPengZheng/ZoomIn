@@ -93,7 +93,6 @@ export default {
     //     )
     //     .then(response => {
     //       alert("成功");
-    //       console.log(response);
     //     })
     //     .catch(response => {
     //       alert("error");
