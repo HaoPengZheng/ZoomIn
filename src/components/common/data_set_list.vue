@@ -2,8 +2,8 @@
   <el-aside :style="{width:width+'px'}">
     <div class="aside-warp">
       <div style="overflow:scroll;width:100%;height:100%;">
-        <el-select v-model="dataSetName" v-show="!isShrink" filterable  reserve-keyword placeholder="搜索数据集" style="padding:5px 3px">
-           <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.title">
+        <el-select v-model="dataSetName" v-show="!isShrink" filterable reserve-keyword placeholder="搜索数据集" style="padding:5px 3px">
+          <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.title">
           </el-option>
         </el-select>
         <el-button v-show="!isShrink" @click="uploadDataSetDialogVisible = true" type="text" style="font-size:16px">
@@ -12,16 +12,21 @@
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
         <el-menu :default-active="`${dataSetId}`" :collapse="isShrink">
           <el-menu-item :index="`${dataSet.id}`" v-for="(dataSet) in dataSetList" :key="dataSet.id">
-            <a @click="showDataSet(dataSet.id)">
+            <template v-if="target==dataSet.id">
+              <i class="el-icon-document" style=""></i>
+              <el-input v-model="newTitle" size="mini" style="width:120px" @blur="saveChangeTitle" @keyup.native="keySaveChange($event)" @click.native="stop($event)"></el-input>
+            </template>
+            <a v-else @click="showDataSet(dataSet.id)">
               <i class="el-icon-document" style=""></i>
               <span slot="title" style="padding-right:80px">{{dataSet.title}}</span>
             </a>
+
             <el-dropdown style="position: absolute;right:20px;">
               <span class="el-dropdown-link">
-                <i class="el-icon-more pointer"></i>
+                <i class="el-icon-more pointer" @click="stop($event)"></i>
               </span>
               <el-dropdown-menu slot="dropdown" style="margin:-10px 0!important">
-                <el-dropdown-item>编辑</el-dropdown-item>
+                <el-dropdown-item @click.native="changeTitle(dataSet)">编辑</el-dropdown-item>
                 <el-dropdown-item @click.native="deleteTask(task.id)">删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -58,7 +63,7 @@
 export default {
   props: {
     dataSetList: Array,
-    dataSetId:""
+    dataSetId: ""
   },
   data() {
     return {
@@ -66,16 +71,27 @@ export default {
       isShrink: false,
       toggleTitle: "隐藏侧边栏",
       uploadDataSetDialogVisible: false,
-      dataSetName:"",
+      dataSetName: "",
+      target: "",
+      newTitle: ""
     };
   },
-  props:{
-    dataSetList:"",
-    dataSetId:"",
-  },
-  created: function() {
+  computed: {
+    showEdit: {
+      get: function() {
+        let showEdit = {};
+        this.dataSetList.forEach(element => {
+          showEdit[element.id] = false;
+        });
+        return showEdit;
+      },
+      set: function(val) {}
+    }
   },
   methods: {
+    initShowEdit: function() {
+      console.log(this.dataSetList);
+    },
     shrink: function() {
       if (this.isShrink) {
         this.isShrink = false;
@@ -94,8 +110,45 @@ export default {
       this.uploadDataSetDialogVisible = false;
       // 上传的方法。
     },
-    showDataSet:function(dataSetId){
-      this.$emit('showDataSet',dataSetId)
+    showDataSet: function(dataSetId) {
+      this.$emit("showDataSet", dataSetId);
+    },
+    changeTitle: function(dataSet) {
+      this.target = dataSet.id;
+      this.newTitle = dataSet.title;
+    },
+    saveChangeTitle: function() {
+      if (this.target == "") {
+        return;
+      }
+      if(this.newTitle==""){
+        this.target = "";
+        return;
+      }
+      this.$post("/task/dataProcessing/changeTitle", {
+        data_set_id: this.target,
+        new_title: this.newTitle
+      })
+        .then(() => {
+          for (let i = 0; i < this.dataSetList.length; i++) {
+            if (this.dataSetList[i].id == this.target) {
+              this.$set(this.dataSetList[i], "title", this.newTitle);
+              this.target = "";
+              return;
+            }
+          }
+        })
+        .catch(() => {
+          this.target = "";
+        });
+    },
+    keySaveChange: function(e) {
+      if (e.keyCode == 13) {
+        this.saveChangeTitle();
+      }
+    },
+    stop(e) {
+      e.stopPropagation();
     }
   }
 };

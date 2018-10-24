@@ -19,7 +19,7 @@
               <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo">
                 <el-menu-item index="1">
                   <span slot="title" @click="chooseFunction('add')">
-                    <el-tooltip placement="left" >
+                    <el-tooltip placement="left">
                       <div slot="content" style="font-size:16px">函数:sum(a,b)<br />作用:两列相加<br />例子:sum(语文,数学)</div>
                       <el-button type="text">
                         <i class="el-icon-menu"></i>add
@@ -29,7 +29,7 @@
                 </el-menu-item>
                 <el-menu-item index="2">
                   <span slot="title" @click="chooseFunction('add')">
-                    <el-tooltip placement="left" >
+                    <el-tooltip placement="left">
                       <div slot="content" style="font-size:16px">函数:sub(a,b)<br />作用:两列相减<br />例子:sub(语文,数学)</div>
                       <el-button type="text">
                         <i class="el-icon-menu"></i>sub
@@ -94,14 +94,28 @@ export default {
   },
   props: {
     fields: Array,
-    types: Array
+    types: Array,
+    dataSetId:Number,
   },
   methods: {
     chooseField: function(field) {
-      this.expression = this.expression + `[${field}]`.trim();
+      this.expression = this.expression + `${field}`.trim();
     },
     chooseFunction: function(fun) {
       this.expression = this.expression + `${fun}()`.trim();
+    },
+    addField:function(){
+      if(typeof this.dataSetId == 'number'){
+        alert("number");
+      }
+      this.$post('/task/dataProcessing/Expression',{
+        data_set_id:this.dataSetId,
+        newColumnName:this.newFieldName,
+        expression:this.expression
+      }).then(()=>{
+         alert("number");
+        this.$emit('refreshData');
+      })
     }
   }
 };

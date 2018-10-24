@@ -78,8 +78,8 @@
       </span>
     </el-dialog>
 
-    <el-dialog title="增加新字段" :visible.sync="addFieldDialogVisible" width="30%">
-      <newFieldForm :fields="tableKeys" :types="tableKeysType"></newFieldForm>
+    <el-dialog title="增加新字段" :visible.sync="addFieldDialogVisible" width="30%" >
+      <newFieldForm ref="newFiledRef" :fields="tableKeys" :types="tableKeysType" :dataSetId="dataSetId" @refreshData="refreshData"></newFieldForm>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addField">确 定</el-button>
@@ -537,42 +537,44 @@ export default {
     },
     //新增字段如何在表格中正确的标识呢
     addField: function(fieldName, fieldType, expression) {
-      let tableData = this.tableData;
-      fieldName = "新增字段";
-      fieldType = "object";
-      tableData.forEach(data => {
-        // var xxcj;
-        // var zcj;
-        // var value;
+            this.$refs.newFiledRef.addField();
+    //   let tableData = this.tableData;
+    //   fieldName = "新增字段";
+    //   fieldType = "object";
+    //   tableData.forEach(data => {
+    //     // var xxcj;
+    //     // var zcj;
+    //     // var value;
 
-        // for (var key in data) {
-        //   if (key == "笔试成绩") {
-        //     xxcj = data[key];
-        //   }
-        //   if (key == "总成绩") {
-        //     zcj = data[key];
-        //   }
-        //   value = xxcj + zcj;
-        // }
+    //     // for (var key in data) {
+    //     //   if (key == "笔试成绩") {
+    //     //     xxcj = data[key];
+    //     //   }
+    //     //   if (key == "总成绩") {
+    //     //     zcj = data[key];
+    //     //   }
+    //     //   value = xxcj + zcj;
+    //     // }
 
-        data[fieldName] = 1;
-      });
-      this.tableData = [];
-      let property = new tableProperty(
-        true,
-        null,
-        fieldName,
-        fieldType,
-        "",
-        true
-      );
-      let newPropertys = deepCopy(this.tablePropertys);
-      newPropertys[fieldName] = property;
-      this.tablePropertys = newPropertys;
-      console.log(this.tablePropertys);
-      this.tableData = tableData;
-      this.addFieldDialogVisible = false;
+    //     data[fieldName] = 1;
+    //   });
+    //   this.tableData = [];
+    //   let property = new tableProperty(
+    //     true,
+    //     null,
+    //     fieldName,
+    //     fieldType,
+    //     "",
+    //     true
+    //   );
+    //   let newPropertys = deepCopy(this.tablePropertys);
+    //   newPropertys[fieldName] = property;
+    //   this.tablePropertys = newPropertys;
+    //   console.log(this.tablePropertys);
+    //   this.tableData = tableData;
+    //   this.addFieldDialogVisible = false;
     },
+    
     //数据处理后进入下一步、
     //todo:若不保存处理，应该删除处理的结果。。也就是用处理前的dataset
     saveAndGoDataAnalysis: function() {
@@ -594,6 +596,8 @@ export default {
     //重新拉取数据集
     refreshData: function() {
       //重新拉取
+      this.addFieldDialogVisible=false;
+      this.dialogVisible =false;
       this.fetch()
     }
   }

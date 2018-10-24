@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import {TYPECONVERTER} from "./common.js";
+import { TYPECONVERTER } from "./common.js";
 export default {
   data() {
     return {
@@ -18,17 +18,14 @@ export default {
         { value: "float64", label: "数值类型" },
         { value: "object", label: "文本类型" },
         { value: "datetime64[ns]", label: "时间类型" }
-      ],
-     
+      ]
     };
   },
   props: {
     value: "",
     size: "",
     placeholder: ""
-  },
-
-
+  }
 };
 </script>
 <style>
