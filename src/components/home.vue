@@ -9,7 +9,7 @@
             </span>
           </div>
           <div class="nav center">
-            <el-menu mode="horizontal" :default-active="activeIndex" background-color="#00c587" text-color="#fff" active-text-color="#ffd04b" v-bind:router="true">
+            <el-menu mode="horizontal" :default-active="activeIndex" background-color="#516464" text-color="#fff" active-text-color="#ffd04b" v-bind:router="true">
               <el-menu-item index="/home/data-import">
                 数据导入
               </el-menu-item>
@@ -27,12 +27,12 @@
               </el-menu-item>
             </el-menu>
           </div>
-          <div class="right">
-            <el-button type="info">
-              <svg class="icon" aria-hidden="true" style="width:50px;height:30px;">
+          <div class="right" >
+            <div style="border:1px solid red;width:60px;border-radius:60px">
+              <svg class="icon" aria-hidden="true" style="width:50px;height:50px">
                 <use xlink:href="#icon-kefuyouxian"></use>
               </svg>
-            </el-button>
+            </div>
           </div>
         </div>
       </el-header>
@@ -63,7 +63,7 @@ export default {
   width: 100%;
   margin: 0 auto;
   display: flex;
-  background-color: #00c587;
+  background-color: #516464;
 }
 .left {
   flex: 0 1 200px;

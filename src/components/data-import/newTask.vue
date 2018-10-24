@@ -18,6 +18,9 @@
         <el-form-item label="任务名称" prop="name">
           <el-input type="text" v-model="newTaskModel.name"></el-input>
         </el-form-item>
+          <el-form-item label="数据集名" prop="title">
+          <el-input type="text" v-model="newTaskModel.title"></el-input>
+        </el-form-item>
         <el-form-item label="数据源">
           <input type="file" ref="obj" @change="importf()" id="excel-input" :accept="accept" />
         </el-form-item>
@@ -64,14 +67,26 @@ export default {
         callback();
       }
     };
+     var validateTitle = (rule, value, callback) => {
+      if (value == "" || typeof value == "undefined") {
+        callback(new Error("数据集名不能为空！"));
+      } else {
+        if (value.length > 15) {
+          callback(new Error("数据集名不能超过15个字符！"));
+        }
+        callback();
+      }
+    };
     return {
       newTaskDialogVisable: false,
       tablePreviewVisable: false,
       newTaskModel: {
         name: "",
         describe: "",
-        file: ""
+        file: "",
+        title:"",//数据集名，与新建任务无关 
       },
+   
       tablejsons: null,
       titleIndex: 1,
       accept:
@@ -79,7 +94,8 @@ export default {
       taskid: 0,
       newTaskRules: {},
       rules2: {
-        name: [{ validator: validateName, trigger: "blur" }]
+        name: [{ validator: validateName, trigger: "blur" }],
+        title:[{ validator: validateTitle, trigger: "blur" }],
       }
     };
   },
@@ -203,7 +219,7 @@ export default {
         step2: "2",
         step3: "3",
         stepX1: "x1",
-        title: this.newTaskModel.name + "-" + this.filename,
+        title: this.newTaskModel.title,
         row_num: (this.titleIndex - 1).toString(),
         data_set: this.tablejsons
       })

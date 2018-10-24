@@ -89,12 +89,6 @@
   </el-container>
 </template>
   <script>
-// 列拖拽尚未完成
-// 样式需优化
-// 改列名需要时间加载,有bug
-// 拉取数据需判断有没有类型,否则自行判断
-// 改列名,条件筛选中已选择的未自动改正
-
 import Left from "../common/data_set_list.vue";
 import ConditionFilter from "./ConditionFilter.vue";
 import wTable from "../common/mytable.vue";
