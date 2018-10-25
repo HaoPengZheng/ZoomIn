@@ -1,7 +1,7 @@
 <template>
   <el-aside :style="{width:width+'px'}">
     <div class="aside-warp">
-      <div style="overflow:scroll;width:100%;height:100%;">
+      <div style="overflow:scroll;width:100%;height:100%;overflow-x: hidden">
         <el-select v-model="dataSetName" v-show="!isShrink" filterable reserve-keyword placeholder="搜索数据集" style="padding:5px 3px">
           <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.title">
           </el-option>

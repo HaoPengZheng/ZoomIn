@@ -27,11 +27,24 @@
               </el-menu-item>
             </el-menu>
           </div>
-          <div class="right" >
-            <div style="border:1px solid red;width:60px;border-radius:60px">
-              <svg class="icon" aria-hidden="true" style="width:50px;height:50px">
-                <use xlink:href="#icon-kefuyouxian"></use>
-              </svg>
+          <div class="right">
+            <div class="login-setting">
+              <a class="el-dropdown-link">
+                <svg class="icon login-icon" aria-hiddewen="true">
+                  <use xlink:href="#icon-denglu1"></use>
+                </svg>
+              </a>
+              <ul class="login-drown">
+                <li>
+                  <a>个人中心</a>
+                </li>
+                <li>
+                  <a>会员中心</a>
+                </li>
+                <li>
+                  <a @click="logout()">退出登录</a>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -44,15 +57,20 @@
 export default {
   components: {},
   data() {
-    return {
-
-    };
+    return {};
   },
-  computed:{
-    activeIndex:function(){
+  computed: {
+    activeIndex: function() {
       return this.$store.getters.activeIndex;
     }
   },
+  methods: {
+    logout: function() {
+      localStorage.setItem("token", "");
+      localStorage.setItem("username", "");
+      this.$router.push({ path: "/" });
+    }
+  }
 };
 </script>
 <style scoped>
@@ -82,6 +100,9 @@ export default {
   padding: 0;
   margin: 0;
 }
+html {
+  overflow-x: hidden;
+}
 html,
 body,
 #home {
@@ -105,5 +126,49 @@ body > .el-container {
 /* 导航下面有element默认的1px的白线*/
 .el-menu--horizontal {
   border-bottom: 0;
+}
+.login-icon {
+  width: 40px;
+  height: 40px;
+  color: #262c30;
+  margin-top: 10px;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.login-setting {
+  position: relative;
+}
+.login-setting:hover {
+  background-color: rgb(65, 80, 80);
+}
+.login-setting:hover .login-icon {
+  color: #fdfdfd;
+}
+.login-setting:hover .login-drown {
+  display: block;
+}
+.login-drown {
+  display: none;
+  list-style: none;
+  position: absolute;
+  top: 60px;
+  right: 0px;
+  background-color: #262c30;
+  z-index: 9999;
+}
+.login-drown li {
+  text-align: center;
+  color: #fff;
+  height: 20px;
+  line-height: 20px;
+  padding: 0 16px;
+  margin: 12px 0;
+  font-size: 12px;
+  width: 80px;
+  cursor: pointer;
+}
+.login-drown li:hover {
+  color: #ffd04b;
 }
 </style>

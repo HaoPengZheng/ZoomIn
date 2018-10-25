@@ -100,6 +100,13 @@ export default {
     };
   },
   methods: {
+    converterJsonBlank:function(objArray){
+      objArray.forEach(element => {
+        for(let key in element){
+          element[key]=element[key].trim();
+        }
+      });
+    },
     submitTask: function(e) {
       // key.Code === 13表示回车键
       if (e.keyCode === 13 && e.ctrlKey) {
@@ -181,6 +188,8 @@ export default {
             defval: ""
           }
         );
+        _this.converterJsonBlank(_this.tablejsons);
+        console.log(_this.tablejsons);
       };
 
       if (rABS) {
