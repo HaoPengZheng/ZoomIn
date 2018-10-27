@@ -3,7 +3,15 @@
 
 
 <el-button @click="dialogVisible = true" class="btn-style"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bi1"></use></svg>新建筛选</el-button>
-
+<el-tag
+  v-for="(tag,index) in picFilterTags"
+  :key="index"
+  closable
+  type="warning"
+  style="margin:5px"
+  @close="picFilterTagClose(tag.value,index)">
+  {{tag.label}}
+</el-tag>
 
     <el-dialog
     title="图内筛选器"
@@ -11,7 +19,7 @@
     width="50%"
     >
     
-      <el-transfer v-model="transferValue" :data="transferData" style="text-align:left;display:inline-block"></el-transfer>   
+      <el-transfer v-model="transferValue" :data="transferData" :titles="['Source', 'Target']" style="text-align:left;display:inline-block"></el-transfer>   
 
 
 
@@ -33,28 +41,56 @@ import Bus from '../Bus.js'
          transferData:[],
          transferValue: [],
          transArray:[],
-         traArrayValue:[]
+         traArrayValue:[],
+         picFilterTags:[]
         }
     },
     mounted(){
-         Bus.$on('AxiosDataDragItem', (e) => {
-             Object.keys(e).forEach((arrayItem,index)=>{
-                 this.transferData.push({
-                     key:index,
-                     label:arrayItem
+        Bus.$on('picFilterItem',(e) => {
+            this.transferData = []
+            this.transArray = []
+            for(let i = 0;i<e.length;i++){
+                this.transferData.push({
+                     key:i,
+                     label:e[i]
                  })
-                 this.transArray.push(arrayItem)
-            })
+                 this.transArray.push(e[i])
+            }
        })
+    //原本显现全部字段数值的事件
+    //      Bus.$on('AxiosDataDragItem', (e) => {
+    //          Object.keys(e).forEach((arrayItem,index)=>{
+    //              this.transferData.push({
+    //                  key:index,
+    //                  label:arrayItem
+    //              })
+    //              this.transArray.push(arrayItem)
+    //         })
+    //    })
+
     },
     methods:{
         transferEnsure(){
             this.dialogVisible = false
             this.traArrayValue = []
+            this.picFilterTags = []
             this.transferValue.forEach((val)=>{
                 this.traArrayValue.push(this.transArray[val])
             })
             Bus.$emit('transferChoice',this.traArrayValue)
+            this.transferValue.forEach((val)=>{
+                this.picFilterTags.push({
+                    label:'筛选:' + this.transArray[val],
+                    value:this.transArray[val]
+                })
+            })
+        },
+        //筛选器tag标签删除的事件
+        picFilterTagClose(value,index){
+            this.picFilterTags.splice(index,1)            //不知道干什么  
+            this.traArrayValue.splice(index,1)            //删掉
+            Bus.$emit('transferChoice',this.traArrayValue)//更新Echarts上的筛选器的选项
+            Bus.$emit('deletePicFilter',value);
         }
     }
     }

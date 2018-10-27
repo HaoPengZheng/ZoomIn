@@ -1,32 +1,24 @@
 <template>
   <div id="app">
     <el-row>
-    <el-col :span="spanParms[0]" class="leftBoardStyle">
+    <el-col :span="spanParms[0]" class="leftBoardStyle" >
 
-      <el-card style="margin-bottom:20px;">
-        <div slot="header" class="clearfix">
-          <span style="font-family:微软雅黑;font-size:14px;">工作表信息</span>
-          <el-button style="float: right; padding: 3px 0" type="text"><i class="el-icon-setting"></i></el-button>
-        </div>
-          <table-info></table-info>
-      </el-card>
+          <el-button @click="btnClick" class="sizeBtn" id="sizeBtn">
+            <icon name="angle-left" v-show="iconFlag"></icon>
+            <icon name="angle-right" v-show="!iconFlag"></icon>
+          </el-button>
 
-      <el-button @click="btnClick" class="sizeBtn" id="sizeBtn">
-        <icon name="angle-left" v-show="iconFlag"></icon>
-        <icon name="angle-right" v-show="!iconFlag"></icon>
-      </el-button>
-
-      <el-card id="analysisDrag">
-        <div slot="header" class="clearfix">
-          <span style="font-family:微软雅黑;font-size:14px;">维度数值</span>
-          <el-button style="float: right; padding: 3px 0" type="text"><i class="el-icon-setting"></i></el-button>
-        </div>
-        <drag></drag>
-      </el-card>
-
-
+          <!-- <transition name="el-zoom-in-center"> -->
+            <div v-show="leftVisiable" class="transition-box">
+              <table-info style="margin-bottom: 50px" v-show="leftVisiable"></table-info>
+                <div class="demo_line_02">
+                  <span>维度数值</span>
+                </div>
+              <drag style="margin-top:30px"></drag>
+            </div>
+          <!-- </transition> -->
     </el-col>
-    
+
     <el-col :span="spanParms[1]">
       <div class="app-border">
         <!-- 由于导航栏的问题，临时下降1px -->
@@ -77,22 +69,25 @@ export default {
       spanParms:[3,17,4],
       hackReset:true,
       leftFlag:true,
-      iconFlag:true
+      iconFlag:true,
+      leftVisiable:true
     }
+  },
+  created(){
+    this.$store.commit('changeIndex',{index:"dataAnalysis"})
   },
   methods:{
     btnClick(){
-      Bus.$emit('leftChange',this.leftFlag)
+      Bus.$emit('leftChange',this.leftVisiable)
        if(this.leftFlag)this.spanParms=[1,22,1]
        else this.spanParms=[3,17,4]
        this.leftFlag = !this.leftFlag
        this.iconFlag = !this.iconFlag
+       this.leftVisiable = !this.leftVisiable
     }    
   },
   mounted(){
-    document.getElementById("sizeBtn").style.marginTop = document.getElementById("app").offsetHeight/4+'px';
-    document.getElementById("analysisDrag").style.height = document.getElementById("app").offsetHeight/1.3+'px';
-    
+    document.getElementById("sizeBtn").style.marginTop = document.getElementById("app").offsetHeight/2.5+'px';
   }
 }
 </script>
@@ -114,11 +109,8 @@ export default {
   border-right: 0px;
   border-left-style: solid;
   border-right-style: solid;
-  border-color: #888888;
-  /* box-shadow:0px -5px 10px 4px #D0D0D0  inset; */
-  /* 第三个阴影宽度 */
-  /* box-shadow:-2px 0 3px -1px #888888;
-  box-shadow:2px 0 3px -1px #888888; #D0D0D0*/
+  border-color: #D0D0D0;
+  box-shadow:0px -10px 10px 1px rgb(224, 224, 224)  inset;
 
 }
 
@@ -140,5 +132,17 @@ export default {
   padding:10px;
   background:#fff;
   position: relative;
+}
+.demo_line_02{
+    height: 1px;
+    border-top: 1px solid rgb(200, 200, 200);
+    text-align: center;
+}
+.demo_line_02 span{
+    position: relative;
+    top: -8px;
+    background: #fff;
+    padding: 0 20px;
+
 }
 </style>

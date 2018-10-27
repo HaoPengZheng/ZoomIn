@@ -90,7 +90,7 @@ import  'echarts/theme/macarons.js'
         markLineItem
     },
     mounted(){
-
+        
         Bus.$on('featureConfiguration',(e)=>{
             this.yData.push(e);
             this.selectOptions.push({

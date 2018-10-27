@@ -31,7 +31,7 @@
                             closable
                             :disable-transitions="false"
                             @close="colRemove(index)"
-                            style="margin:3px">{{item}}(求和)
+                            style="margin:3px">{{item}}
                         </el-tag>
 
                         <!-- 添加的按钮 -->
@@ -80,13 +80,18 @@ import Bus from './Bus.js'
             dropCol:[],
             dropAxisCol:[],
             axisFlag:false,
-            addIconFlag:true
+            addIconFlag:true,
+            dataArray:[]
         }
     },
     mounted(){
         Bus.$on('yAixsFail',(e)=>{
             this.dropCol.pop()
         })
+        Bus.$on('AxiosDataDragItem', (e) => {
+            this.dataArray = e
+            console.log(e)
+       })
     },
     methods:{
             drag:function(ev){
@@ -102,7 +107,7 @@ import Bus from './Bus.js'
                         //判定是否超过要求的范围
                         if(this.dropRow.length > 1){
                             this.$message({
-                                message: '只允许有一个维度',
+                                message: '只允许有一个因变量',
                                 showClose: true,
                                 type: 'warning',
                                 duration:1000
@@ -110,17 +115,28 @@ import Bus from './Bus.js'
                             this.dropRow.pop()
                             return;
                         }
-			            // var element = document.createElement("div");
-			            // element.setAttribute("id", "row-" + data);
-                        // element.setAttribute("class","drop-tag");
-                        // element.setAttribute("draggable", true);
-                        // //element.setAttribute("ondragstart", "drag(event)");
-                        // //element.setAttribute("onclick","liClick")
-			            // var text = document.createTextNode(data);
-                        // // alert(data);
-			            // element.appendChild(text);
-			            // ev.target.appendChild(element);                                                                
-                        //给echarts组件发名字
+
+                        if(!this.isNumber(this.dataArray[data])){
+                            this.$message({
+                                message: '只允许数值类型',
+                                showClose: true,
+                                type: 'warning',
+                                duration:1000
+                            });
+                            this.dropRow.pop()
+                            return;
+                        }
+                        if(this.dropRow.length > 1){
+                            this.$message({
+                                message: '只允许有一个自变量',
+                                showClose: true,
+                                type: 'warning',
+                                duration:1000
+                            });
+                            this.dropRow.pop()
+                            return;
+                        } 
+
                         Bus.$emit('rowdata', data)
                         if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
 
@@ -133,6 +149,29 @@ import Bus from './Bus.js'
                         Bus.$emit('coldata', data)//给echarts组件发名字
                         Bus.$emit('featureConfiguration',data)//给功能配置发送消息
                         if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
+                        
+                        //判定是否超过要求的范围
+
+                        if(!this.isNumber(this.dataArray[data])){
+                            this.$message({
+                                message: '只允许数值类型',
+                                showClose: true,
+                                type: 'warning',
+                                duration:1000
+                            });
+                            this.dropCol.pop()
+                            return;
+                        }
+                        if(this.dropCol.length > 1){
+                            this.$message({
+                                message: '只允许有一个自变量',
+                                showClose: true,
+                                type: 'warning',
+                                duration:1000
+                            });
+                            this.dropCol.pop()
+                            return;
+                        }    
 			        
             },
             colAxisDrop:function(ev){
@@ -173,6 +212,15 @@ import Bus from './Bus.js'
                 this.axisFlag = false;
                 this.addIconFlag = true;
                 // if(yAxisIndex)
+            },
+            isNumber(val) {
+            var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+            var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+            if(regPos.test(val) || regNeg.test(val)) {
+                return true;
+                } else {
+                    return false;
+                }
             }
 		    
     }
@@ -228,7 +276,11 @@ import Bus from './Bus.js'
     white-space: nowrap;
 }
 .el-tag {
-    font-size: 13px
+    color: #fff;
+    border: 0px;
+    font-size: 13px;
+    background: #6495ed;
+    background: linear-gradient(-135deg, transparent 8px, #6495ed 0) top right;
 }
 .box-style {
     background-color: #fff;

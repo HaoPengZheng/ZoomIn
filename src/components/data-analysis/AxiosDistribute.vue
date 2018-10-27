@@ -33,7 +33,7 @@ export default {
           "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
           {
             //data_set_id: this.dataSetId
-            data_set_id: 4
+            data_set_id: 15
           },
           {
             headers: {
@@ -83,7 +83,6 @@ export default {
         });
 
     this.$get("/dataSet/").then(r=>{
-      console.log(r)
       for (let i = 0; i < r.length; i++) {
         if(r[i].id == 4){
           Bus.$emit('taskTitle',r[i].title)

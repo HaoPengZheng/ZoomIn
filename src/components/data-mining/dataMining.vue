@@ -14,8 +14,9 @@
       <div class="app-border" >
         <!-- 由于导航栏的问题，临时下降1px -->
         <el-row style="margin-top:1px;" > 
-          <el-col :span="24"><div style="margin-left:15px;margin-right:20px"><drop></drop></div></el-col>
-          <el-col :span="24"><div style="margin-top:5px;margin-left:15px"><model-parms></model-parms></div></el-col>
+          <el-col :span="24" v-if="status=='回归分析'"><div style="margin-left:15px;margin-right:20px"><drop></drop></div></el-col>
+          <el-col :span="24" v-if="status=='回归分析'"><div style="margin-top:5px;margin-left:15px"><model-parms></model-parms></div></el-col>
+          <ClusterParms v-else-if="status=='聚类分析'"></ClusterParms>
         </el-row>
 
         <el-row>
@@ -41,9 +42,10 @@ import dropFilter from './dropFilter'
 import echarts from './echarts'
 import rightBoard from './rightBoard'
 import AxiosDistribute from './AxiosDistribute'
-import tableInfo from './tableInfo'
+import tableInfo from '../data-analysis/tableInfo'
 import modelParms from './modelParms'
 import Bus from './Bus.js'
+import ClusterParms from './ClusterParms'
 export default {
   name: 'App',
   components:{
@@ -54,7 +56,8 @@ export default {
     AxiosDistribute,
     dropFilter,
     tableInfo,
-    modelParms
+    modelParms,
+    ClusterParms
   },
   data(){
     return{
@@ -62,11 +65,34 @@ export default {
       spanParms:[3,17,4],
       hackReset:true,
       leftFlag:true,
-      iconFlag:true
+      iconFlag:true,
+      status:'回归分析'
     }
+  },
+  created(){
+    this.$store.commit('changeIndex',{index:"dataMining"})
   },
   mounted(){
     document.getElementById("sizeBtn").style.marginTop = document.getElementById("app").offsetHeight/4+'px';
+    Bus.$on('modelParmsFlag',(modelType)=>{
+      switch (modelType) {
+        case '线性回归':
+          this.status = '回归分析'
+          break;
+        case '非线性回归':
+          this.status = '回归分析'
+          break;
+        case 'K-Means聚类':
+          this.status = '聚类分析'
+          break;
+        case 'Mini Batch K-Means聚类':
+          this.status = '聚类分析'
+          break;
+      
+        default:
+          break;
+      }
+    })
   },
   methods:{
     btnClick(){
@@ -98,7 +124,7 @@ export default {
   border-left-style: solid;
   border-right-style: solid;
   border-color: #D0D0D0;
-  box-shadow:0px -10px 10px 7px rgb(224, 224, 224)  inset;
+  box-shadow:0px -10px 10px 1px rgb(224, 224, 224)  inset;
   /* #F0F2F3 */
   /* rgb(224, 224, 224) */
 }
