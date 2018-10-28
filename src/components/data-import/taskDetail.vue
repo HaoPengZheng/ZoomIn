@@ -77,26 +77,6 @@ export default {
   created: function() {
     this.fetchTask();
     this.updateDetail(this.$route.params.taskId);
-    // this.$axios
-    //     .post(
-    //       "http://120.79.146.91:8000/task/dataProcessing/filters",
-    //       {
-    //         data_set_id: "26",
-    //         logical_type: this.conditionType,
-    //         filter: this.filterData
-    //       },
-    //       {
-    //         headers: {
-    //           Authorization: "JWT " + localStorage.getItem("token")
-    //         }
-    //       }
-    //     )
-    //     .then(response => {
-    //       alert("成功");
-    //     })
-    //     .catch(response => {
-    //       alert("error");
-    //     });
   },
   methods: {
     fetchTask: function() {
@@ -110,9 +90,6 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event);
-    },
-    onSubmit() {
-      console.log("submit!");
     },
     updateDetail: function(id) {
       this.taskId = id;

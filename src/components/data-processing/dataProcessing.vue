@@ -1,6 +1,6 @@
   <template>
   <el-container>
-    <Left :dataSetList="dataSetList" v-on:showDataSet="showDataSet" :dataSetId="dataSetId">
+    <Left :dataSetList="dataSetList" :dataSetId="dataSetId">
     </Left>
     <el-container>
       <el-main>
@@ -36,11 +36,19 @@
                   </div>
                 </el-row>
                 <div style="padding-top:30px;width:100%;margin:0 auto">
-                  <div v-if="IsEmptyDataSet">
+                  <div v-if="IsEmptyDataSetList">
                     <EmptyTask>
                       <template slot="404Message">
-                        <p>数据集列表空空如也！</p>
+                        <p>数据集内容空空如也！</p>
                         <p>请重新新建任务，再进行数据处理！</p>
+                      </template>
+                    </EmptyTask>
+                  </div>
+                   <div v-if="IsEmptyDataSet&&!IsEmptyDataSetList">
+                    <EmptyTask>
+                      <template slot="404Message">
+                        <p>数据集内容空空如也！</p>
+                        <p>可能是被您过滤完了。</p>
                       </template>
                     </EmptyTask>
                   </div>
@@ -78,7 +86,7 @@
       </span>
     </el-dialog>
 
-    <el-dialog title="增加新字段" :visible.sync="addFieldDialogVisible" width="30%" >
+    <el-dialog title="增加新字段" :visible.sync="addFieldDialogVisible" width="30%">
       <newFieldForm ref="newFiledRef" :fields="tableKeys" :types="tableKeysType" :dataSetId="dataSetId" @refreshData="refreshData"></newFieldForm>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addFieldDialogVisible = false">取 消</el-button>
@@ -150,6 +158,7 @@ export default {
       activeName: "first",
       dialogVisible: false,
       addFieldDialogVisible: false,
+      IsEmptyDataSetList:false,
       IsEmptyDataSet: false,
       tableLoading: true,
       tableOption: {
@@ -268,32 +277,58 @@ export default {
     // 返回json
     fetch: function() {
       //如果不是router传过来的dataSetId
-      if (typeof this.dataSetId == "undefined") {
-        if (
-          this.dataSetList.length == 0 ||
-          this.dataSetList[0].id == "undefined"
-        ) {
-          this.IsEmptyDataSet = true;
-          return;
-        }
-        if (typeof this.$store.getters.lastActiveDataSetId == Number) {
-          this.dataSetId = this.$store.getters.lastActiveDataSetId;
+      // if (typeof this.dataSetId == "undefined") {
+      //   if (
+      //     this.dataSetList.length == 0 ||
+      //     this.dataSetList[0].id == "undefined"
+      //   ) {
+      //     this.IsEmptyDataSet = true;
+      //     return;
+      //   }
+      //   if (typeof this.$store.getters.lastActiveDataSetId == Number) {
+      //     this.dataSetId = this.$store.getters.lastActiveDataSetId;
+      //   } else {
+      //     this.dataSetId = this.dataSetList[0].id;
+      //   }
+      // }
+      // if (this.IsEmptyDataSet) {
+      //   return;
+      // }
+      // this.$store.commit("changeDataProcessingActiveDataSetId", {
+      //   dataSetId: this.dataSetId
+      // });
+      if (this.dataSetId == "" || typeof this.dataSetId == "undefined") {
+        if (this.$route.params.id) {
+          this.dataSetId = this.$route.params.id;
+          this.$router.push(`/home/data-processing/${this.dataSetId}`);
         } else {
-          this.dataSetId = this.dataSetList[0].id;
+          if (
+            this.dataSetList.length == 0 ||
+            this.dataSetList[0].id == "undefined"
+          ) {
+            this.IsEmptyDataSetList = true;
+            return;
+          } else {
+            this.IsEmptyDataSetList = false;
+            this.dataSetId = this.dataSetList[0].id;
+            this.$router.push(`/home/data-processing/${this.dataSetId}`);
+          }
         }
       }
-      if (this.IsEmptyDataSet) {
-        return;
-      }
-      this.$store.commit("changeDataProcessingActiveDataSetId", {
-        dataSetId: this.dataSetId
-      });
+
+      this.tableLoading = true;
+      this.tableData = [];
       this.$post("/task/dataProcessing/showDataSet3", {
         data_set_id: this.dataSetId
       })
         .then(response => {
           this.allItems = response.data.length;
           this.tableData = response.data.slice(0, 100);
+          this.IsEmptyDataSet = this.tableData.length <=0?true:false;
+          if(this.IsEmptyDataSet){
+            this.tableData=[];
+            return ;
+          }
           console.log(this.tableData);
           this.tableKeys = Object.keys(this.tableData[0]);
           console.log(this.tableKeys);
@@ -304,6 +339,7 @@ export default {
               // 用来存储字段类型
               var tableKeysTypes = [];
               // 将后端传回的字符串转换为Object
+              // 类型
               this.tableKeysTypeObject = JsonParse.looseJsonParse(
                 response.data
               );
@@ -320,11 +356,14 @@ export default {
               }
               this.tableLoading = false;
             });
+
+            // 字段描述
             this.$post("/task/dataProcessing/showDesc", {
               data_set_id: this.dataSetId
             }).then(response => {
               this.keyDesc = JsonParse.looseJsonParse(response.data);
             });
+            // 列名
             this.$post("/task/dataProcessing/showOriginColumnsName", {
               data_set_id: this.dataSetId
             }).then(response => {
@@ -334,6 +373,8 @@ export default {
         })
         .catch(response => {
           alert("获取数据失败");
+        }).then(()=>{
+          this.tableLoading = false;
         });
     },
     //条件筛选显示
@@ -537,44 +578,44 @@ export default {
     },
     //新增字段如何在表格中正确的标识呢
     addField: function(fieldName, fieldType, expression) {
-            this.$refs.newFiledRef.addField();
-    //   let tableData = this.tableData;
-    //   fieldName = "新增字段";
-    //   fieldType = "object";
-    //   tableData.forEach(data => {
-    //     // var xxcj;
-    //     // var zcj;
-    //     // var value;
+      this.$refs.newFiledRef.addField();
+      //   let tableData = this.tableData;
+      //   fieldName = "新增字段";
+      //   fieldType = "object";
+      //   tableData.forEach(data => {
+      //     // var xxcj;
+      //     // var zcj;
+      //     // var value;
 
-    //     // for (var key in data) {
-    //     //   if (key == "笔试成绩") {
-    //     //     xxcj = data[key];
-    //     //   }
-    //     //   if (key == "总成绩") {
-    //     //     zcj = data[key];
-    //     //   }
-    //     //   value = xxcj + zcj;
-    //     // }
+      //     // for (var key in data) {
+      //     //   if (key == "笔试成绩") {
+      //     //     xxcj = data[key];
+      //     //   }
+      //     //   if (key == "总成绩") {
+      //     //     zcj = data[key];
+      //     //   }
+      //     //   value = xxcj + zcj;
+      //     // }
 
-    //     data[fieldName] = 1;
-    //   });
-    //   this.tableData = [];
-    //   let property = new tableProperty(
-    //     true,
-    //     null,
-    //     fieldName,
-    //     fieldType,
-    //     "",
-    //     true
-    //   );
-    //   let newPropertys = deepCopy(this.tablePropertys);
-    //   newPropertys[fieldName] = property;
-    //   this.tablePropertys = newPropertys;
-    //   console.log(this.tablePropertys);
-    //   this.tableData = tableData;
-    //   this.addFieldDialogVisible = false;
+      //     data[fieldName] = 1;
+      //   });
+      //   this.tableData = [];
+      //   let property = new tableProperty(
+      //     true,
+      //     null,
+      //     fieldName,
+      //     fieldType,
+      //     "",
+      //     true
+      //   );
+      //   let newPropertys = deepCopy(this.tablePropertys);
+      //   newPropertys[fieldName] = property;
+      //   this.tablePropertys = newPropertys;
+      //   console.log(this.tablePropertys);
+      //   this.tableData = tableData;
+      //   this.addFieldDialogVisible = false;
     },
-    
+
     //数据处理后进入下一步、
     //todo:若不保存处理，应该删除处理的结果。。也就是用处理前的dataset
     saveAndGoDataAnalysis: function() {
@@ -596,11 +637,23 @@ export default {
     //重新拉取数据集
     refreshData: function() {
       //重新拉取
-      this.addFieldDialogVisible=false;
-      this.dialogVisible =false;
-      this.fetch()
+      this.addFieldDialogVisible = false;
+      this.dialogVisible = false;
+      this.fetch();
+    }
+  },
+  watch: {
+    $route(to, from) {
+      // 对路由变化作出响应...
+      this.dataSetId = to.params.id;
+      this.refreshData();
     }
   }
+  // beforeRouteUpdate(to, from, next) {
+  //   this.dataSetId = to.params.id;
+  //   this.refreshData();
+  //   next();
+  // }
 };
 </script>
 <style scoped>

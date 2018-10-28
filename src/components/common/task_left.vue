@@ -6,12 +6,12 @@
           <el-option v-for="item in allTaskInfo" :key="item.id" :label="item.task_name" :value="item">
           </el-option>
         </el-select>
-        <el-button v-show="!isShrink" @click="newTaskDialogVisable = true" type="text" style="font-size:16px">
+        <el-button v-show="!isShrink"  type="text" style="font-size:16px">
           <i class="el-icon-plus"></i>
         </el-button>
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
-        <el-menu :default-active="activeIndex==undefined?'':activeIndex+''" :collapse="isShrink">
-          <el-menu-item :index="task.id==undefined?'':task.id+''" v-for="(task,index) in allTaskInfo" :key="index">
+        <el-menu :default-active="`/home/task-detail/`+activeNumber" :collapse="isShrink" v-bind:router="true">
+          <el-menu-item :index="`/home/task-detail/${task.id}`" v-for="(task,index) in allTaskInfo" :key="index">
             <a @click="showTaskDetail(task.id)">
               <i class="el-icon-document" style=""></i>
               <span slot="title" style="padding-right:80px">{{task.task_name}}</span>
@@ -37,49 +37,14 @@
         </template>
       </a>
     </div>
-    <el-dialog title="上传数据集" :visible.sync="uploadDataSetDialogVisible" width="30%">
-      <div style="margin:0 auto">
-        <el-upload class="upload-demo" style="padding:0 10%" drag multiple>
-          <i class="el-icon-upload"></i>
-          <div class="el-upload__text">将文件拖到此处，或
-            <em>点击上传</em>
-          </div>
-          <div class="el-upload__tip" slot="tip">只能上传excel,csv文件 </div>
-        </el-upload>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
-      </span>
-    </el-dialog>
-    <!-- 新建任务的模态框 -->
-    <el-dialog :visible.sync="newTaskDialogVisable" width="30%" title="新建任务" center>
-      <el-form ref="form" label-width="80px" label-position="left">
-        <el-form-item label="任务名称">
-          <el-input type="text" v-model="newTaskModel.name"></el-input>
-        </el-form-item>
-
-        <el-form-item label="数据源">
-          <input type="file" ref="obj" @change="importf()" id="excel-input" :accept="accept" />
-        </el-form-item>
-        <el-form-item label="任务描述">
-          <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="newTaskModel.describe">
-          </el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="newTaskDialogVisable = false">取 消</el-button>
-        <el-button type="primary" @click="newTask">下一步</el-button>
-      </span>
-    </el-dialog>
-    <!-- 数据预览模态框 -->
+    <!-- 数据预览模态框
     <el-dialog :visible.sync="tablePreviewVisable" width="50%" title="数据预览" top="5vh">
       <previewTable :json="tablejsons" v-on:setTitleIndex="setTitleIndex"></previewTable>
       <span slot="footer" class="dialog-footer">
         <el-button @click="tablePreviewVisable = false">取 消</el-button>
         <el-button type="primary" @click="createTask">创建任务</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </el-aside>
 </template>
 <script>
@@ -93,9 +58,9 @@ export default {
     PreviewTable
   },
   props: {
-    task: Array,
-    active: Number,
-    taskInfo: Array
+    task: "",
+    active:"" ,
+    taskInfo:"" 
   },
   data() {
     return {
@@ -104,7 +69,6 @@ export default {
       toggleTitle: "隐藏侧边栏",
       uploadDataSetDialogVisible: false,
       activeNumber: Number,
-      activeIndex: String,
       allTaskInfo: this.taskInfo,
       taskQueryName: {
         id: "",
@@ -152,16 +116,11 @@ export default {
       let query = this.$get("/taskinfo");
       query.then(response => {
         this.allTaskInfo = response;
-        console.log(this.allTaskInfo[0].id);
-        // this.showTaskDetail(this.taskInfo[0].id);
-        // this.$emit("updateDetail", this.taskInfo[0].id);
-        // console.log(response);
-        // 默认第一个
-        if (this.activeNumber == undefined) {
+        this.activeNumber = this.$route.params.id;
+        if (this.activeNumber == undefined) {     
           this.activeNumber = this.allTaskInfo[0].id;
-          this.showTaskDetail(this.allTaskInfo[0].id);
-          this.activeIndex = this.activeNumber.toString();
         }
+        this.showTaskDetail(this.activeNumber);
       });
     },
     shrink: function() {
@@ -183,131 +142,8 @@ export default {
       this.taskQueryName = "";
       this.$emit("updateDetail", id);
     },
-    showNewTaskDialog(fileType) {
-      if (fileType == "csv") {
-        this.accept = ".csv";
-      } else {
-        this.accept =
-          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel";
-      }
-      this.newTaskDialogVisable = true;
-    },
-    newTask: function() {
-      if (this.$refs.obj.value == "") {
-        this.$message({
-          message: "请选择数据源！",
-          type: "warning"
-        });
-      } else {
-        this.$axios
-          .post(
-            "http://120.79.146.91:8000/taskinfo/",
-            {
-              task_name: this.newTaskModel.name,
-
-              task_desc: this.newTaskModel.describe
-            },
-            {
-              headers: {
-                Authorization: "JWT " + localStorage.getItem("token")
-              }
-            }
-          )
-          .then(response => {
-            this.taskid = response.data.id;
-            this.tablePreviewVisable = true;
-            this.newTaskDialogVisable = false;
-          })
-          .catch(response => {
-            console.log(response.data);
-          });
-      }
-    },
-    importf() {
-      //导入
-      let obj = this.$refs.obj;
-      if (!obj.files) {
-        return;
-      }
-      var f = obj.files[0];
-      var reader = new FileReader();
-      let _this = this;
-      reader.onload = function(e) {
-        var data = e.target.result;
-        if (rABS) {
-          wb = XLSX.read(btoa(fixdata(data)), {
-            //手动转化
-            type: "base64"
-          });
-        } else {
-          wb = XLSX.read(data, {
-            type: "binary"
-          });
-        }
-        //wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
-        //wb.Sheets[Sheet名]获取第一个Sheet的数据
-        var jsons = JSON.stringify(
-          XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]])
-        );
-        console.log(jsons);
-        _this.tablejsons = JSON.parse(jsons);
-        x;
-      };
-
-      if (rABS) {
-        reader.readAsArrayBuffer(f);
-      } else {
-        reader.readAsBinaryString(f);
-      }
-    },
-    fixdata(data) {
-      //文件流转BinaryString
-      var o = "",
-        l = 0,
-        w = 10240;
-      for (; l < data.byteLength / w; ++l)
-        o += String.fromCharCode.apply(
-          null,
-          new Uint8Array(data.slice(l * w, l * w + w))
-        );
-      o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
-      return o;
-    },
     setTitleIndex: function(index) {
       this.titleIndex = index;
-    },
-    createTask: function() {
-      this.tablePreviewVisable = false;
-      this.$axios
-        .post(
-          "http://120.79.146.91:8000/dataSet/",
-          {
-            task: this.taskid,
-            title: "数据集名",
-            step1: "1",
-            step2: "2",
-            step3: "3",
-            row_num: (this.titleIndex - 1).toString(),
-            data_set: this.tablejsons
-          },
-          {
-            headers: {
-              Authorization: "JWT " + localStorage.getItem("token")
-            }
-          }
-        )
-        .then(response => {
-          console.log(response);
-          var dataSetId = response.data.data.id;
-          //创建完成之后，跳转到数据处理页面，传任务ID
-          this.$router.push({
-            name: "data-processing",
-            params: { taskId: this.taskid, dataSetId: dataSetId }
-          });
-        })
-        .catch(response => {
-          alert("出错了");
-        });
     },
     deleteTask: function(id) {
       this.$toDelete("/taskinfo/" + id + "/").then(response => {
@@ -325,7 +161,6 @@ export default {
       immediate: true,
       handler: function(val) {
         this.activeNumber = val;
-        this.activeIndex = val;
       }
     },
     taskInfo: {
@@ -334,6 +169,11 @@ export default {
       handler: function(val) {
         this.allTaskInfo = val;
       }
+    },
+    $route(to, from) {
+      // 对路由变化作出响应...
+      this.activeNumber = to.params.id;
+      this.showTaskDetail(to.params.id);
     }
   }
 };

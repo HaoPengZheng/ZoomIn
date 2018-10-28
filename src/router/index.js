@@ -34,7 +34,15 @@ const router = new Router({
             }
         },
         {
-            path: 'task-detail',
+            path: 'data-processing/:id',
+            name: 'data-processing',
+            component: DataProcessing,
+            meta: {
+                requireAuth: true
+            }
+        },
+        {
+            path: 'task-detail/:id',
             name: 'task-detail',
             component: TaskDetail,
             meta: {

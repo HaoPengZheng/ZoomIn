@@ -10,13 +10,13 @@
           <i class="el-icon-plus"></i>
         </el-button>
         <hr style="height:1px;border:none;border-top:1px solid #ccc">
-        <el-menu :default-active="`${dataSetId}`" :collapse="isShrink">
-          <el-menu-item :index="`${dataSet.id}`" v-for="(dataSet) in dataSetList" :key="dataSet.id">
+        <el-menu :default-active="`/home/data-processing/${dataSetId}`" :collapse="isShrink" v-bind:router="true">
+          <el-menu-item :index="`/home/data-processing/${dataSet.id}`" v-for="(dataSet) in dataSetList" :key="dataSet.id">
             <template v-if="target==dataSet.id">
               <i class="el-icon-document" style=""></i>
               <el-input v-model="newTitle" size="mini" style="width:120px" @blur="saveChangeTitle" @keyup.native="keySaveChange($event)" @click.native="stop($event)"></el-input>
             </template>
-            <a v-else @click="showDataSet(dataSet.id)">
+            <a v-else >
               <i class="el-icon-document" style=""></i>
               <span slot="title" style="padding-right:80px">{{dataSet.title}}</span>
             </a>

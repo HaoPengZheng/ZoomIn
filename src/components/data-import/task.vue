@@ -50,10 +50,7 @@ export default {
       }
     },
     taskDetail: function() {
-      this.$router.push({
-        name: "task-detail",
-        params: { taskId: this.taskid }
-      });
+      this.$router.push(`/home/task-detail/${this.taskid}`);
     }
   }
 };
