@@ -15,24 +15,44 @@
         <el-col :span="12">
           <h5 style="text-align:center">函数</h5>
           <vue-scroll :ops="ops">
-            <div class='your-content'>
-              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo">
+            <div class='chooseFun'>
+              <el-menu  style="max-height:200px;border:0px" class="el-menu-vertical-demo">
                 <el-menu-item index="1">
-                  <span slot="title" @click="chooseFunction('add')">
+                  <span slot="title">
                     <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px">函数:sum(a,b)<br />作用:两列相加<br />例子:sum(语文,数学)</div>
+                      <div slot="content" style="font-size:16px">expression:a+b<br />作用:相加<br />例子:语文+数学+...</div>
                       <el-button type="text">
-                        <i class="el-icon-menu"></i>add
+                        <i class="el-icon-menu"></i>ADD
                       </el-button>
                     </el-tooltip>
                   </span>
                 </el-menu-item>
                 <el-menu-item index="2">
-                  <span slot="title" @click="chooseFunction('add')">
+                  <span slot="title" >
                     <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px">函数:sub(a,b)<br />作用:两列相减<br />例子:sub(语文,数学)</div>
+                      <div slot="content" style="font-size:16px">expression:a-b<br />作用:相减<br />例子:总成绩-数学</div>
                       <el-button type="text">
-                        <i class="el-icon-menu"></i>sub
+                        <i class="el-icon-menu"></i>SUB
+                      </el-button>
+                    </el-tooltip>
+                  </span>
+                </el-menu-item>
+                <el-menu-item index="3">
+                  <span slot="title" >
+                    <el-tooltip placement="left">
+                      <div slot="content" style="font-size:16px">expression:a*b<br />作用:相乘<br />例子:平均分*3</div>
+                      <el-button type="text">
+                        <i class="el-icon-menu"></i>MUL
+                      </el-button>
+                    </el-tooltip>
+                  </span>
+                </el-menu-item>
+                     <el-menu-item index="4">
+                  <span slot="title" >
+                    <el-tooltip placement="left">
+                      <div slot="content" style="font-size:16px">expression:a*b<br />作用:相除<br />例子:数学/总成绩</div>
+                      <el-button type="text">
+                        <i class="el-icon-menu"></i>DEV
                       </el-button>
                     </el-tooltip>
                   </span>
@@ -45,7 +65,7 @@
           <h5 style="text-align:center">字段</h5>
           <vue-scroll :ops="ops">
             <div class='your-content'>
-              <el-menu default-active="1" style="max-height:200px;border:0px" class="el-menu-vertical-demo">
+              <el-menu  style="max-height:200px;border:0px" class="el-menu-vertical-demo">
                 <el-menu-item :index="index.toString()" v-for="(field,index) in fields " :key="index">
                   <span slot="title">
                     <a @click="chooseField(field)">
@@ -95,7 +115,7 @@ export default {
   props: {
     fields: Array,
     types: Array,
-    dataSetId:Number,
+    dataSetId:"",
   },
   methods: {
     chooseField: function(field) {

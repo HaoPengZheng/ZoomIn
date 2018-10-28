@@ -236,10 +236,7 @@ export default {
           var dataSetId = response.data.id;
           //创建完成之后，跳转到数据处理页面，传任务ID
           loading.close();
-          this.$router.push({
-            name: "data-processing",
-            params: { taskId: this.taskid, dataSetId: dataSetId }
-          });
+          this.$router.push(`/home/data-processing/${dataSetId}`);
         })
         .catch(err => {
           loading.close();

@@ -48,7 +48,9 @@ export default {
   watch: {
     data: {
       handler(val, oldVal) {
-
+        if(val==null||val==undefined||val==""){
+          return;
+        }
         let keys = Object.keys(val[0]);
         let tempHeader = [];
         this.tableHeader = keys;

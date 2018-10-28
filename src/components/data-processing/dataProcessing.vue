@@ -453,6 +453,7 @@ export default {
         ]
       });
       query.then(response => {
+        console.log(response);
         this.$set(this.tableKeys, this.changeColumnIndex, this.newColumnName);
         //set方法。数组更新，但是试图不更新的问题，遇到类似的可以使用vue.set为解决方案
         this.$set(

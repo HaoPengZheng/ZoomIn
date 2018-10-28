@@ -21,7 +21,6 @@
                 <i class="el-icon-more pointer"></i>
               </span>
               <el-dropdown-menu slot="dropdown" style="margin:-10px 0!important">
-                <el-dropdown-item>编辑</el-dropdown-item>
                 <el-dropdown-item @click.native="deleteTask(task.id)">删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
