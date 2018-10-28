@@ -12,13 +12,13 @@
 
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">标题</div>
-                <el-input class="axisOptionStyle" v-model="xAxisInput" placeholder="请输入X轴" suffix-icon="el-icon-edit" @blur="xAxisChange"></el-input>
+                <el-input v-model="xAxisInput" @blur="xAxisInputChange" class="axisOptionStyle" placeholder="请输入X轴" suffix-icon="el-icon-edit"></el-input>
                 </div>
 
-                <!-- <div class="el-input el-input-group el-input-group--prepend">
+                <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">单位</div>
-                <el-input v-model="xAxisUnit" class="axisOptionStyle" placeholder="请输入X轴" suffix-icon="el-icon-edit"></el-input>
-                </div> -->
+                <el-input v-model="xAxisUnit" @blur="xAxisUnitChange" class="axisOptionStyle" placeholder="请输入X轴" suffix-icon="el-icon-edit"></el-input>
+                </div>
 
         </el-submenu>
 
@@ -32,13 +32,13 @@
             
                 <div class="el-input el-input-group el-input-group--prepend ">
                 <div class="el-input-group__prepend">标题</div>
-                <el-input class="axisOptionStyle" v-model="yAxisInput" placeholder="请输入Y轴" suffix-icon="el-icon-edit" @blur="yAxisChange"></el-input>
+                <el-input class="axisOptionStyle" v-model="yAxisInput" @blur="yAxisInputChange" placeholder="请输入Y轴" suffix-icon="el-icon-edit"></el-input>
                 </div>
 
-                <!-- <div class="el-input el-input-group el-input-group--prepend">
+                <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">单位</div>
-                <el-input  class="axisOptionStyle" v-model="yAxisUnit" placeholder="请输入Y轴" suffix-icon="el-icon-edit"></el-input>
-                </div> -->
+                <el-input  class="axisOptionStyle" v-model="yAxisUnit" @blur="yAxisUnitChange" placeholder="请输入Y轴" suffix-icon="el-icon-edit"></el-input>
+                </div>
             
 
         </el-submenu>
@@ -60,11 +60,17 @@ export default {
           }
         },
         methods: {
-            xAxisChange(){
-                Bus.$emit('miningXAxis',this.xAxisInput)
+            xAxisInputChange(){
+                Bus.$emit('xAxisInputChange',this.xAxisInput)
             },
-            yAxisChange(){
-                Bus.$emit('miningYAxis',this.yAxisInput)
+            xAxisUnitChange(){
+                Bus.$emit('xAxisUnitChange',this.xAxisUnit)
+            },
+            yAxisInputChange(){
+                Bus.$emit('yAxisInputChange',this.yAxisInput)
+            },
+            yAxisUnitChange(){
+                Bus.$emit('yAxisUnitChange',this.yAxisUnit)
             }
         }
 }

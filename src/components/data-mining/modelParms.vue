@@ -4,7 +4,7 @@
             <el-col :span="12" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">数据划分比例</div>
-                <el-input-number v-model="num1" :precision="2" :step="0.01" size="small" @change="handleChange" :min="0" :max="0.99" label="描述文字"></el-input-number>
+                <el-input-number v-model="num1" :precision="2" :step="0.01" size="small" @change="testSizeChange(num1)" :min="0" :max="0.99" label="描述文字"></el-input-number>
                 <a style="color:#dcdfe6">（建议值：0.7~0.8）</a>
                 </div>
             </el-col>
@@ -12,7 +12,7 @@
             <el-col :span="12" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">&nbsp;误差计算&nbsp;&nbsp;</div>
-                <el-select v-model="value" placeholder="MSE(平均绝对误差)" size="small">
+                <el-select v-model="value" placeholder="MSE(平均绝对误差)" size="small" @change="errorType(value)">
                     <el-option
                     v-for="(item,index) in selValue"
                     :key="index"
@@ -26,11 +26,11 @@
 
 
     <!-- 非线性回归部分 -->
-        <el-row v-show="!modelParmsFlag">
+        <el-row v-show="!modelParmsFlag"  class="modelParmsStyle">
             <el-col :span="10" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">数据划分比例</div>
-                <el-input-number v-model="num1" :precision="2" :step="0.1" size="small" @change="handleChange" :min="0" :max="0.99" label="描述文字"></el-input-number>
+                <el-input-number v-model="num1" :precision="2" :step="0.01" size="small" @change="testSizeChange(num1)" :min="0" :max="0.99" label="描述文字"></el-input-number>
                 <a style="color:#dcdfe6">（建议值：0.7~0.8）</a>
                 </div>
             </el-col>
@@ -38,14 +38,14 @@
             <el-col :span="7" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">次数m</div>
-                <el-input-number v-model="num2" size="small" @change="handleChange" :min="2" :max="10" label="描述文字"></el-input-number>
+                <el-input-number v-model="num2" size="small" @change="mthPowerChange(num2)" :min="2" :max="10" label="描述文字"></el-input-number>
                 </div>
             </el-col>
 
             <el-col :span="7" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">误差计算</div>
-                <el-select v-model="value" placeholder="MSE(平均绝对误差)" size="small">
+                <el-select v-model="value" placeholder="MSE(平均绝对误差)" size="small" @change="errorType(value)">
                     <el-option
                     v-for="(item,index) in selValue"
                     :key="index"
@@ -73,13 +73,28 @@ export default {
         };
     },
     methods: {
-        handleChange(value) {
-            console.log(value);
+        testSizeChange(value) {
+            Bus.$emit('test_size',value)
+        },
+        mthPowerChange(value){
+            Bus.$emit('mth_power',value)
+        },
+        errorType(value){
+            Bus.$emit('error_type',value)
         }
     },
     mounted(){
-        Bus.$on('modelParmsFlag',(e)=>{
-            this.modelParmsFlag = e
+        Bus.$on('modelParmsFlag',(type)=>{
+            switch (type) {
+                case '线性回归':
+                    this.modelParmsFlag = true
+                    break;
+                case '非线性回归':
+                    this.modelParmsFlag = false
+                    break;
+                default:
+                    break;
+            }
         })
     }
 }
@@ -90,6 +105,5 @@ export default {
     background-color: #ffffff;
     border: 0px solid;
     /* border-bottom: 1px solid #dcdfe6;  */
-
 }
 </style>

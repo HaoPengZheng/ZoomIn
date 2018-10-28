@@ -1,46 +1,42 @@
 <template>
 	<div>
 		
-		<el-card class="box-card analysisCardStyle" id="echartsCard" shadow="never">
-
+		<div class="box-card analysisCardStyle" id="echartsCard"   v-loading="loading">
 			<!-- 图内筛选器部分 -->
-			<div v-show="picFilterFlag">
-				&nbsp;
-				<el-dropdown trigger="click" class="dropdowmMenuStyle" v-for="(val,index) in dropdownArray" :key="index"  @command="handleCommand">
+			<div v-show="picFilterFlag" style="margin-left:16px">&nbsp;
+
+				<!-- 字段筛选器部分 -->
+				<el-dropdown trigger="click" class="dropdowmMenuStyle" v-for="(val,index) in dropdownArray_text" :key="index"  @command="picFilterTextClick">
 				<span class="el-dropdown-link">
 					{{val}}<i class="el-icon-arrow-down el-icon--right"></i>
 				</span>
 				<el-dropdown-menu slot="dropdown" style="padding:10px">
-					<!-- <el-dropdown-item v-for="(item,k) in dropdownItemArray[index]" :key="k" :command="item">
+					<el-dropdown-item v-for="(item,k) in dropdownTextItemArray[index]" :key="k" :command="item">
 						{{item}}
-					</el-dropdown-item> -->
+					</el-dropdown-item>
+				</el-dropdown-menu>
+				</el-dropdown>
 
-					<!-- 数值筛选器部分 -->
-					<div>
-						<el-select v-model="numberFilterSelectValue" placeholder="请选择" style="width:50%" class="echart">
-							<el-option
-							v-for="item in numberFilterItemType"
-							:key="item"
-							:label="item"
-							:value="item">
-							</el-option>
-						</el-select>
-					</div>
-					<div>
-					<el-input v-model="numberFilterInput" placeholder="请输入数值"  class="echart"></el-input>
-					</div>
+				<!-- 数值筛选器部分 -->
+				<el-dropdown trigger="click" class="dropdowmMenuStyle" v-for="val in dropdownArray_number" :key="val"  @command="picFilterNumberClick">
+				<span class="el-dropdown-link">
+					{{val}}<i class="el-icon-arrow-down el-icon--right"></i>
+				</span>
+				<el-dropdown-menu slot="dropdown" style="padding:10px">
+					<number-filter-item :choiceVal="val"></number-filter-item>
 
 				</el-dropdown-menu>
 				</el-dropdown>
 			</div>
 
+			<!-- Echarts部分 -->
 			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
+
 				<!-- 未显示图表时 -->
-				<div class="echarts-font" id="font-position" v-show="!tableVisible" v-loading="loading">当前图表无数据</div>
+				<div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>
 				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
 				
 				<!-- 表格部分 -->
-				<!-- <p class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</p> -->
 				<el-table
 				:data="tableData"
 				stripe border
@@ -57,12 +53,13 @@
 				</el-table>
 			</div>
 
-		</el-card>
+		</div>
 	</div>
 </template>
 
 <script>
 import Bus from './Bus.js'
+import numberFilterItem from './numberFilterItem.vue'
 import  'echarts/theme/macarons.js'
 import  'echarts/theme/vintage.js'
 import  'echarts/theme/dark.js'
@@ -74,153 +71,163 @@ export default {
   name: 'echarts',
   data () {
     return {
-	  msg: 'Welcome to Your Vue.js App',
-	  echartAxiosData:[],
-	  originAxiosData:[],
-	  winHeight:0,
-	  winWidth:0,
-	  yAxisItemName:[],
-      Xdata:[],
-	  xAxisItem:[],
-	  seriesData:[],
-	  seriesDataItem:[],
-	  myChart:{},
-	  option:{},
-	  chartStyle:'macarons',
-	  chartTitle:'图表标题',
-	  markPointArray:new Array(),
-	  //表格数据
-	  tableData: [],
-	  fields:[],
-	  dropdownArray:[],
-	  dropdownItemArray:[],//图内筛选器的选项
-	  tableVisible:false,
-	  chartYAxis:[{
-					name : '',
-					type : 'value',
-					axisLine:{
-                        lineStyle:{
-                            width:1,
-						},
-						symbol:['none','arrow']
-                    },					
-				}],
+		msg: 'Welcome to Your Vue.js App',
+		echartAxiosData:[],
+		originAxiosData:[],
+		winHeight:0,
+		winWidth:0,
+		yAxisItemName:[],
+		Xdata:[],
+		xAxisItem:[],
+		seriesData:[],
+		seriesDataItem:[],
+		myChart:{},
+		option:{},
+		chartStyle:'macarons',
+		chartTitle:'图表标题',
+		markPointArray:new Array(),
+		//表格数据
+		tableData: [],
+		fields:[],
+		dropdownArray:[],
+		dropdownTextItemArray:[],//图内筛选器的选项
+		tableVisible:false,
+		chartYAxis:[], //
+	  	chartXAxis:[],
 		chartId:1,
 		picFilterFlag:false,
-		numberFilterItemType:['等于','大于','小于','不大于','不小于'],	//图内筛选器-数值-可选类型
-		numberFilterSelectValue:'等于',  							  //图内筛选器-数值-选择的类型
-		numberFilterInput:''	,									  //图内筛选器-数值-填写的数值
 		loading:false,
 		responseData:[],
-		deleteJsonKeyArray:[]
+		deleteJsonKeyArray:[],
+		responseOriginData:[],
+		dropdownArray_text:[],
+		dropdownArray_number:[],
+		picSeries:[],
+		chartMethod:[],
+		xAxisString:[],
+		yAxisString:[],
+		sortFlag:1,
+		selectItem:'RANK',
+		echartsFinishedFlag:0,
+		XAxisTitle:[],
+		YAxisTitle:[],
+		filter:[],
+		YAxisFormatter:'{value}',
+		XAxisFormatter:function (value, index) {
+					return value 
+				}
     }
   },
-  mounted(){
 
-	this.autoDivSize();//根据浏览器尺寸设置echarts的宽高
-//1.页面加载时创建图表或者PATCH图表（得到id,data_set）data_set：任务id，title随机生成
-// 2.拖动到框上的时候求和
-// 3.每一步PATCH
+	components:{
+		numberFilterItem
+	},
+	mounted(){
+		this.autoDivSize();//根据浏览器尺寸设置echarts的宽高
 
-Bus.$on('leftChange',(e)=>{
-	if(e){
-		document.getElementById("myChart").style.width= this.winWidth*0.87 + "px";
-		document.getElementById("echartsCard").style.width= this.winWidth*0.898 + "px";
-		this.myChart.dispose();
-		this.drawLine();
-	}
-	else{
-		document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
-		document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
-		this.myChart.dispose();
-		this.drawLine();
-	}
+		//左侧伸缩按钮导致的echarts重绘
+		Bus.$on('leftChange',(e)=>{
+			if(e){
+				document.getElementById("myChart").style.width= this.winWidth*0.87 + "px";
+				document.getElementById("echartsCard").style.width= this.winWidth*0.898 + "px";
+				this.myChart.dispose();
+				this.drawLine();
+			}
+			else{
+				document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
+				document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
+				this.myChart.dispose();
+				this.drawLine();
+			}
+		})
 
-})
 		//0.从AxiosDistribute过来的图表ID
 		Bus.$on('chartID',(e)=>{
 			this.chartId = e
 			//alert(e)
 		})
+
 		//0.从AxiosDistribute过来的完整图表数据
         Bus.$on('AxiosDataEcharts', (e) => {
 			this.originAxiosData = e; //原初的数据
-			this.echartAxiosData = e;		//被用来操作（筛选）的数据
-			})
+			this.echartAxiosData = e; //被用来操作（筛选）的数据
+		})
 	  
 	  
 		//1.监听X轴传值
 		Bus.$on('rowdata', (e) => {
 			this.xAxisItem.push(e)
-			//this.echartAxiosData[e].length 用来取代下面的15
-
-/////////为了实现可以随时拖X轴，从底下复制过来，否则单独拖动X轴时不触发请求
-
-// //拼y轴字符串
-// 			let yAxisString = this.yAxisItemName[0]; 
-// 			for (let i = 1; i < this.yAxisItemName.length; i++) {
-// 				yAxisString = yAxisString + ',' + this.yAxisItemName[i] 
-// 			}
-// 			//拼x轴字符串
-// 			let xAxisString = this.xAxisItem[0]; 
-// 			for (let i = 1; i < this.xAxisItem.length; i++) {
-// 				xAxisString = xAxisString + ',' + this.xAxisItem[i] 
-// 			}
-
-// 			//发送求和请求
-// 			this.$axios
-// 			.post(
-// 			"http://120.79.146.91:8000/task/chart/sum",
-// 				{
-// 					chart_id:this.chartId,
-// 					data_set:4,//应该是data_set_id?到时换成this.$router.parms
-// 					chart_type:1,
-// 					x_axis:xAxisString,
-// 					y_axis:yAxisString
-// 				},
-// 				{
-// 					headers: {
-// 					Authorization: "JWT " + localStorage.getItem("token")
-// 					}
-// 				}
-// 			)
-// 			.then(r => {
-// 				console.log(r.data.data)
-// 				console.log(JSON.parse(r.data.data))
-// 				//r.data.data 								完整数据
-// 				//Object.values(JSON.parse(r.data.data)) 	表头
-// 				//Object.keys(element)						去重的X轴的值
-// 				let element = JSON.parse(r.data.data)[e]	//对应的y轴的值
-// 				this.Xdata = []//每次循环清空X轴，否则重叠
-// 				this.seriesDataItem = [] //清空serIDataItem否则重叠
-// 				//给X轴赋值,Xdata为echarts的X轴的值
-// 		　　　　for(let i=0;i<Object.keys(element).length;i++){
-// 					this.Xdata.push(Object.keys(element)[i])  
-// 				}
-// 				//给Y轴赋值
-// 		　　　　for(let i=0;i<Object.keys(element).length;i++){
-// 					this.seriesDataItem.push(element[Object.keys(element)[i]])  
-// 				}
-				
-// 				console.log(this.seriesDataItem)					
-// 				this.seriesData.push({
-// 					name:this.yAxisItemName[this.yAxisItemName.length-1],
-// 					type:'bar',
-// 					data:this.seriesDataItem
-// 				})
-
-// })
-
-/////////取出key的数据插入换行"["女","北大附校"]"
-
-
-			//图表展示控制
+			this.XAxisTitle.push(e)
+			Bus.$emit('firstXAixs',e)
+			
+			//表格
 			if(this.yAxisItemName.length<1){
 					this.tableVisible = true
 					for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
 					this.fields.push(e)
 				}
-				else{this.drawLine();}
+				else{
+					//在新增拖动x轴，且y轴已经有值的时候，发送请求，重写数据
+					//拼x轴字符串
+					this.xAxisString = []
+					this.xAxisString = this.xAxisItem[0]; 
+					for (let i = 1; i < this.xAxisItem.length; i++) {
+						this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
+					}
+
+
+					this.chartMethod = this.chartMethod.join(',')
+					//发送求和请求
+
+					this.$axios
+					.post(
+					"http://120.79.146.91:8000/task/chart/result",
+						{
+							chart_id:this.chartId,
+							data_set:15,//应该是data_set_id?到时换成this.$router.parms
+							chart_method:this.chartMethod,
+							chart_type:1,
+							x_axis:this.xAxisString,
+							y_axis:this.yAxisString,
+							sort:-1,
+							sort_value:'',
+							filter:[{
+								field_type:0,
+								field_name:'RANK',
+								filter_method:">",
+								filter_obj:"-100000"
+							}],
+						},
+						{
+							headers: {
+							Authorization: "JWT " + localStorage.getItem("token")
+							}
+						}
+					)
+					.then(r => {
+						
+						let str1 = r.data.data	
+						let str2 = str1.replace(/\["|\"]/g,"")
+						let str3 = str2.replace(/\","/g,"·")
+
+						for(let i = 0;i<this.yAxisItemName.length;i++){
+							this.setData(r,this.yAxisItemName[i])
+						}
+
+						this.chartMethod = this.chartMethod.split(',');
+
+					})
+					.catch(response => {
+						console.log(response)
+						this.$message({
+						message: '操作失败，请重试',
+						type: 'warning',
+						duration:1000
+						});
+					});
+					Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
+					this.drawLine();
+				}
 		})
 	   
 
@@ -229,28 +236,50 @@ Bus.$on('leftChange',(e)=>{
 		Bus.$on('coldata', (e) => {
 			//获得拖到y轴上的节点字段数组
 			this.yAxisItemName.push(e)
-			
+			this.YAxisTitle.push(e)
+			Bus.$emit('chartsType',this.yAxisItemName)//让右边图表类型改颜色
 			//拼y轴字符串
-			let yAxisString = this.yAxisItemName[0]; 
+			this.yAxisString = []
+			this.yAxisString = this.yAxisItemName[0]; 
 			for (let i = 1; i < this.yAxisItemName.length; i++) {
-				yAxisString = yAxisString + ',' + this.yAxisItemName[i] 
+				this.yAxisString = this.yAxisString + ',' + this.yAxisItemName[i] 
 			}
 			//拼x轴字符串
-			let xAxisString = this.xAxisItem[0]; 
+			this.xAxisString = []
+			this.xAxisString = this.xAxisItem[0]; 
 			for (let i = 1; i < this.xAxisItem.length; i++) {
-				xAxisString = xAxisString + ',' + this.xAxisItem[i] 
+				this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
 			}
 
+			//给"平均求和计数"等chartMethod赋初始值
+			this.chartMethod = []
+			for(let i =0;i<this.yAxisItemName.length;i++){
+				this.chartMethod.push("2")
+			}
+			this.chartMethod = this.chartMethod.join(',')
 			//发送求和请求
+			//console.log(new Date().getTime())
 			this.$axios
 			.post(
-			"http://120.79.146.91:8000/task/chart/sum",
+			"http://120.79.146.91:8000/task/chart/result",
 				{
 					chart_id:this.chartId,
-					data_set:4,//应该是data_set_id?到时换成this.$router.parms
+					data_set:15,					//应该是data_set_id?到时换成this.$router.parms
+					chart_method:this.chartMethod,
 					chart_type:1,
-					x_axis:xAxisString,
-					y_axis:yAxisString
+					x_axis:this.xAxisString,
+					y_axis:this.yAxisString,
+					sort:-1,
+					sort_value:'RANK',
+					filter:[{
+						field_type:0,
+						field_name:'RANK',
+						filter_method:">",
+						filter_obj:"-100000"
+					}],
+					secondary_axis:"RANK",
+					chart_method_2nd:"2",
+					chart_type_2nd:2,
 				},
 				{
 					headers: {
@@ -259,61 +288,21 @@ Bus.$on('leftChange',(e)=>{
 				}
 			)
 			.then(r => {
-				this.responseData = r.data.data;
-				// console.log("y:"+this.echartAxiosData[0])
-				// console.log("r:"+r.data.data)
-				let str1 = r.data.data
+				//console.log(new Date().getTime())
+				let str1 = r.data.data	
 				let str2 = str1.replace(/\["|\"]/g,"")
 				let str3 = str2.replace(/\","/g,"·")
-				//console.log(str3)
-				//r.data.data 								完整数据
-				//Object.values(JSON.parse(r.data.data)) 	表头
-				//Object.keys(element)						去重的X轴的值
-				//element       							去重的X值和Y值
-				let element = JSON.parse(str3)[e]	//对应的y轴的值
-				this.Xdata = []//每次循环清空X轴，否则重叠
-				this.seriesDataItem = [] //清空serIDataItem否则重叠
-				//给X轴赋值,Xdata为echarts的X轴的值
-		　　　　for(let i=0;i<Object.keys(element).length;i++){
-					this.Xdata.push(Object.keys(element)[i])  
-				}
-				//给Y轴赋值
-		　　　　for(let i=0;i<Object.keys(element).length;i++){
-					this.seriesDataItem.push(element[Object.keys(element)[i]])  
-				}
+console.log(r.data.data)
+				this.setData(r,e)
+				//this.drawLine();
+				this.chartMethod = this.chartMethod.split(',');
 				
-				//console.log(this.seriesDataItem)					
-				this.seriesData.push({
-					name:this.yAxisItemName[this.yAxisItemName.length-1],
-					type:'bar',
-					data:this.seriesDataItem,
-					itemStyle: {
-						normal: {
-							barBorderRadius: 10,
-
-							shadowColor: 'rgba(0, 0, 0, 0.4)',
-							shadowBlur: 20
-						}
-					}
-				})
-				
-				//打开dataZoom，X轴大于10时
-				if(Object.keys(element).length>10){
-					this.dataZoom = {
-						type: 'slider',
-						show: true,
-						xAxisIndex: [0],
-						start: 0,
-						end: 30
-					}
-				}
-				this.loading = false
-				this.drawLine();
-
 			})
 			.catch(response => {
+				console.log(response)
 				this.loading = false
 				this.yAxisItemName.pop()
+				this.YAxisTitle.pop()
 				Bus.$emit('yAixsFail','fail');
 				this.$message({
 				message: '操作失败，请重试',
@@ -321,62 +310,243 @@ Bus.$on('leftChange',(e)=>{
                 duration:1000
 				});
 			});
-
-			//表格显示
-			// if(this.Xdata.length<1){
-			// 	this.tableVisible = true
-			// 		for(let j =0 ;j < 15;j++){
-			// 		this.tableData[j] = this.echartAxiosData[j];
-			// 		}
-			// 		this.fields.push(e)
-			// }
+			//给图内筛选器提供选项
+			Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
 			this.drawLine();
-
+			
 		})
+		
 
-		//次轴也要求和…………………………参数为X轴和次轴
 	   //2.然后是监听次轴传值
        Bus.$on('dropAxisCol', (e) => {
-
+		   //alert(e)
 			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
 
-    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-                this.seriesDataItem.push(this.echartAxiosData[i][e])  //根据传进来的字段，给X轴赋值
-            }
+			//拼y轴字符串
+			this.yAxisString = []
+			this.yAxisString = this.yAxisItemName[0]; 
+			for (let i = 1; i < this.yAxisItemName.length; i++) {
+				this.yAxisString = this.yAxisString + ',' + this.yAxisItemName[i] 
+			}
+			//拼x轴字符串
+			this.xAxisString = []
+			this.xAxisString = this.xAxisItem[0]; 
+			for (let i = 1; i < this.xAxisItem.length; i++) {
+				this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
+			}
 
-			this.seriesData.push({
-				name:e,
-				type:'line',
-				yAxisIndex: 1,
-				data:this.seriesDataItem
-			})
-			this.seriesDataItem = []
-			
-		   if(this.Xdata.length<1){
-			   this.tableVisible = true
-				for(let j =0 ;j < 15;j++){
-				this.tableData[j] = this.echartAxiosData[j];
-				}
-				this.fields.push(e)
-		   }
-		   else{
-			   	this.chartYAxis.push(
+			//给"平均求和计数"等chartMethod赋初始值
+			this.chartMethod = []
+			for(let i =0;i<this.yAxisItemName.length;i++){
+				this.chartMethod.push("2")
+			}
+			this.chartMethod = this.chartMethod.join(',')
+			//发送求和请求
+			//console.log(new Date().getTime())
+			this.$axios
+			.post(
+			"http://120.79.146.91:8000/task/chart/result",
 				{
-					name : e,
-		            type : 'value'
-				})
-				console.log(this.option.yAxis)
-				this.myChart.dispose()
-				this.drawLine();
-		   }
+					chart_id:this.chartId,
+					data_set:15,//应该是data_set_id?到时换成this.$router.parms
+					chart_method:this.chartMethod,
+					chart_type:1,
+					x_axis:this.xAxisString,
+					y_axis:this.yAxisString,
+					sort:-1,
+					sort_value:'RANK'
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
+				}
+			)
+			.then(r => {
+				//console.log(new Date().getTime())
+				let str1 = r.data.data	
+				let str2 = str1.replace(/\["|\"]/g,"")
+				let str3 = str2.replace(/\","/g,"·")
+	
+				this.setData(r,e)
+				this.seriesData[this.seriesData.length-1].type = 'line'
+				this.seriesData[this.seriesData.length-1].yAxisIndex = '1'
+			// this.seriesData.push({
+			// 	name:e,
+			// 	type:'line',
+			// 	yAxisIndex: 1,
+			// 	data:this.seriesDataItem
+			// })
+
+				this.chartMethod = this.chartMethod.split(',');
+
+			})
+			.catch(response => {
+				console.log(response)
+				this.loading = false
+				this.yAxisItemName.pop()
+				this.YAxisTitle.pop()
+				Bus.$emit('yAixsFail','fail');
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
+			});
+			//给图内筛选器提供选项
+			Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
+			this.drawLine();
+		   
 	   	})
 
-	   
+
+		//监听图表计算方法的变化（求和、平均、计数） type是求和、平均、计数，dropName是选中的tag名字
+		Bus.$on('chartMethod',(type,dropName)=>{		
+			switch (type) {
+				case '计数':
+					this.chartMethod[this.yAxisItemName.indexOf(dropName)] = 1
+					break;
+				case '求和':
+					this.chartMethod[this.yAxisItemName.indexOf(dropName)] = 2
+					break;
+				case '平均':
+					this.chartMethod[this.yAxisItemName.indexOf(dropName)] = 3
+					break;
+				default:
+					break;
+			}
+			this.chartMethod = this.chartMethod.join(',')
+			//发送求和请求
+			this.$axios
+			.post(
+			"http://120.79.146.91:8000/task/chart/result",
+				{
+					chart_id:this.chartId,
+					data_set:15,//应该是data_set_id?到时换成this.$router.parms
+					chart_method:this.chartMethod,
+					chart_type:1,
+					x_axis:this.xAxisString,
+					y_axis:this.yAxisString,
+					sort:-1,
+					sort_value:'RANK'
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
+				}
+			)
+			.then(r => {
+				let str1 = r.data.data	
+				let str2 = str1.replace(/\["|\"]/g,"")
+				let str3 = str2.replace(/\","/g,"·")
+
+				this.responseData = r.data.data;
+				this.responseOriginData = r.data.data;
+
+				//console.log(JSON.parse(str3))
+				//console.log(JSON.parse(str3))
+				for(let i =0 ;i<Object.keys(JSON.parse(str3)).length;i++){
+					let seriesItem = []
+					let element = JSON.parse(str3)[Object.keys(JSON.parse(str3))[i]]
+					for(let j = 0;j<Object.keys(element).length;j++){
+						seriesItem.push(element[Object.keys(element)[j]])  
+						}
+
+						this.seriesData[i].data = seriesItem
+				}
+
+				this.drawLine();
+				this.chartMethod = this.chartMethod.split(',');
+
+			})
+			.catch(response => {
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
+			});
+
+			//Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
+			this.drawLine();
+			
+		})
+
+		//监听图表排序
+		Bus.$on('sortValue',(SortRadio,selectItem)=>{
+			// alert(SortRadio)
+			// alert(selectItem)
+			this.sortClick(SortRadio,selectItem)
+		})
+
+	 
 	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
        Bus.$on('rowdataRemove', (e) => {
-			this.Xdata = [];
-			//this.Xdata.splice(e, 1);这种写法是错的，Xdata是18个学校的名字
-			this.tableVisible = false
+			this.xAxisItem.splice(e, 1);//这里删完之后要重新请求，所以要把请求写成方法
+			this.XAxisTitle.splice(e, 1)
+			//this.tableVisible = false
+			//表格
+			if(this.yAxisItemName.length<1){
+					this.tableVisible = true
+					for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+					this.fields.splice(e, 1)
+				}
+				else{
+					//在新增拖动x轴，且y轴已经有值的时候，发送请求，重写数据
+					//拼x轴字符串
+					this.xAxisString = []
+					this.xAxisString = this.xAxisItem[0]; 
+					for (let i = 1; i < this.xAxisItem.length; i++) {
+						this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
+					}
+
+					this.chartMethod = this.chartMethod.join(',')
+					//发送求和请求
+
+					this.$axios
+					.post(
+					"http://120.79.146.91:8000/task/chart/result",
+						{
+							chart_id:this.chartId,
+							data_set:15,//应该是data_set_id?到时换成this.$router.parms
+							chart_method:this.chartMethod,
+							chart_type:1,
+							x_axis:this.xAxisString,
+							y_axis:this.yAxisString,
+							sort:-1,
+							sort_value:''
+						},
+						{
+							headers: {
+							Authorization: "JWT " + localStorage.getItem("token")
+							}
+						}
+					)
+					.then(r => {
+						
+						let str1 = r.data.data	
+						let str2 = str1.replace(/\["|\"]/g,"")
+						let str3 = str2.replace(/\","/g,"·")
+					
+						for(let i = 0;i<this.yAxisItemName.length;i++){
+							this.setData(r,this.yAxisItemName[i])
+						}
+
+						this.chartMethod = this.chartMethod.split(',');
+
+					})
+					.catch(response => {
+						console.log(response)
+						this.$message({
+						message: '操作失败，请重试',
+						type: 'warning',
+						duration:1000
+						});
+					});
+					Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
+					this.drawLine();
+				}
 			this.myChart.dispose()
 			this.drawLine();
 	   })
@@ -384,29 +554,58 @@ Bus.$on('leftChange',(e)=>{
 
 		//2.监听y轴移除事件(还没有PATCH)
        Bus.$on('coldataRemove', (e) => {
+		//    alert(e)
+		//    alert(this.yAxisItemName)
 			this.seriesData.splice(e, 1);
 			this.yAxisItemName.splice(e, 1);
-			
+			this.YAxisTitle.splice(e, 1);
+			if(this.yAxisItemName.length == 0){
+				
+				this.tableVisible = true
+			}
+			Bus.$emit('chartsType',this.yAxisItemName)//让右边图表类型改颜色
 			this.tableVisible = false
 			this.myChart.dispose()
 			this.drawLine();
 	   })
 		
 		//3.监听图表类型改变(还没有PATCH)
-		//大工程，图表之间切换，建议每次都重新生成
-		Bus.$on('typeChange',(e)=>{
-			if(e=='pie'){
-				this.pieDrawLine()
-			}
-			if(e=='bar'){
-				this.drawLine()
-			}
-			// for(var i = 0;i<this.option.series.length;i++){
-			// 	this.option.series[i].type = e; //可以改类型，不能改标题，重新drawLine也没用
-			// 	if(e === 'scatter')this.option.series[i].symbolSize = 20
-			// }
-			
-			// this.drawLine();
+		Bus.$on('barChange',(type)=>{
+            this.drawLine(type)
+		})
+		Bus.$on('lineChange',(type)=>{
+
+						
+		})
+		Bus.$on('scatterChange',(type)=>{
+            switch (type) {
+                case '普通散点图':
+                    this.scatterDrawLine('普通散点图') //此处传参
+                    break;
+                case '气泡图':
+                    this.scatterDrawLine('气泡图')
+                    break;
+                default:
+                    break;
+            }			
+		})
+		Bus.$on('pieChange',(type)=>{
+            switch (type) {
+                case '普通饼图':
+                    this.pieDrawLine('普通饼图') //此处传参
+                    break;
+                case '半径饼图':
+                    this.pieDrawLine('半径饼图')
+                    break;
+                case '面积饼图':
+                    this.pieDrawLine('面积饼图')
+                    break;
+                case '南丁格尔图':
+                    this.pieDrawLine('南丁格尔图')
+                    break;
+                default:
+                    break;
+            }			
 		})
 
 		//3.监听图表风格(不PATCH)
@@ -505,128 +704,597 @@ Bus.$on('leftChange',(e)=>{
 			this.markPointArray[seriesIndex].push({coord:[dataIndex,data],pointText:pointInput})
 			this.option.series[seriesIndex].markPoint.data = this.markPointArray[seriesIndex]
 			//this.option.series[seriesIndex].markPoint.itemStyle.normal.label.formatter = this.option.series[seriesIndex].markPoint.data.cnm
-			console.log(seriesIndex)
 			this.drawLine();
 		})
 
 		//监听数据标注删除（不PATCH）
 		Bus.$on('deletePoint',(val,pointSeriesIndex)=>{   //尝试传(pointSeries,pointY,pointX)失败，pointSeries被覆盖，用回名字
-			console.log(val,pointSeriesIndex)
-			// for(var i = 0;i<this.option.series.length;i++){
-			// 	if(this.option.series[i].name == e){
-			// 		this.option.series[i].markLine = {
-			// 		}
-			// 	}
-			// }
+
 			for(let j = 0;j<this.option.series[pointSeriesIndex].markPoint.data.length;j++){
-				console.log()
 				this.option.series[pointSeriesIndex].markPoint.data.splice(j,1)
 			}
 			
 			this.drawLine();
 
 		})
+		
+		//监听筛选移除
+		Bus.$on('filterCancel',(e)=>{
+			this.responseData = this.responseOriginData
+				let str1 = this.responseData
+				let str2 = str1.replace(/\["|\"]/g,"")
+				let str3 = str2.replace(/\","/g,"·")
+			let responseDataJSON = JSON.parse(str3)
+			let jsonFirstKeys = Object.keys(responseDataJSON)
+			let jsonSecKeys = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
+			this.seriesDataItem = []  //相当于清空echarts的数据 
+			this.seriesData = []  
 
-		//监听数值筛选（还没有PATCH）
-		Bus.$on('numberFilter',(numberInput,numberTypeSelect,dropName)=>{
-			let sql = ''
-			switch (numberTypeSelect) {
-				case '等于':
-					sql = "x=>x."+ dropName +"="+ numberInput
-					break;
-				case '大于':
-					sql = "x=>x."+ dropName +">"+ numberInput
-					break;
-				case '小于':
-					sql = "x=>x."+ dropName +"<"+ numberInput
-					break;
-				case '大于等于':
-					sql = "x=>x."+ dropName +">="+ numberInput
-					break;
-				case '小于等于':
-					sql = "x=>x."+ dropName +"<="+ numberInput
-					break;
-				default:
-					break;
-			}
+			//let yAixsData = JSON.parse(this.responseData)[dropName]
+			this.yAxisItemName = Object.keys(responseDataJSON)
 
+			for(let index=0;index<jsonFirstKeys.length;index++){
+				this.seriesDataItem = []
+				this.Xdata =  Object.keys(responseDataJSON[Object.keys(responseDataJSON)[index]])
+			　　　　 for(let i=0;i<this.Xdata.length;i++){
+						this.seriesDataItem.push(JSON.parse(str3)[jsonFirstKeys[index]][this.Xdata[i]])  
+					}			
+				this.seriesData.push({
+					name:jsonFirstKeys[index],
+					type:'bar',
+					data:this.seriesDataItem,
+					itemStyle: {
+						normal: {
+							barBorderRadius: 10,
+							shadowColor: 'rgba(0, 0, 0, 0.4)',
+							shadowBlur: 20
+							}
+						}
+					})
+				}
+				 
+			this.myChart.dispose()
+			this.drawLine()
+		})
+
+
+		//监听字段筛选（还没有PATCH）
+		Bus.$on('textFilter',(textInput,textTypeSelect,dropName)=>{
 			//responseDataJSON是原数据
 			//jsonFirstKeys 是 Y轴数值 RANK,RANK_H
 			//jsonSecKeys是学校名称
 			//deleteJsonKeyArray是被删掉的学校名称
 
-			let responseDataJSON = JSON.parse(this.responseData)
+			let str1 = this.responseData
+			let str2 = str1.replace(/\["|\"]/g,"")
+			let str3 = str2.replace(/\","/g,"·")
+			let responseDataJSON = JSON.parse(str3)
 			let jsonFirstKeys = Object.keys(responseDataJSON)
 			let jsonSecKeys = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
+			this.seriesDataItem = []  //相当于清空echarts的数据 
+			this.seriesData = []  
 
-			console.log("原始数据："+responseDataJSON)
+			for(let filterIndex=0;filterIndex<textTypeSelect.length;filterIndex++){
+				switch (textTypeSelect[filterIndex]) {
+					case '等于':
+						for(let i=0;i<Object.keys(responseDataJSON).length;i++){
 
-			for(let j=0;j<Object.keys(responseDataJSON[dropName]).length;j++){
-				if(responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]>30000){
-					console.log([Object.keys(responseDataJSON[dropName])[j]])
-					this.deleteJsonKeyArray.push([Object.keys(responseDataJSON[dropName])[j]])
-					delete responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]
-					j--
+							for(let j=0;j<Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]]).length;j++){
+								//console.log(Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j])
+								if(Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j].indexOf(textInput[filterIndex]) != -1){
+									
+									//alert(responseDataJSON[Object.keys(responseDataJSON)[i]])
+									// console.log([Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j]])//键
+									// delete responseDataJSON[Object.keys(responseDataJSON)[i]][Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j]]
+									// j--
+									
+									//"name":1
+
+								}
+	
+
+								let jsonArray = ''
+								if(textInput.length<2){
+									jsonArray = "{" + '"' + textInput[0] + '"' + ":" + 10000 + "}"
+									responseDataJSON[textInput[0]] = JSON.parse(jsonArray)
+									}
+								else{
+									jsonArray = "{" + '"' + textInput[0] + '"' + ":" + 10000 
+									for(let k=1;k<textInput.length;k++){
+									jsonArray = jsonArray + "," + '"' + textInput[k] + '"' + ":" + 10000
+									}
+									jsonArray = jsonArray + "}"
+								}
+								responseDataJSON[Object.keys(responseDataJSON)[i]] = JSON.parse(jsonArray)
+							}
+
+						}
+													
+						break;
+					case '不等于':
+						for(let i=0;i<Object.keys(responseDataJSON).length;i++){
+							delete responseDataJSON[Object.keys(responseDataJSON)[i]][textInput[filterIndex]]
+						}
+						break;
+					case '包含':
+						for(let i=0;i<Object.keys(responseDataJSON).length;i++){
+
+							for(let j=0;j<Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]]).length;j++){
+
+								if(Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j].indexOf(textInput[filterIndex]) == -1){
+									//console.log(responseDataJSON[Object.keys(responseDataJSON)[i]])
+									// console.log(responseDataJSON[Object.keys(responseDataJSON)[i]])
+									//console.log([Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j]])//键
+									delete responseDataJSON[Object.keys(responseDataJSON)[i]][Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j]]
+									j--
+
+								}
+
+								
+							}
+
+						}
+						break;
+					case '不包含':
+						for(let i=0;i<Object.keys(responseDataJSON).length;i++){
+
+							for(let j=0;j<Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]]).length;j++){
+
+								if(Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j].indexOf(textInput[filterIndex]) == -1){
+									//console.log(responseDataJSON[Object.keys(responseDataJSON)[i]])
+									// console.log(responseDataJSON[Object.keys(responseDataJSON)[i]])
+									//console.log([Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j]])//键
+									delete responseDataJSON[Object.keys(responseDataJSON)[i]][Object.keys(responseDataJSON[Object.keys(responseDataJSON)[i]])[j]]
+									j--
+
+								}
+
+								
+							}
+
+						}
+						break;
+					case '为空':
+						
+						break;
+					case '不为空':
+						for(let i=0;i<Object.keys(responseDataJSON).length;i++){
+							delete responseDataJSON[Object.keys(responseDataJSON)[i]]['']
+						}
+						break;
+					default:
+						break
 				}
 			}
+
+			let yAixsData = JSON.parse(str3)[dropName]
+			this.yAxisItemName = Object.keys(responseDataJSON)
+
+			for(let index=0;index<jsonFirstKeys.length;index++){
+				this.seriesDataItem = []
+				this.Xdata =  Object.keys(responseDataJSON[Object.keys(responseDataJSON)[index]])
+			　　　　 for(let i=0;i<this.Xdata.length;i++){
+						this.seriesDataItem.push(JSON.parse(str3)[jsonFirstKeys[index]][this.Xdata[i]])  
+					}			
+				this.seriesData.push({
+					name:jsonFirstKeys[index],
+					type:'bar',
+					data:this.seriesDataItem,
+					itemStyle: {
+						normal: {
+							barBorderRadius: 10,
+							shadowColor: 'rgba(0, 0, 0, 0.4)',
+							shadowBlur: 20
+							}
+						}
+					})
+				}
+			this.responseData = JSON.stringify(responseDataJSON)
+			this.myChart.dispose()
+			this.drawLine()
+		})
+
+		//监听字段筛选的精确筛选
+		Bus.$on('textFilterAccuracy',(e)=>{
+			//responseDataJSON是原数据
+			//jsonFirstKeys 是 Y轴数值 RANK,RANK_H
+			//jsonSecKeys是学校名称
+			//deleteJsonKeyArray是被删掉的学校名称
+			let str1 = this.responseData
+			let str2 = str1.replace(/\["|\"]/g,"")
+			let str3 = str2.replace(/\","/g,"·")
+			let responseDataJSON = JSON.parse(str3)
+			let jsonFirstKeys = Object.keys(responseDataJSON)
+			let jsonSecKeys = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
+			this.seriesDataItem = []  //相当于清空echarts的数据 
+			this.seriesData = []  
+			
+			for(let i=0;i<Object.keys(responseDataJSON).length;i++){
+			//e是穿梭框选中的值的数组
+			let jsonArray = ''
+			if(e.length<2){
+				jsonArray = "{" + '"' + e[0] + '"' + ":" + responseDataJSON[Object.keys(responseDataJSON)[0]][e[0]] + "}"
+				responseDataJSON[e[0]] = JSON.parse(jsonArray)
+				}
+			else{
+				jsonArray = "{" + '"' + e[0] + '"' + ":" + responseDataJSON[Object.keys(responseDataJSON)[0]][e[0]] 
+					for(let k=1;k<e.length;k++){
+						jsonArray = jsonArray + "," + '"' + e[k] + '"' + ":" + responseDataJSON[Object.keys(responseDataJSON)[i]][e[k]]
+					}
+				jsonArray = jsonArray + "}"
+				}
+			responseDataJSON[Object.keys(responseDataJSON)[i]] = JSON.parse(jsonArray)
+			}
+			
+			//let yAixsData = JSON.parse(this.responseData)[dropName]
+			this.yAxisItemName = Object.keys(responseDataJSON)
+
+			for(let index=0;index<jsonFirstKeys.length;index++){
+				this.seriesDataItem = []
+				this.Xdata =  Object.keys(responseDataJSON[Object.keys(responseDataJSON)[index]])
+			　　　　 for(let i=0;i<this.Xdata.length;i++){
+						this.seriesDataItem.push(JSON.parse(str3)[jsonFirstKeys[index]][this.Xdata[i]])  
+					}			
+				this.seriesData.push({
+					name:jsonFirstKeys[index],
+					type:'bar',
+					data:this.seriesDataItem,
+					itemStyle: {
+						normal: {
+							barBorderRadius: 10,
+							shadowColor: 'rgba(0, 0, 0, 0.4)',
+							shadowBlur: 20
+							}
+						}
+					})
+				}
+			this.responseData = JSON.stringify(responseDataJSON)
+			this.myChart.dispose()
+			this.drawLine()
+		})
+
+		
+		//监听数值筛选（还没有PATCH）
+		Bus.$on('numberFilter',(numberInput,numberTypeSelect,dropName)=>{
+			//responseDataJSON是原数据
+			//jsonFirstKeys 是 Y轴数值 RANK,RANK_H
+			//jsonSecKeys是学校名称
+			//deleteJsonKeyArray是被删掉的学校名称
+			let str1 = this.responseData
+			let str2 = str1.replace(/\["|\"]/g,"")
+			let str3 = str2.replace(/\","/g,"·")
+			let responseDataJSON = JSON.parse(str3)
+			let jsonFirstKeys = Object.keys(responseDataJSON)
+			let jsonSecKeys = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
+			this.seriesDataItem = []  //相当于清空echarts的数据 
+			this.seriesData = []  
+
+			for(let filterIndex=0;filterIndex<numberTypeSelect.length;filterIndex++){
+			switch (numberTypeSelect[filterIndex]) {
+				case '等于':
+					this.filter.push({
+						field_type:0,
+						field_name:dropName,
+						filter_method:"=",
+						filter_obj:numberInput[filterIndex]
+					})
+					break;
+				case '大于':
+					this.filter.push({
+						field_type:0,
+						field_name:dropName,
+						filter_method:">",
+						filter_obj:numberInput[filterIndex]
+					})
+					break;
+				case '小于':
+					for(let j=0;j<Object.keys(responseDataJSON[dropName]).length;j++){
+						if(responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]>=numberInput[filterIndex]){
+							this.deleteJsonKeyArray.push([Object.keys(responseDataJSON[dropName])[j]])
+							delete responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]
+							j--
+						}
+					}
+					break;
+				case '大于等于':
+					for(let j=0;j<Object.keys(responseDataJSON[dropName]).length;j++){
+						if(responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]<numberInput[filterIndex]){
+							this.deleteJsonKeyArray.push([Object.keys(responseDataJSON[dropName])[j]])
+							delete responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]
+							j--
+						}
+					}
+					break;
+				case '小于等于':
+					for(let j=0;j<Object.keys(responseDataJSON[dropName]).length;j++){
+						if(responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]>numberInput[filterIndex]){
+							this.deleteJsonKeyArray.push([Object.keys(responseDataJSON[dropName])[j]])
+							delete responseDataJSON[dropName][Object.keys(responseDataJSON[dropName])[j]]
+							j--
+						}
+					}
+					break;
+				default:
+					break;
+				}
+
 
 			for(let arrayItem=0;arrayItem<this.deleteJsonKeyArray.length;arrayItem++){
 				for(let k=0;k<jsonFirstKeys.length;k++){
 					delete responseDataJSON[Object.keys(responseDataJSON)[k]][this.deleteJsonKeyArray[arrayItem]]
 				}
 			}
+			}
+			let yAixsData = JSON.parse(str3)[dropName]
+			this.yAxisItemName = Object.keys(responseDataJSON)
 
-			console.log(responseDataJSON)
+			for(let index=0;index<jsonFirstKeys.length;index++){
+				this.seriesDataItem = []
+				this.Xdata =  Object.keys(responseDataJSON[Object.keys(responseDataJSON)[index]])
+			　　　　 for(let i=0;i<this.Xdata.length;i++){
+						this.seriesDataItem.push(JSON.parse(str3)[jsonFirstKeys[index]][this.Xdata[i]])  
+					}			
+				this.seriesData.push({
+					name:jsonFirstKeys[index],
+					type:'bar',
+					data:this.seriesDataItem,
+					itemStyle: {
+						normal: {
+							barBorderRadius: 10,
+							shadowColor: 'rgba(0, 0, 0, 0.4)',
+							shadowBlur: 20
+							}
+						}
+					})
+				}
+			
 
-			this.Xdata =  Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
-			console.log(this.Xdata)
+
+			// console.log(numberInput)
+			// console.log(numberTypeSelect)
+			// console.log(responseDataJSON)
+			// console.log(this.seriesData)
+			//通知字段筛选的穿梭框改数值
+			Bus.$emit('textFilterData',Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]]))
+			this.responseData = JSON.stringify(responseDataJSON)
+
 			this.myChart.dispose()
 			this.drawLine()
+
 		})
 
 		//监听筛选移除
 		Bus.$on('numberFilterRemove',(dropName)=>{
-    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-                this.seriesDataItem.push(this.echartAxiosData[i][dropName])  //根据传进来的字段，给X轴赋值
-            }
-			console.log(this.seriesDataItem)
-			for(let j=0;j<this.seriesData.length;j++){
-				if(this.seriesData[j].name == dropName){
-					this.seriesData[j] = {
-						name:dropName,
-						type:'bar',
-						data:this.seriesDataItem,
+		　　　　for(let i=0;i<this.echartAxiosData.length;i++){
+					this.seriesDataItem.push(this.echartAxiosData[i][dropName])  //根据传进来的字段，给X轴赋值
+				}
+				for(let j=0;j<this.seriesData.length;j++){
+					if(this.seriesData[j].name == dropName){
+						this.seriesData[j] = {
+							name:dropName,
+							type:'bar',
+							data:this.seriesDataItem,
 
+						}
 					}
 				}
-			}
-	 		this.seriesDataItem = [] //清空serIDataItem否则重叠
+			this.seriesDataItem = [] //清空serIDataItem否则重叠
 			this.myChart.dispose()
 			this.drawLine()
 		})
 
-		//监听图内筛选器
+		//监听图内筛选器-创建
 		Bus.$on('transferChoice',(e)=>{
 			this.picFilterFlag = true
-			this.dropdownArray = [];
-			this.dropdownArray = e //e是选定的字段
+			this.dropdownArray_text = [];
+			this.dropdownArray_number = []
 			
-			// this.dropdownArray.forEach((val)=>{
-			// 	let itemArray=[]
-			// 	for (let i = 0; i < this.originAxiosData.length; i++) {//this.originAxiosData去重，不用this.originAxiosData
-			// 	console.log()
-			// 	//console.log(val)
-			// 		itemArray.push(this.originAxiosData[i][val])
-			// 		if(i>=10)break;
-			// 	}
-			// 	this.dropdownItemArray.push(itemArray)
-			// 	console.log(this.dropdownItemArray)
-			// 	itemArray = []
-			// })
+			let str1 = this.responseData
+			let str2 = str1.replace(/\["|\"]/g,"")
+			let str3 = str2.replace(/\","/g,"·")
+			let responseDataJSON = JSON.parse(str3)
+			// this.dropdownTextItemArray = [];
+			//e是选定的字段,上面循环dropdownArray来产生筛选器的选项，这里要区分字段和数值
+			//
+			for(let i=0;i<e.length;i++){
+				try {
+					if(this.isNumber(responseDataJSON[e[i]][Object.keys(responseDataJSON[e[i]])[0]]))this.dropdownArray_number.push(e[i])
+				} catch (error) {
+					this.dropdownArray_text.push(e[i])
+				}
+
+			}
+
+
+
+			//目前只做一个维度的图内筛选，所以直接写死,如果两个维度，要了解返回的JSON，要判断index，通过和dropdownArray_text共用index
+			//alert(this.Xdata)
+			let dropdownTextItemArrayItem1 = []
+			let dropdownTextItemArrayItem2 = []
 			
+			for(let i=0;i<this.Xdata.length;i++){
+				// if(this.Xdata[0].split('·').length>1)i++  //愚蠢的判定
+				dropdownTextItemArrayItem1.push(this.Xdata[i].split('·')[0])
+				dropdownTextItemArrayItem2.push(this.Xdata[i].split('·')[1])
+			}
+
+			try {
+				dropdownTextItemArrayItem1.unshift('全部') //这句会报错
+				dropdownTextItemArrayItem2.unshift('全部') //这句会报错
+			} catch (error) {
+				
+			}
+			dropdownTextItemArrayItem1 = Enumerable.from(dropdownTextItemArrayItem1).distinct().toArray()  //去重
+			dropdownTextItemArrayItem2 = Enumerable.from(dropdownTextItemArrayItem2).distinct().toArray()  //去重
+			//dropdownTextItemArrayItem1.push('东方外语')
+			this.dropdownTextItemArray.push(dropdownTextItemArrayItem1)
+			this.dropdownTextItemArray.push(dropdownTextItemArrayItem2)
+			//this.dropdownTextItemArray = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]]) 
+			//alert(Object.keys(responseDataJSON))
+
+
+			
+
 			
 		})
 
+		//图内筛选器--数值筛选
+		Bus.$on('numberPicFilter',(numberInput,numberTypeSelect,dropName)=>{
+
+			let str1 = this.responseData
+			let str2 = str1.replace(/\["|\"]/g,"")
+			let str3 = str2.replace(/\","/g,"·")
+			let responseDataJSON = JSON.parse(str3)
+			let jsonFirstKeys = Object.keys(responseDataJSON)
+			let jsonSecKeys = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]])
+			this.seriesDataItem = []  //相当于清空echarts的数据 
+			this.seriesData = []  
+			//this.filter = []
+			for(let i =0;i<this.filter.length;i++){
+				console.log(this.filter[i].field_name)
+				if(this.filter[i].field_name == dropName)this.filter.splice(i,1)
+			}
+
+			for(let filterIndex=0;filterIndex<numberTypeSelect.length;filterIndex++){
+			switch (numberTypeSelect[filterIndex]) {
+				case '等于':
+					this.filter.push({
+						field_type:0,
+						field_name:dropName,
+						filter_method:"=",
+						filter_obj:numberInput[filterIndex]
+					})
+					break;
+				case '大于':
+					this.filter.push({
+						field_type:0,
+						field_name:dropName,
+						filter_method:">",
+						filter_obj:numberInput[filterIndex]
+					})
+					break;
+				case '小于':
+					this.filter.push({
+						field_type:0,
+						field_name:dropName,
+						filter_method:"<",
+						filter_obj:numberInput[filterIndex]
+					})
+					break;
+				case '大于等于':
+					this.filter.push({
+						field_type:0,
+						field_name:dropName,
+						filter_method:">=",
+						filter_obj:numberInput[filterIndex]
+					})
+					break;
+				case '小于等于':
+					this.filter.push({
+						field_type:0,
+						field_name:dropName,
+						filter_method:"<=",
+						filter_obj:numberInput[filterIndex]
+					})
+					break;
+				default:
+					break;
+				}
+
+			console.log(this.filter)
+
+			this.chartMethod = this.chartMethod.join(',')		
+			this.$axios
+			.post(
+			"http://120.79.146.91:8000/task/chart/result",
+				{
+					chart_id:this.chartId,
+					data_set:15,					//应该是data_set_id?到时换成this.$router.parms
+					chart_method:this.chartMethod,
+					chart_type:1,
+					x_axis:this.xAxisString,
+					y_axis:this.yAxisString,
+					sort:-1,
+					sort_value:'RANK',
+					filter:this.filter
+
+					// [{
+					// 	field_type:0,
+					// 	field_name:'RANK',
+					// 	filter_method:">",
+					// 	filter_obj:'50000'
+					// },
+					// {
+					// 	field_type:0,
+					// 	field_name:'RANK_H',
+					// 	filter_method:"<",
+					// 	filter_obj:'600000'
+					// }]
+					
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
+				}
+			)
+			.then(r => {
+				console.log(r.data.data)
+				console.log(new Date().getTime())
+				let str1 = r.data.data	
+				let str2 = str1.replace(/\["|\"]/g,"")
+				let str3 = str2.replace(/\","/g,"·")
+				console.log(JSON.parse(str3))
+
+				for(let i = 0;i<this.yAxisItemName.length;i++){
+					this.setData(r,this.yAxisItemName[i])
+				}
+				
+			})
+			.catch(response => {
+				console.log(response)
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
+			});
+			this.chartMethod = this.chartMethod.split(',');
+
+			}
+			
+			//通知字段筛选的穿梭框改数值,可能已经失效
+			Bus.$emit('textFilterData',Object.keys(responseDataJSON[Object.keys(responseDataJSON)[0]]))
+			this.responseData = JSON.stringify(responseDataJSON)
+
+			this.myChart.dispose()
+			this.drawLine()
+
+
+		})
+
+
+		//监听修改X轴Y轴的标题和的单位
+		Bus.$on('xAxisInputChange',(val)=>{
+			this.XAxisTitle = val
+			this.drawLine()
+		})
+		Bus.$on('xAxisUnitChange',(val)=>{
+			this.XAxisFormatter = function (value, index) {
+					return value + '(' + val + ')'
+				}
+			this.drawLine()
+		})
+		Bus.$on('yAxisInputChange',(val)=>{
+			this.YAxisTitle = val
+			this.drawLine()
+		})
+		Bus.$on('yAxisUnitChange',(val)=>{
+			this.YAxisFormatter = '{value}(' + val + ')'
+			this.drawLine()
+		})
+
+		
 		//定义二维数组存，否则会窜数据
 		for(var k=0;k<=20;k++){        
 			this.markPointArray[k]=new Array();   
@@ -634,13 +1302,209 @@ Bus.$on('leftChange',(e)=>{
 
   },
   methods: {
-    drawLine(){
+
+	setData(r,dropName){
+		
+		this.responseData = r.data.data;
+		this.responseOriginData = r.data.data;
+
+		let str1 = r.data.data						//完整数据
+		let str2 = str1.replace(/\["|\"]/g,"")
+		let str3 = str2.replace(/\","/g,"·")
+
+		
+		try {
+			Bus.$emit('xAixsData',JSON.parse(str3)) //发一份给字段筛选穿梭框
+		} catch (error) {
+			//这个地方不抛出异常的话会导致2个维度的时候下面的代码不能执行，目前抛出异常后能正常地拖1或2个维度，但2维度时不能有图内筛选器
+		}
+
+		//Object.values(JSON.parse(r.data.data)) 	表头
+		//Object.keys(element)						去重的X轴的值
+		//element       							去重的数据
+		let element = JSON.parse(str3)[dropName]	//对应的y轴的值
+		this.Xdata = []//每次循环清空X轴，否则重叠
+		this.seriesDataItem = [] //清空serIDataItem否则重叠
+
+		//给X轴赋值,Xdata为echarts的X轴的值
+		　　　　 for(let i = 0;i<Object.keys(element).length;i++){
+				this.Xdata.push(Object.keys(element)[i])  
+			}
+			//给Y轴赋值
+		　　　　 for(let i = 0;i<Object.keys(element).length;i++){
+			this.seriesDataItem.push(element[Object.keys(element)[i]])  
+			}
+				
+		this.seriesData.push({
+			name:this.yAxisItemName[this.yAxisItemName.length-1],
+			type:'bar',
+			data:this.seriesDataItem,
+			itemStyle: {
+				normal: {
+					barBorderRadius: 10,
+
+					shadowColor: 'rgba(0, 0, 0, 0.4)',
+					shadowBlur: 20
+				}
+			},
+
+		})
+
+		console.log(this.seriesData)
+		//打开dataZoom，X轴大于10时,数据是前10条
+		if(Object.keys(element).length>10){
+			this.dataZoom = [{
+				type: 'slider',
+				show: true,
+				xAxisIndex: [0],
+				start: 0,
+				end: 1000/this.Xdata.length
+			},{
+				type: 'inside',
+				start: 0,
+				end: 1000/this.Xdata.length
+			}]
+		}
+		Bus.$emit('filterClear','filterClear')//拖动y轴时直接清空筛选
+	}, 
+
+    drawLine(type){
+		//这里直接让chartYxis这些赋值而没有push会导致次轴失效
+		this.chartYAxis = {  	
+			type : 'value',
+			name: this.YAxisTitle,
+			// nameLocation: 'start',
+			axisLine:{
+				lineStyle:{
+					width:1,
+				},
+				symbol:['none','arrow']
+			},
+			axisLabel: {
+				interval:0,
+				formatter:this.YAxisFormatter
+			}					
+		}
+
+		this.chartXAxis = {
+			type : 'category',
+			data : this.Xdata,
+			name: this.XAxisTitle,
+			axisLine:{
+				lineStyle:{
+					width:1,//X轴宽度
+				},
+				symbol:['none','arrow']
+			},
+			axisLabel: {
+				interval:0,
+				formatter:this.XAxisFormatter
+			}
+
+		}
+
+		switch (type) {
+			case '普通柱状图':
+				this.chartYAxis.type = 'value'
+				this.chartXAxis.type = 'category'	
+				for(let i =0;i<this.seriesData.length;i++){
+						this.seriesData[i].type = 'bar'
+						delete this.seriesData[i].stack			//删掉堆叠
+						delete this.seriesData[i].label			//删掉横向的label
+						this.seriesData[i].itemStyle.normal = { //恢复横向和堆叠删掉的圆角
+							barBorderRadius: 10,
+							shadowColor: 'rgba(0, 0, 0, 0.4)',
+							shadowBlur: 20
+						}
+				}
+				this.dataZoom = [{
+						type: 'slider',
+						show: true,
+						xAxisIndex: [0],
+						start: 0,
+						end: 1000/this.Xdata.length
+						},{
+						type: 'inside',
+						xAxisIndex: [0],
+						start: 0,
+						end: 1000/this.Xdata.length
+					}]				
+				break;
+			case '横向柱状图':
+				let chartAxis = this.chartYAxis;
+				this.chartYAxis = this.chartXAxis;
+				this.chartXAxis = chartAxis;
+				this.dataZoom = [{
+					type: 'slider',
+					show: true,
+					yAxisIndex: [0],
+					start: 0,
+					end: 1000/this.Xdata.length
+					},{
+					type: 'inside',
+					yAxisIndex: [0],
+					start: 0,
+					end: 1000/this.Xdata.length
+				}]
+				for(let i =0;i<this.seriesData.length;i++){
+						this.seriesData[i].type = 'bar'
+						delete this.seriesData[i].itemStyle.normal
+					}
+	
+				break;
+			case '堆叠柱状图':
+				for(let i =0;i<this.seriesData.length;i++){
+						// this.seriesData[i].label =	{
+						// 	normal: {
+						// 		show: true,
+						// 		position: 'inside'
+						// 	}
+						// }
+						this.seriesData[i].type = 'bar'
+						delete this.seriesData[i].itemStyle.normal
+						this.seriesData[i].stack = '总量'
+					}
+					this.dataZoom = [{
+						type: 'slider',
+						show: true,
+						xAxisIndex: [0],
+						start: 0,
+						end: 1000/this.Xdata.length
+						},{
+						type: 'inside',
+						xAxisIndex: [0],
+						start: 0,
+						end: 1000/this.Xdata.length
+					}]
+				break;
+			case '对比柱状图':
+				
+				break;
+			case '普通折线图':
+				for(let i =0;i<this.seriesData.length;i++){
+						this.seriesData[i].type = 'line'
+						delete this.seriesData[i].areaStyle
+					}
+				break;
+			case '面积图':
+				for(let i =0;i<this.seriesData.length;i++){
+						this.seriesData[i].type = 'line'
+						this.seriesData[i].areaStyle = {normal: {}}
+					}
+				break;
+			case '对比柱状图':
+				
+				break;
+			default:
+				break;
+		}
+
 		let dom = this.$refs.myChart;
       	this.myChart = this.$echarts.init(dom,this.chartStyle);
         this.option = {
 		    title : {
-		        text: this.chartTitle,
-		        subtext: '副标题'
+				text: this.chartTitle,
+				left:'center'
 		    },
 		    tooltip : {
 				trigger: 'axis',
@@ -649,42 +1513,38 @@ Bus.$on('leftChange',(e)=>{
 			dataZoom: this.dataZoom,
 		    legend: {
 				data:this.yAxisItemName,  //拖到y轴的节点来创建图例
-				x: 'center' //居右显示
-		    },
+				y: 'center',    //延Y轴居中
+             	x: 'right', //居右显示
+				orient:'vertical'
+			},
+			toolbox: {
+				show: true,
+				feature: {
+					dataZoom: {
+						yAxisIndex: 'none'
+					},
+					dataView: {readOnly: false},
+					saveAsImage: {}
+				}
+			},
 		    calculable : true,
-		    xAxis : [
-		        {
-		            type : 'category',
-					data : this.Xdata,
-					axisLine:{
-                        lineStyle:{
-                            width:1,//X轴宽度
-						},
-						symbol:['none','arrow']
-                    },
-					axisLabel :{
-					interval:0 
-				}
-				}
-		    ],
+		    xAxis : this.chartXAxis,
 		    yAxis : this.chartYAxis,
 		    series : this.seriesData	
 		};
+		this.myChart.on('finished', function () {
+
+		});
 
         this.myChart.setOption(this.option,true);
 		Bus.$emit('chartsOption',this.option)
-		console.log(this.seriesData)
 	},
+
+	//绘制饼图
 	pieDrawLine(pieType){
-		if(pieType='ndge'){
-			//填入样式
-		}
+
 		let pieData = [];
 		let pieValue = this.seriesData[0]['data'];
-		// console.log(this.seriesData)
-		// console.log(this.seriesData[0])
-		// console.log(this.seriesData[0]['data'])
-		// console.log(this.Xdata.length)
 		for (let i = 0; i < this.Xdata.length; i++) {
 			let pieDataItem = {
 				value:pieValue[i],
@@ -692,14 +1552,13 @@ Bus.$on('leftChange',(e)=>{
 			}
 			pieData.push(pieDataItem)
 		}
-		console.log(pieData)
 		
 		let dom = this.$refs.myChart;
       	this.myChart = this.$echarts.init(dom,this.chartStyle);
         this.option ={
 		backgroundColor: '#FFF',
 		title: {
-			text: 'Customized Pie',
+			text: this.chartTitle,
 			left: 'left',
 			top: 20,
 			textStyle: {
@@ -712,11 +1571,24 @@ Bus.$on('leftChange',(e)=>{
 			formatter: "{a} <br/>{b} : {c} ({d}%)"
 		},
 		legend: {
-			x : 'center',
-			y : 'bottom',
+			y: 'center',    //延Y轴居中
+			x: 'right', //居右显示
+			orient:'vertical',
 			data:this.Xdata,
 			textStyle :{
 				color:'#5A616A'
+			}
+		},
+		toolbox: {
+			show: true,
+			feature: {
+				dataZoom: {
+					yAxisIndex: 'none'
+				},
+				dataView: {readOnly: false},
+				magicType: {type: ['line', 'bar']},
+				restore: {},
+				saveAsImage: {}
 			}
 		},
 		visualMap: {
@@ -734,54 +1606,288 @@ Bus.$on('leftChange',(e)=>{
 				radius : '75%',
 				center: ['50%', '50%'],
 				data:pieData.sort(function (a, b) { return a.value - b.value; }),
-				roseType: 'radius',
-				label: {
-					normal: {
-						textStyle: {
-							color: '#AAAAAA'
+				label : {
+						normal: {
+							textStyle: {
+								color: '#AAAAAA'
+							}
 						}
-					}
-				},
-				labelLine: {
-					normal: {
-						lineStyle: {
-							color: '#AAAAAA'
-						},
-						smooth: 0.2,
-						length: 10,
-						length2: 20
-					}
-				},
-				itemStyle: {
+					},
+				labelLine : {
+						normal: {
+							lineStyle: {
+								color: '#AAAAAA'
+							},
+							smooth: 0.2,
+							length: 10,
+							length2: 20
+						}
+					},
+				animationTyp : 'scale',
+				animationEasing : 'elasticOut',
+				animationDelay : function (idx) {return Math.random() * 200;}
+			}
+		]
+		};
+		
+		switch (pieType) {
+			case '普通饼图':
+
+				break;
+			case '半径饼图':
+				this.option.series[0].radius = ['50%', '70%']
+				break;
+			case '面积饼图':
+				this.option.series[0].roseType = 'radius',
+				this.option.series[0].radius = [40, 210]
+				break;
+			case '南丁格尔图':
+				this.option.series[0].roseType = 'radius',
+				this.option.series[0].itemStyle = {
 					normal: {
 						color: '#c23531',
 						shadowBlur: 200,
 						shadowColor: 'rgba(0, 0, 0, 0.5)'
 					}
-				},
-
-				animationType: 'scale',
-				animationEasing: 'elasticOut',
-				animationDelay: function (idx) {
-					return Math.random() * 200;
 				}
-			}
-		]
-	};
+				break;
+			default:
+				break;
+		}
+		
+
+        this.myChart.setOption(this.option,true);
+		Bus.$emit('chartsOption',this.option)
+	},
+
+	//绘制散点图
+	scatterDrawLine(scatterType){
+
+		    // xAxis : this.chartXAxis,
+		    // yAxis : this.chartYAxis,
+		let scatterData = []
+		for(let i =0;i<this.seriesData[0].data.length;i++){
+			let scatterDataItem = []
+			scatterDataItem.push(this.seriesData[0].data[i])
+			scatterDataItem.push(this.seriesData[1].data[i])
+			scatterDataItem.push(this.Xdata[i])
+			scatterData.push(scatterDataItem)
+		}
+		switch (scatterType) {
+			case '普通散点图':
+							
+				break;
+			case '气泡图':
+				
+				break;
+			default:
+				break;
+		}
+
+		let dom = this.$refs.myChart;
+      	this.myChart = this.$echarts.init(dom,this.chartStyle);
+        this.option = {
+		    title : {
+		        text: this.chartTitle,
+		        subtext: '副标题'
+		    },
+		    tooltip : {
+				trigger: 'axis',
+				axisPointer : {type : 'shadow'}
+			},
+			dataZoom: {},
+			toolbox: {
+				show: true,
+				feature: {
+					dataZoom: {
+						yAxisIndex: 'none'
+					},
+					dataView: {readOnly: false},
+					magicType: {type: ['line', 'bar']},
+					restore: {},
+					saveAsImage: {},
+					myTool1: {
+						show: true,
+						title: '自定义扩展方法1',
+						icon: 'path://M432.45,595.444c0,2.177-4.661,6.82-11.305,6.82c-6.475,0-11.306-4.567-11.306-6.82s4.852-6.812,11.306-6.812C427.841,588.632,432.452,593.191,432.45,595.444L432.45,595.444z M421.155,589.876c-3.009,0-5.448,2.495-5.448,5.572s2.439,5.572,5.448,5.572c3.01,0,5.449-2.495,5.449-5.572C426.604,592.371,424.165,589.876,421.155,589.876L421.155,589.876z M421.146,591.891c-1.916,0-3.47,1.589-3.47,3.549c0,1.959,1.554,3.548,3.47,3.548s3.469-1.589,3.469-3.548C424.614,593.479,423.062,591.891,421.146,591.891L421.146,591.891zM421.146,591.891',
+						onclick: function (){
+							alert('myToolHandler1')
+						}
+					},
+				}
+			},
+
+		    // xAxis : this.chartXAxis,
+		    // yAxis : this.chartYAxis,
+		    xAxis: {},
+			yAxis: {},
+			series: [{
+				symbolSize: 20,
+				data: scatterData,
+				type: 'scatter',
+				label: {
+					emphasis: {
+						show: true,
+						formatter: function (param) {
+							return param.data[2]
+						},
+						position: 'top'
+					}
+				}
+			}]	
+		};
 		
         this.myChart.setOption(this.option,true);
 		Bus.$emit('chartsOption',this.option)
 	},
 
-	//图内筛选器事件
-	handleCommand(command) {
-		alert(command)
-		let sql = "x=>x."+ 'RANK' +">"+ command
-		this.echartAxiosData = Enumerable.from(this.echartAxiosData).where(sql).toArray();//this.echartAxiosData没用this，以后可能有问题
+
+	//图内筛选器-数值筛选-点击事件
+	picFilterNumberClick(val){
+		//这里填入数值筛选时的筛选
 		this.myChart.dispose()
 		this.drawLine();
 	},
 
+	//图内筛选器-字段筛选-点击事件
+	picFilterTextClick(val){
+
+		if(val=='全部'){}//直接调用清除数据的filterCancel来恢复数据
+
+		this.seriesDataItem = []  //相当于清空echarts的数据 
+		this.seriesData = []  
+		//val是传进来的学校名称
+
+		this.filter.push({
+			field_type:1,
+			field_name:'学校名称',
+			filter_method:"contains",
+			filter_obj:'市一中'		
+		})
+
+			this.chartMethod = this.chartMethod.join(',')		
+			this.$axios
+			.post(
+			"http://120.79.146.91:8000/task/chart/result",
+				{
+					chart_id:this.chartId,
+					data_set:15,					//应该是data_set_id?到时换成this.$router.parms
+					chart_method:this.chartMethod,
+					chart_type:1,
+					x_axis:'学校名称',
+					y_axis:'RANK,RANK_H',
+					sort:-1,
+					sort_value:'RANK',
+					filter:{
+						field_type:1,
+						field_name:'学校名称',
+						filter_method:"contains",
+						filter_obj:'市一中'		
+					}
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
+				}
+			)
+			.then(r => {
+				console.log(r.data.data)
+
+				console.log(JSON.parse(str3))
+
+				for(let i = 0;i<this.yAxisItemName.length;i++){
+					this.setData(r,this.yAxisItemName[i])
+				}
+				
+			})
+			.catch(response => {
+				console.log(response)
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
+			});
+			this.chartMethod = this.chartMethod.split(',');
+console.log(this.filter)
+		this.myChart.dispose()
+		this.drawLine();
+	},
+
+	sortClick(SortRadio,selectItem){
+		switch (SortRadio) {
+			case '原序':
+				this.sortFlag = -1
+				break;
+			case '升序':
+				this.sortFlag = 1
+				break;
+			case '降序':
+				this.sortFlag = 0
+				break;
+			default:
+				break;
+		}
+		this.selectItem = selectItem
+		//selectItem = selectItem.join('')
+		this.$axios
+			.post(
+			"http://120.79.146.91:8000/task/chart/result",
+				{
+					chart_id:this.chartId,
+					data_set:15,//应该是data_set_id?到时换成this.$router.parms
+					chart_method:this.chartMethod,
+					chart_type:1,
+					x_axis:this.xAxisString,
+					y_axis:this.yAxisString,
+					sort:this.sortFlag,
+					sort_value:this.selectItem
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
+				}
+			)
+			.then(r => {
+				let str1 = r.data.data	
+				let str2 = str1.replace(/\["|\"]/g,"")
+				let str3 = str2.replace(/\","/g,"·")
+				this.responseData = r.data.data 		//使得所有的数据都是排序的
+
+				for(let i =0 ;i<Object.keys(JSON.parse(str3)).length;i++){
+					let seriesItem = []
+					this.Xdata = []
+					let element = JSON.parse(str3)[Object.keys(JSON.parse(str3))[i]]
+
+					//给X轴赋值,Xdata为echarts的X轴的值
+			　　　　 for(let j = 0;j<Object.keys(element).length;j++){
+						this.Xdata.push(Object.keys(element)[j])  
+					}
+
+					for(let j = 0;j<Object.keys(element).length;j++){
+						seriesItem.push(element[Object.keys(element)[j]])  
+						}
+
+						this.seriesData[i].data = seriesItem
+				}
+
+				this.drawLine();
+				//this.chartMethod = this.chartMethod.split(',');
+			})
+			.catch(response => {
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
+			});
+
+			//Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
+			//this.myChart.dispose()
+	},
+	
 	autoDivSize(){
 		if (window.innerHeight)
             this.winHeight = window.innerHeight;
@@ -789,7 +1895,6 @@ Bus.$on('leftChange',(e)=>{
             this.winHeight = document.body.clientHeight;
         if (document.documentElement && document.documentElement.clientHeight)
 			this.winHeight = document.documentElement.clientHeight;
-			
 		
 		if (window.innerWidth)
             this.winWidth = window.innerWidth;
@@ -806,6 +1911,17 @@ Bus.$on('leftChange',(e)=>{
 		document.getElementById("font-position").style.marginTop= this.winHeight*0.30 + "px";
 		
 	},
+
+	isNumber(val) {
+		var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+		var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+		if(regPos.test(val) || regNeg.test(val)) {
+			return true;
+			} else {
+				return false;
+			}
+	},
+
     //Aiox模拟
     myAiox(){
         return JSON.parse('[{	"RANK": "1111",	"RANK_H": "1291",	"姓名_x": "赵一钦1",	"学校名称": "市三中1",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区1",	"考生号": "170010508"}, {	"RANK": "2222",	"RANK_H": "1292",	"姓名_x": "赵一钦2",	"学校名称": "市三中2",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区2",	"考生号": "170010508"}, {	"RANK": "3333",	"RANK_H": "1293",	"姓名_x": "赵一钦3",	"学校名称": "市三中3",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区3",	"考生号": "170010508"}]')
@@ -815,7 +1931,7 @@ Bus.$on('leftChange',(e)=>{
 </script>
 <style>
 .analysisCardStyle{
-	border: 0px;
+	border: 1px solid #fff;
 	margin: 15px;
 	margin-top: 20px;
 	
@@ -835,5 +1951,7 @@ Bus.$on('leftChange',(e)=>{
         border: 1px solid #ffffff;
         border-bottom-color: #dcdfe6;
     }
+
+
 
 </style>

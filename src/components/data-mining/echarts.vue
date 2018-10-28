@@ -1,12 +1,27 @@
 <template>
 	<div>
-		<el-card class="box-card miningCardStyle" id="echartsCard"  shadow="never">
+		<div class="box-card miningCardStyle" id="echartsCard">
 
-			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
+			<el-popover  placement="bottom" trigger="hover" style="float:right">
+				<a v-if="errorSumFlag">{{errorSumTips}}</a>
+				<img :src="errorSumTips" v-if="!errorSumFlag" style="width:105%;height:105%">
+			<el-button slot="reference" size="small" ><i class="el-icon-info" style="float:left"></i>&nbsp;误差信息</el-button>
+			</el-popover>
+
+			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart"  v-loading="loading">
 
 				<!-- 未显示图表时 -->
-				<div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>
-				<img :src="picPath" style="width:90%;height:90%;margin:40px;">
+				<div class="echarts-font" id="font-position"  v-show="bgFlag" v-loading="loading">当前图表无数据</div>
+				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:45px;margin-top:10px"  v-show="bgFlag">
+
+				<!-- 这里单独定义显示变量 -->
+				<img :src="picPath" style="width:90%;height:90%;margin:45px;"  v-show="regressionFlag">
+
+				<el-carousel indicator-position="outside" :height="ClusterHeight" v-if="ClusterFlag">
+					<el-carousel-item v-for="item in 3" :key="item">
+					<img :src="picPath" style="width:100%;height:100%;">
+					</el-carousel-item>
+				</el-carousel>
 
 				<!-- 表格部分 -->
 				<el-table
@@ -25,23 +40,8 @@
 				</el-table>
 			</div>
 
-			<!-- 图内筛选器部分 -->
-			<div>
-				<svg class="icon dropdowmMenuStyle" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg>	
-				<el-dropdown class="dropdowmMenuStyle" v-for="(val,index) in dropdownArray" :key="index"  @command="handleCommand">
-				<span class="el-dropdown-link">
-					{{val}}<i class="el-icon-arrow-down el-icon--right"></i>
-				</span>
-				<el-dropdown-menu slot="dropdown">
-					<el-dropdown-item v-for="(item,k) in dropdownItemArray[index]" :key="k" :command="item">
-						{{item}}
-					</el-dropdown-item>
-				</el-dropdown-menu>
-				</el-dropdown>
-			</div>
 
-
-		</el-card>
+		</div>
 	</div>
 </template>
 
@@ -54,8 +54,6 @@ import  'echarts/theme/infographic.js'
 import  'echarts/theme/shine.js'
 import  'echarts/theme/roma.js'
 import bg from '@/assets/chartBg.png'
-import bg2 from '@/assets/logo.png'
-var Enumerable = require('linq');
 export default {
   name: 'echarts',
   data () {
@@ -83,157 +81,148 @@ export default {
 	  tableVisible:false,
 	  chartYAxis:[{name : '',type : 'value'}],
 	  chartId:1,
-	  picPath:bg
-
+	  picPath:bg,
+	  xAxisString:'',
+	  yAxisString:'',
+	  test_size: 0.7,
+	  mth_power: 0,
+	  error_type : 1,
+	  category:11,
+	  errorSumTips:'',
+	  errorSumFlag:true,
+	  loading:false,
+	  regressionFlag:false,
+	  ClusterFlag:false,
+	  ClusterHeight:'100px',
+	  bgFlag:true,
+	  xAxisLabel:'',
+	  yAxisLabel:''
     }
   },
   mounted(){
-	  
 
-	this.autoDivSize();//根据浏览器尺寸设置echarts的宽高
-//1.页面加载时创建图表或者PATCH图表（得到id,data_set）data_set：任务id，title随机生成
-// 2.拖动到框上的时候求和
-// 3.每一步PATCH
-
-Bus.$on('wtf',(e)=>{
-	if(e){
-		document.getElementById("myChart").style.width= this.winWidth*0.87 + "px";
-		document.getElementById("echartsCard").style.width= this.winWidth*0.898 + "px";
-		this.myChart.dispose();
-		this.drawLine();
-	}
-	else{
-		document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
-		document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
-		this.myChart.dispose();
-		this.drawLine();
-	}
-
-})
-		//0.从AxiosDistribute过来的图表ID
-		Bus.$on('chartID',(e)=>{
-			this.chartId = e
-			//alert(e)
+		Bus.$on('modelParmsFlag',(modelType)=>{
+		switch (modelType) {
+			case '线性回归':
+			this.regressionFlag = true
+			this.ClusterFlag = false
+			break;
+			case '非线性回归':
+			this.regressionFlag = true
+			this.ClusterFlag = false
+			break;
+			case 'K-Means聚类':
+			this.ClusterFlag = true
+			this.regressionFlag = false
+			break;
+			case 'Mini Batch K-Means聚类':
+			this.ClusterFlag = true
+			this.regressionFlag = false
+			break;
+		
+			default:
+			break;
+		}
 		})
-		//0.从AxiosDistribute过来的完整图表数据
+
+
+	  	//0.从AxiosDistribute过来的完整图表数据
         Bus.$on('AxiosDataEcharts', (e) => {
-			this.originAxiosData = e; //原初的数据
 			this.echartAxiosData = e;		//被用来操作（筛选）的数据
 			})
-	  
-	  
+
+		this.autoDivSize();//根据浏览器尺寸设置echarts的宽高
+
+		Bus.$on('wtf',(e)=>{
+			if(e){
+				document.getElementById("myChart").style.width= this.winWidth*0.87 + "px";
+				document.getElementById("echartsCard").style.width= this.winWidth*0.898 + "px";
+				this.ClusterHeight = this.winWidth*0.87 + "px";
+			}
+			else{
+				document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
+				document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
+				this.ClusterHeight = this.winWidth*0.67 + "px";
+			}
+
+		})
+
+	  	Bus.$on('modelParmsFlag',(type)=>{
+			  switch (type) {
+                    case '线性回归':
+                        this.mth_power = 0
+						this.category = 11
+                        break;
+                    case '非线性回归':
+                        if(this.mth_power==0)this.mth_power = 2
+				  		this.category = 12 
+                        break;
+				  default:
+					  break;
+			  }
+
+
+			  this.drawModel()
+			  this.tableVisible = false
+		})
+		Bus.$on('test_size',(e)=>{
+			this.test_size = e
+			//alert(this.test_size)
+			this.drawModel()
+		})
+		Bus.$on('mth_power',(e)=>{
+			this.mth_power = e
+			//alert(this.mth_power)
+			this.drawModel()
+		})
+		Bus.$on('error_type',(e)=>{
+			if(e=='MSE(平均绝对误差)')this.error_type = 1
+			if(e=='MAE(均方误差)')this.error_type = 2
+			if(e=='RMSE(均方根误差)')this.error_type = 3
+			//alert(this.error_type)
+			this.drawModel()
+			//alert(this.test_size+" "+this.mth_power+" "+this.error_type)
+		})
+
+
+	 
+
 		//1.监听X轴传值
 		Bus.$on('rowdata', (e) => {
 			this.xAxisItem.push(e)
-			//this.echartAxiosData[e].length 用来取代下面的15
-
-			//图表展示控制
 			if(this.yAxisItemName.length<1){
 					this.tableVisible = true
 					for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
 					this.fields.push(e)
 				}
-				else{this.drawLine();}
+			this.bgFlag = false
 		})
 	   
 
 
 		//1.监听Y轴传值
 		Bus.$on('coldata', (e) => {
+			this.bgFlag = false
 			//获得拖到y轴上的节点字段数组
 			this.yAxisItemName.push(e)
 			//拼x轴字符串
-			let yAxisString = this.yAxisItemName[0]; 
+			this.yAxisString = this.yAxisItemName[0]; 
 			for (let i = 1; i < this.yAxisItemName.length; i++) {
-				yAxisString = yAxisString + ',' + this.yAxisItemName[i] 
+				this.yAxisString = this.yAxisString + ',' + this.yAxisItemName[i] 
 			}
 			//拼Y轴字符串
-			let xAxisString = this.xAxisItem[0]; 
+			this.xAxisString = this.xAxisItem[0]; 
 			for (let i = 1; i < this.xAxisItem.length; i++) {
-				xAxisString = xAxisString + ',' + this.xAxisItem[i] 
+				this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
 			}
-console.log("xxx:"+xAxisString)
-console.log(yAxisString)
-			//发送求和请求
-			this.$axios
-			.post(
-			"http://120.79.146.91:8000/dataMining/regression/",
-				{
-					//chart_id:this.chartId,
-					// chart_type:1,
-					// x_axis:xAxisString,
-					// y_axis:yAxisString,
-					data_set:4,//应该是data_set_id?到时换成this.$router.parms
-					title : Math.floor(Math.random()*(1000000-1+1)+1),
-					desc: "zzzzz3",
-					category: 12,
-					xlabel: xAxisString,
-					ylabel: yAxisString,
-					x_axis: xAxisString,
-					y_axis: yAxisString,
-					test_size: 0.2,
-					mth_power: 4,
-					error_type : 3
-				},
-				{
-					headers: {
-					Authorization: "JWT " + localStorage.getItem("token")
-					}
-				}
-			)
-			.then(r => {
-				console.log(r)
-			 	this.$message({
-					message: r.data.message,
-					type: 'success'
-				});
-				console.log(r.data.data[0])
-				this.picPath = r.data.data[0];
-				alert(this.picPath)
-			})
-			.catch(response => {
-				console.log(response)
-			});
 
+
+			this.xAxisLabel = this.xAxisString
+			this.yAxisLabel = this.yAxisString
+			this.drawModel()
+			
 
 		})
-
-		//次轴也要求和…………………………参数为X轴和次轴
-	   //2.然后是监听次轴传值
-       Bus.$on('dropAxisCol', (e) => {
-
-			this.yAxisItemName.push(e)	//获得拖到y轴上的节点字段数组
-
-    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-                this.seriesDataItem.push(this.echartAxiosData[i][e])  //根据传进来的字段，给X轴赋值
-            }
-
-			this.seriesData.push({
-				name:e,
-				type:'line',
-				yAxisIndex: 1,
-				data:this.seriesDataItem
-			})
-			this.seriesDataItem = []
-			
-		   if(this.Xdata.length<1){
-			   this.tableVisible = true
-				for(let j =0 ;j < 15;j++){
-				this.tableData[j] = this.echartAxiosData[j];
-				}
-				this.fields.push(e)
-		   }
-		   else{
-			   	this.chartYAxis.push(
-				{
-					name : e,
-		            type : 'value'
-				})
-				console.log(this.option.yAxis)
-				this.myChart.dispose()
-				this.drawLine();
-		   }
-	   	})
 
 	   
 	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
@@ -241,8 +230,6 @@ console.log(yAxisString)
 			this.Xdata = [];
 			//this.Xdata.splice(e, 1);这种写法是错的，Xdata是18个学校的名字
 			this.tableVisible = false
-			this.myChart.dispose()
-			this.drawLine();
 	   })
 
 
@@ -252,219 +239,23 @@ console.log(yAxisString)
 			this.yAxisItemName.splice(e, 1);
 			
 			this.tableVisible = false
-			this.myChart.dispose()
-			this.drawLine();
+	
 	   })
 		
-		//3.监听图表类型改变(还没有PATCH)
-		Bus.$on('typeChange',(e)=>{
-			for(var i = 0;i<this.option.series.length;i++){
-				this.option.series[i].type = e; //可以改类型，不能改标题，重新drawLine也没用
-				if(e === 'scatter')this.option.series[i].symbolSize = 20
-			}
-			
-			this.drawLine();
-		})
-
-		//3.监听图表风格(不PATCH)
-		Bus.$on('chartStyleType',(e)=>{
-			this.chartStyle = e;
-			this.myChart.dispose()
-			this.drawLine();
-		})
-
 		//3.监听标题改变(还没有PATCH)
 		Bus.$on('titleChange',(e)=>{
 			this.chartTitle = e;
-			this.myChart.dispose()
-			this.drawLine();
-		})
-
-		//监听辅助线设置（不PATCH）
-		Bus.$on('markLineOption',(e)=>{
-			if(e.selectTypeValue == '计算值'){
-				for(var i = 0;i<this.option.series.length;i++){
-					if(this.option.series[i].name == e.selectValue){
-						if(e.selectCalculateTypeValue == '平均值')
-						this.option.series[i].markLine = {
-								data: [{
-									type: 'average',
-									name: '平均值'
-									}]
-						}
-						if(e.selectCalculateTypeValue == '最小值')
-						this.option.series[i].markLine = {
-								data: [{
-									type: 'min',
-									name: '最小值'
-									}]
-						}
-						if(e.selectCalculateTypeValue == '最大值')
-						this.option.series[i].markLine = {
-								data: [{
-									type: 'max',
-									name: '最大值'
-									}]
-						}
-					}
-				}
-			}
 	
-			if(e.selectTypeValue == '固定值'){
-				for(var i = 0;i<this.option.series.length;i++){
-					if(this.option.series[i].name == e.selectValue){
-						this.option.series[i].markLine = {
-								data: [{
-									yAxis: e.inputValue,
-									name: '固定值'
-									}]
-						}
-					}
-				}
-			}	
-
-			this.drawLine();
 		})
 
-		//监听辅助线删除（不PATCH）
-		Bus.$on('deleteLine',(e)=>{
-			for(var i = 0;i<this.option.series.length;i++){
-				if(this.option.series[i].name == e){
-					this.option.series[i].markLine = {
-					}
-				}
-			}
-			this.drawLine();
+		//x,y轴的标题
+		Bus.$on('miningXAxis',(e)=>{
+			this.xAxisLabel = e
+			this.drawModel()
 		})
-
-		//监听数据标注（不PATCH）
-		Bus.$on('echartsMarkPoint',(seriesIndex,data,dataIndex,pointInput)=>{
-			//其实markPoint应该写到series里面，但是我不想改series了
-			this.option.series[seriesIndex].markPoint = {
-		                symbol:'roundRect',
-						symbolSize:[10, 10],// 容器大小
-						symbolOffset:[0,-20],//位置偏移
-						data:[],
-						itemStyle:{
-							normal:{
-								label:{
-						            show: true,
-						            position: 'top',
-									formatter: function (params,ticket,callback) {//格式化展现（标签+值）
-											 //console.log(params,ticket,callback)
-											 return params.data.pointText;
-										}  
-								  	}
-								}
-		                },
-					};
-
-			this.markPointArray[seriesIndex].push({coord:[dataIndex,data],pointText:pointInput})
-			this.option.series[seriesIndex].markPoint.data = this.markPointArray[seriesIndex]
-			//this.option.series[seriesIndex].markPoint.itemStyle.normal.label.formatter = this.option.series[seriesIndex].markPoint.data.cnm
-			console.log(seriesIndex)
-			this.drawLine();
-		})
-
-		//监听数据标注删除（不PATCH）
-		Bus.$on('deletePoint',(val,pointSeriesIndex)=>{   //尝试传(pointSeries,pointY,pointX)失败，pointSeries被覆盖，用回名字
-			console.log(val,pointSeriesIndex)
-			// for(var i = 0;i<this.option.series.length;i++){
-			// 	if(this.option.series[i].name == e){
-			// 		this.option.series[i].markLine = {
-			// 		}
-			// 	}
-			// }
-			for(let j = 0;j<this.option.series[pointSeriesIndex].markPoint.data.length;j++){
-				console.log()
-				this.option.series[pointSeriesIndex].markPoint.data.splice(j,1)
-			}
-			
-			this.drawLine();
-
-		})
-
-		//监听数值筛选（还没有PATCH）
-		Bus.$on('numberFilter',(numberInput,numberTypeSelect,dropName)=>{
-			let sql = ''
-			switch (numberTypeSelect) {
-				case '等于':
-					sql = "x=>x."+ dropName +"="+ numberInput
-					break;
-				case '大于':
-					sql = "x=>x."+ dropName +">"+ numberInput
-					break;
-				case '小于':
-					sql = "x=>x."+ dropName +"<"+ numberInput
-					break;
-				case '大于等于':
-					sql = "x=>x."+ dropName +">="+ numberInput
-					break;
-				case '小于等于':
-					sql = "x=>x."+ dropName +"<="+ numberInput
-					break;
-				default:
-					break;
-			}
-			
-			this.echartAxiosData = Enumerable.from(this.echartAxiosData).where(sql).toArray();//this.echartAxiosData没用this，以后可能有问题
-
-    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-                this.seriesDataItem.push(this.echartAxiosData[i][dropName])  //根据传进来的字段，给X轴赋值
-            }
-
-			for(let j=0;j<this.seriesData.length;j++){
-				if(this.seriesData[j].name == dropName){
-					this.seriesData[j] = {
-						name:dropName,
-						type:'bar',
-						data:this.seriesDataItem
-					}
-				}
-			}
-	 		this.seriesDataItem = [] //清空serIDataItem否则重叠
-			this.myChart.dispose()
-			this.drawLine()
-		})
-
-		//监听筛选移除
-		Bus.$on('numberFilterRemove',(dropName)=>{
-    　　　　for(let i=0;i<this.echartAxiosData.length;i++){
-                this.seriesDataItem.push(this.echartAxiosData[i][dropName])  //根据传进来的字段，给X轴赋值
-            }
-			console.log(this.seriesDataItem)
-			for(let j=0;j<this.seriesData.length;j++){
-				if(this.seriesData[j].name == dropName){
-					this.seriesData[j] = {
-						name:dropName,
-						type:'bar',
-						data:this.seriesDataItem
-					}
-				}
-			}
-	 		this.seriesDataItem = [] //清空serIDataItem否则重叠
-			this.myChart.dispose()
-			this.drawLine()
-		})
-
-		//监听图内筛选器
-		Bus.$on('transferChoice',(e)=>{
-			this.dropdownArray = [];
-			this.dropdownArray = e
-			this.dropdownArray.forEach((val)=>{
-				let itemArray=[]
-				for (let i = 0; i < this.originAxiosData.length; i++) {//this.originAxiosData去重，不用this.originAxiosData
-				console.log()
-				//console.log(val)
-					itemArray.push(this.originAxiosData[i][val])
-					if(i>=10)break;
-				}
-				this.dropdownItemArray.push(itemArray)
-				console.log(this.dropdownItemArray)
-				itemArray = []
-			})
-			
-			
+		Bus.$on('miningYAxis',(e)=>{
+			this.yAxisLabel = e
+			this.drawModel()
 		})
 
 		//定义二维数组存，否则会窜数据
@@ -474,48 +265,6 @@ console.log(yAxisString)
 
   },
   methods: {
-    drawLine(){
-		let dom = this.$refs.myChart;
-      	this.myChart = this.$echarts.init(dom,this.chartStyle);
-        this.option = {
-		    title : {
-		        text: this.chartTitle,
-		        subtext: '副标题'
-		    },
-		    tooltip : {
-				trigger: 'axis',
-				axisPointer : {type : 'shadow'}
-			},
-			dataZoom: this.dataZoom,
-		    legend: {
-		        data:this.yAxisItemName  //拖到y轴的节点来创建图例
-		    },
-		    calculable : true,
-		    xAxis : [
-		        {
-		            type : 'category',
-					data : this.Xdata,
-					axisLabel :{
-					interval:0 
-				}
-				}
-		    ],
-		    yAxis : this.chartYAxis,
-		    series : this.seriesData	
-		};
-
-        this.myChart.setOption(this.option,true);
-		Bus.$emit('chartsOption',this.option)
-	},
-
-	//图内筛选器事件
-	handleCommand(command) {
-		alert(command)
-		let sql = "x=>x."+ 'RANK' +">"+ command
-		this.echartAxiosData = Enumerable.from(this.echartAxiosData).where(sql).toArray();//this.echartAxiosData没用this，以后可能有问题
-		this.myChart.dispose()
-		this.drawLine();
-	},
 
 	autoDivSize(){
 		if (window.innerHeight)
@@ -538,14 +287,73 @@ console.log(yAxisString)
 		document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
 		document.getElementById("echartsCard").style.height= this.winHeight*0.84 + "px";
 		document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
+		this.ClusterHeight = this.winHeight*0.7	 + "px";
 		document.getElementById("font-position").style.marginTop= this.winHeight*0.30 + "px";
 		
-	},
-    //Aiox模拟
-    myAiox(){
-        return JSON.parse('[{	"RANK": "1111",	"RANK_H": "1291",	"姓名_x": "赵一钦1",	"学校名称": "市三中1",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区1",	"考生号": "170010508"}, {	"RANK": "2222",	"RANK_H": "1292",	"姓名_x": "赵一钦2",	"学校名称": "市三中2",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区2",	"考生号": "170010508"}, {	"RANK": "3333",	"RANK_H": "1293",	"姓名_x": "赵一钦3",	"学校名称": "市三中3",	"性别_x": "女",	"毕业学校": "紫荆中学凤凰路校区3",	"考生号": "170010508"}]')
-    }
-  }
+		},
+		drawModel(){
+			this.loading = false//打开加载条动画
+			this.tableVisible = false
+			//发送请求
+			this.$axios
+			.post(
+			"http://120.79.146.91:8000/dataMining/regression/",
+				{
+					data_set:15,//是data_set_id,要和Axios.vue的id保持一致
+					title : Math.floor(Math.random()*(1000000-1+1)+1),
+					desc: "zzzzz3",
+					category: this.category,
+					xlabel: this.xAxisLabel,
+					ylabel: this.yAxisLabel,
+					x_axis: this.xAxisString,
+					y_axis: this.yAxisString,
+					test_size: this.test_size,
+					mth_power: this.mth_power,
+					error_type : this.error_type
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
+				}
+			)
+			.then(r => {
+				console.log(r)
+			 	this.$message({
+					message: r.data.message,
+					type: 'success'
+				});
+				//console.log(r.data.data[0])
+				this.picPath = "http://120.79.146.91:8000"+r.data.data[0].slice(15,r.data.data[0].length);
+				// this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+				// console.log(r.data.data[1])
+				if(r.data.data[1][0]=='c'){
+					this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+					this.errorSumFlag = false
+				}
+				else{
+					if(this.error_type == 1)this.errorSumTips = 'MSE(平均绝对误差):' + r.data.data[1].slice(10,r.data.data[1].length)
+					if(this.error_type == 2)this.errorSumTips = 'MAE(均方误差):' + r.data.data[1].slice(10,r.data.data[1].length)
+					if(this.error_type == 3)this.errorSumTips = 'RMSE(均方根误差):' + r.data.data[1].slice(10,r.data.data[1].length)
+					this.errorSumFlag = true
+				}
+				
+				console.log(this.errorSumTips)
+				this.loading = false
+				if(!this.ClusterFlag)this.regressionFlag = true //这句不好
+			})
+			.catch(response => {
+				console.log(response)
+				this.$message({
+					message: '操作失败，请重试',
+					showClose: true,
+					type: 'warning',
+					duration:1000
+				});
+			});
+		}
+
+  	}
 }
 </script>
 <style>

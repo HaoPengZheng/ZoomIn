@@ -1,12 +1,12 @@
 <template>
     <div>
-            <el-menu
-            default-active="1"
-            class="el-menu-vertical-demo modelTypeStyle"
-            @open="handleOpen"
-            @close="handleClose"
-             style="text-align: left;"
-             >
+        <el-menu
+        default-active="1"
+        class="el-menu-vertical-demo modelTypeStyle"
+        @open="handleOpen"
+        @close="handleClose"
+        style="text-align: left;"
+        >
             <el-submenu index="1">
 
                 <template slot="title">
@@ -16,28 +16,45 @@
 
                 <el-menu-item-group >
                 <el-menu-item index="1">
-                    <div><el-radio v-model="radio" label="1">线性回归</el-radio></div>
+                    <div><el-radio v-model="radio" label="线性回归">线性回归</el-radio></div>
                 </el-menu-item>
                 </el-menu-item-group>
                 
                 <el-menu-item-group>
                 <el-menu-item index="2">
-                    <div><el-radio v-model="radio" label="2">非线性回归</el-radio></div>
+                    <div><el-radio v-model="radio" label="非线性回归">非线性回归</el-radio></div>
                 </el-menu-item>
                 </el-menu-item-group>
 
             </el-submenu>
 
+        <el-submenu index="2">
+                <template slot="title">
+                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-27huiguiquxiantu"></use></svg>
+                <span>聚类分析</span>
+                </template>
 
-            <el-menu-item index="2">
-                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shujuxiangguanxingfenxi1"></use></svg>
-                <span slot="title">相关性分析</span>
-            </el-menu-item>
-            <el-menu-item index="3">
-                <svg class="icon" aria-hidden="true"><use xlink:href="#icon-cluster-analysis"></use></svg>
-                <span slot="title">聚类分析</span>
-            </el-menu-item>
-            </el-menu>
+                <el-menu-item-group >
+                <el-menu-item index="1">
+                    <div><el-radio v-model="radio" label="K-Means聚类">K-Means聚类</el-radio></div>
+                </el-menu-item>
+                </el-menu-item-group>
+                
+                <el-menu-item-group>
+                <el-menu-item index="2">
+                    <div><el-radio v-model="radio" label="Mini Batch K-Means聚类">Mini Batch K-Means聚类</el-radio></div>
+                </el-menu-item>
+                </el-menu-item-group>
+        </el-submenu>
+
+        <el-submenu index="3">
+            <template slot="title">
+            <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shujuxiangguanxingfenxi1"></use></svg>
+            <span slot="title">相关性分析</span>
+            </template>
+        </el-submenu>
+
+    </el-menu>
     </div>
 </template>
 
@@ -47,7 +64,7 @@ import Bus from '../Bus.js'
   export default {
       data(){
           return{
-              radio: '1'
+              radio: '线性回归'
           }
         },
         methods: {
@@ -60,8 +77,23 @@ import Bus from '../Bus.js'
         },
         watch:{
             radio(val){
-                if(val==1)Bus.$emit('modelParmsFlag',true)  
-                if(val==2)Bus.$emit('modelParmsFlag',false)  
+                switch (val) {
+                    case '线性回归':
+                        Bus.$emit('modelParmsFlag','线性回归')  
+                        break;
+                    case '非线性回归':
+                        Bus.$emit('modelParmsFlag','非线性回归')  
+                        break;
+                    case 'K-Means聚类':
+                        Bus.$emit('modelParmsFlag','K-Means聚类')  
+                        break;
+                    case 'Mini Batch K-Means聚类':
+                        Bus.$emit('modelParmsFlag','Mini Batch K-Means聚类')  
+                        break;
+                    default:
+                        break;
+                }
+
             }
         }
   }

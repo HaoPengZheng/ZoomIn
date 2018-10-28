@@ -1,6 +1,5 @@
 <template>
     <div class='drag-content' id="dragCon" >
-        <el-tabs v-model="activeName">
 
                 <div>
                     <div style="margin-top:130px" v-if="loadingUsergroupList"><div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div></div>
@@ -17,8 +16,6 @@
                         </ul>
                     </div> <!-- 拖动的标签 -->
                 </div>
-
-        </el-tabs>
 
 
     <!-- <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shuzi"></use></svg> -->
@@ -93,7 +90,7 @@ import Bus from './Bus.js'
   cursor:pointer;
 
   color: #5A616A;
-  font-family: "Microsoft YaHei","微软雅黑"
+  font-family: "Microsoft YaHei","宋体"
 }
 .select-item {
   /* border:1px solid #5bc0de;
@@ -105,6 +102,8 @@ import Bus from './Bus.js'
   padding: 6px 20px;
   color: #5bc0de;
   width: 120px; */
+  color: rgb(100, 100, 100);
+  font-family: "微软雅黑";
     border: 0px
 }
  .cursored{

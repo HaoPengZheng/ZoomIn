@@ -1,7 +1,7 @@
 <template>
     <div>
         {{dropName}}：
-        <el-select v-model="selectTypeValue" placeholder="类型">
+        <el-select class="selectBox" v-model="selectTypeValue" placeholder="类型">
             <el-option
             v-for="item in selectType"
             :key="item"
@@ -9,7 +9,7 @@
             :value="item">
             </el-option>
         </el-select>
-        <el-input class="selectBox" v-model="inputValue" placeholder="请输入数值" v-show="inputVisiable" style="width:20.52%"></el-input>
+        <el-input class="selectBox" v-model="inputValue" placeholder="字段" v-show="inputVisiable" style="width:20.52%"></el-input>
         
         <svg class="icon" aria-hidden="true" style="margin-left:10px" @click="rowAdd" v-show="iconVisiable"><use xlink:href="#icon-iconjia"></use></svg>
         <svg class="icon" aria-hidden="true" style="margin-left:10px" v-show="!iconVisiable"><use xlink:href="#icon-koba"></use></svg>
@@ -26,7 +26,7 @@ export default {
         input: '',
         yData:[],
         selectValue:[],
-        selectType:['等于','大于','小于','大于等于','小于等于'],
+        selectType:['包含','不包含','为空','不为空'],
         selectTypeValue:'',
         selectCalculateType:['平均值','最大值','最小值'],
         selectCalculateTypeValue:'',
@@ -34,7 +34,7 @@ export default {
         selectCalculateVisible:false,
         inputVisiable:true,
         iconVisiable:true,
-        inputValue:0,
+        inputValue:'',
         rowArray:[1]
         }
     },
@@ -44,7 +44,7 @@ export default {
         // if(this.itemIndex == this.itemMaxIndex-1)this.iconVisiable = true
         // })
 
-        Bus.$on('addBtnFlag',(e)=>{
+        Bus.$on('addBtnTextFlag',(e)=>{
               if(e==this.itemIndex)this.iconVisiable = true
              
         })
@@ -55,10 +55,10 @@ export default {
     },
     watch:{
         selectTypeValue(val){
-            this.$emit('numberFilterChange',this.inputValue,this.selectTypeValue,this.itemIndex)
+            this.$emit('textFilterChange',this.inputValue,this.selectTypeValue,this.itemIndex)
         },
         inputValue(val){
-            this.$emit('numberFilterChange',this.inputValue,this.selectTypeValue,this.itemIndex)
+            this.$emit('textFilterChange',this.inputValue,this.selectTypeValue,this.itemIndex)
         }
     },
     computed:{
