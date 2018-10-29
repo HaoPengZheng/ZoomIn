@@ -98,14 +98,17 @@ import axisOption from './rightOption/axisOption'
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
 
 html {
   overflow-x: hidden;
   overflow-y: hidden;
 
 }
+</style>
 
+
+<style>
 /* body {
   width: 100vw;
   overflow: hidden;
