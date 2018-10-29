@@ -7,7 +7,7 @@
       <typeSelect v-model="newFieldType" style="width:100%;" :placeholder="`请选择字段类型`"></typeSelect>
     </el-form-item>
     <el-form-item>
-      <el-input type="textarea" :rows="2" placeholder="SUM[A]+SUM[B]" v-model="expression" resize="none">
+      <el-input type="textarea" :rows="2" placeholder="根据下面函数提示编写expression" v-model="expression" resize="none">
       </el-input>
     </el-form-item>
     <el-form-item>
@@ -50,7 +50,7 @@
                      <el-menu-item index="4">
                   <span slot="title" >
                     <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px">expression:a*b<br />作用:相除<br />例子:数学/总成绩</div>
+                      <div slot="content" style="font-size:16px">expression:a/b<br />作用:相除<br />例子:数学/总成绩</div>
                       <el-button type="text">
                         <i class="el-icon-menu"></i>DEV
                       </el-button>

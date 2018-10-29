@@ -81,6 +81,9 @@ export default {
         "div",
         {
           class: ["thead-cell"],
+          attrs:{
+            title:column.label
+          },
           on: {
             mousedown: $event => {
               this.handleMouseDown($event, column);
