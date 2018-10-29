@@ -220,6 +220,8 @@ import Bus from './Bus.js'
                 this.addIconFlag = false
             },
             removeRowClick(){
+                Bus.$emit('secondRemove','secondRemove')
+                this.dropAxisCol = []
                 this.axisFlag = false;
                 this.addIconFlag = true;
                 // if(yAxisIndex)

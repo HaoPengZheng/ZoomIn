@@ -97,10 +97,17 @@ import Bus from '../Bus.js'
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
     .btn-style{
         width:100%;
         text-align: left;
         border: 0px
     }
+    .el-tag {
+    color: #fff;
+    border: 0px;
+    font-size: 13px;
+    background: #6495ed;
+    background: linear-gradient(-135deg, transparent 8px, #6495ed 0) top right;
+}
 </style>

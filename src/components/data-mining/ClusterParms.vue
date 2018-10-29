@@ -30,28 +30,28 @@
             <el-col :span="6" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">聚类数&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
-                <el-input-number controls-position="right"  v-model="num1" :step="1" size="small" @change="testSizeChange(num1)" :min="0" :max="500" label="描述文字"></el-input-number>
+                <el-input-number controls-position="right"  v-model="num1" :step="1" size="small" @change="clusterParmsChange" :min="0" :max="500" label="描述文字"></el-input-number>
                 </div>
             </el-col>
 
             <el-col :span="6" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">迭代次数</div>
-                <el-input-number controls-position="right"  v-model="num2" :step="1" size="small" @change="testSizeChange(num1)" :min="0" :max="500" label="描述文字"></el-input-number>
+                <el-input-number controls-position="right"  v-model="num2" :step="1" size="small" @change="clusterParmsChange" :min="0" :max="500" label="描述文字"></el-input-number>
                 </div>
             </el-col>
 
             <el-col :span="6" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">随机种子</div>
-                <el-input-number controls-position="right"  v-model="num3" :step="1" size="small" @change="testSizeChange(num1)" :min="0" :max="500" label="描述文字"></el-input-number>
+                <el-input-number controls-position="right"  v-model="num3" :step="1" size="small" @change="clusterParmsChange" :min="0" :max="500" label="描述文字"></el-input-number>
                 </div>
             </el-col>
 
             <el-col :span="6" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">初始簇中心<br>迭代次数</div>
-                <el-input-number controls-position="right"  v-model="num4" :step="5" size="small" @change="testSizeChange(num1)" :min="0" :max="500" label="描述文字"></el-input-number>
+                <el-input-number controls-position="right"  v-model="num4" :step="5" size="small" @change="clusterParmsChange" :min="0" :max="500" label="描述文字"></el-input-number>
                 </div>
             </el-col>
 
@@ -61,13 +61,13 @@
             <el-col :span="6" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">采集样大小</div>
-                <el-input-number controls-position="right"  v-model="num5" :step="100" size="small" @change="testSizeChange(num1)" :min="0" :max="500" label="描述文字"></el-input-number>
+                <el-input-number controls-position="right"  v-model="num5" :step="100" size="small" @change="clusterParmsChange" :min="0" :max="500" label="描述文字"></el-input-number>
                 </div>
             </el-col>
             <el-col :span="6" style="text-align:left">
                 <div class="el-input el-input-group el-input-group--prepend">
                 <div class="el-input-group__prepend">reassignment ration</div>
-                <el-input-number controls-position="right"  v-model="num6" :step="0.01" size="small" @change="testSizeChange(num1)" :min="0" :max="500" label="描述文字"></el-input-number>
+                <el-input-number controls-position="right"  v-model="num6" :step="0.01" size="small" @change="clusterParmsChange" :min="0" :max="500" label="描述文字"></el-input-number>
                 </div>
             </el-col>
         </el-row>
@@ -140,9 +140,9 @@ import Bus from './Bus.js'
             axisFlag:false,
             addIconFlag:true,
             ClusterParmsFlag:false,
-            num1:8, 
+            num1:3, 
             num2:300, 
-            num3:0, 
+            num3:80, 
             num4:10, 
             num5:100, 
             num6:0.01
@@ -185,16 +185,16 @@ import Bus from './Bus.js'
                         this.dropRow.push(data)
                         //console.log(this.dropRow.length)
                         //判定是否超过要求的范围
-                        if(this.dropRow.length > 1){
-                            this.$message({
-                                message: '只允许有一个维度',
-                                showClose: true,
-                                type: 'warning',
-                                duration:1000
-                            });
-                            this.dropRow.pop()
-                            return;
-                        }
+                        // if(this.dropRow.length > 1){
+                        //     this.$message({
+                        //         message: '只允许有一个维度',
+                        //         showClose: true,
+                        //         type: 'warning',
+                        //         duration:1000
+                        //     });
+                        //     this.dropRow.pop()
+                        //     return;
+                        // }
 			            // var element = document.createElement("div");
 			            // element.setAttribute("id", "row-" + data);
                         // element.setAttribute("class","drop-tag");
@@ -206,27 +206,12 @@ import Bus from './Bus.js'
 			            // element.appendChild(text);
 			            // ev.target.appendChild(element);                                                                
                         //给echarts组件发名字
-                        Bus.$emit('rowdata', data)
-                        if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
-
+                        // Bus.$emit('rowdata', data)
+                        // if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
+                        this.clusterParmsChange()
 			        
             },
-            colDrop:function(ev){
-              ev.preventDefault();
-			        var data = ev.dataTransfer.getData("ID");//拖动的元素的ID
-                        this.dropCol.push(data)
-                        Bus.$emit('coldata', data)//给echarts组件发名字
-                        Bus.$emit('featureConfiguration',data)//给功能配置发送消息
-                        if(this.dropRow &&this.dropCol)Bus.$emit('featureConfigurationFlag',true)
-			        
-            },
-            colAxisDrop:function(ev){
-              ev.preventDefault();
-			        let data = ev.dataTransfer.getData("ID");//拖动的元素的ID
-                        this.dropAxisCol.push(data)
-                        Bus.$emit('dropAxisCol', data)//给echarts组件发名字
-			        
-            },
+            
             allowDrop:function(event){
               event.preventDefault();//阻止默认事件
             },
@@ -240,7 +225,7 @@ import Bus from './Bus.js'
 			        obj.remove();
             },
             rowRemove(tag) {
-                Bus.$emit('rowdataRemove', tag);
+                //Bus.$emit('rowdataRemove', tag);
                 this.dropRow.splice(this.dropRow.indexOf(tag), 1);
             },
             colRemove(tag) {
@@ -258,6 +243,15 @@ import Bus from './Bus.js'
                 this.axisFlag = false;
                 this.addIconFlag = true;
                 // if(yAxisIndex)
+            },
+            clusterParmsChange(){
+                let clusterParms = {
+                    "Datacsv_list":this.dropRow,//聚类轴的值
+                    "random_state":this.num3, //随机种子 
+                    "k_clustering":this.num1 //聚类数  
+                    //后续再补上 
+                }
+                Bus.$emit('getClusterParms',clusterParms)
             }
 		    
     }

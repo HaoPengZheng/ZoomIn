@@ -42,7 +42,7 @@
             </el-card>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="numberFilter">确2 2定</el-button>
+                <el-button type="primary" @click="numberFilter">确定</el-button>
             </span>
         </el-dialog>
 
@@ -155,7 +155,7 @@ import dropFilterItem from './dropFilterItem'
     }
 </script>
 
-<style scoped>
+<style>
 .select-item-drop {
   border:1px solid #5bc0de;
   display: inline-block;
@@ -204,7 +204,11 @@ import dropFilterItem from './dropFilterItem'
     white-space: nowrap;
 }
 .el-tag {
-    font-size: 13px
+    color: #fff;
+    border: 0px;
+    font-size: 13px;
+    background: #6495ed;
+    background: linear-gradient(-135deg, transparent 8px, #6495ed 0) top right;
 }
 .box-style {
     background-color: #fff;

@@ -8,7 +8,7 @@
              </div>
              </div>
              <el-button class="tableInfoBtn" @click="dialogTableVisible = true">
-               <svg class="icon"><use xlink:href="#icon-excel1"></use></svg>&nbsp;{{taskTitle}}.xlsx
+               <svg class="icon"><use xlink:href="#icon-excel1"></use></svg>&nbsp;工作表信息
               </el-button>
         </span>
        

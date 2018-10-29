@@ -14,16 +14,24 @@ axios.defaults.withCredentials = true;   // axios 默认不发送cookie，需要
 export default {
     data(){
         return{
-            dataSetId:1,
+            dataSetId:184,
             chartTitle:'图表标题',
             chartId:1
         }
     },
     created() {
-      this.dataSetId = this.$route.params.dataSetId;
 
     },
     mounted(){
+      if(this.$route.params.dataSetId === undefined){
+        this.dataSetId = 184
+      }
+      else{
+        this.dataSetId = this.$route.params.dataSetId;
+        Bus.$emit('getMiningDataSetId',this.dataSetId)
+        //alert(this.dataSetId)
+      }
+
       //打印TOKEN供测试用
       console.log(localStorage.getItem("token"))
 
@@ -33,7 +41,7 @@ export default {
           "http://120.79.146.91:8000/task/dataProcessing/showDataSet1",
           {
             //data_set_id: this.dataSetId
-            data_set_id: 15
+            data_set_id: this.dataSetId
           },
           {
             headers: {

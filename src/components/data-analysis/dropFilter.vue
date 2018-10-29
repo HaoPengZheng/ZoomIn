@@ -178,11 +178,11 @@ import dropFilterTextItem from './dropFilterTextItem'
                             // this.textTransferData.push
                             // })
                             console.log(this.xAixsValueArray)
-                            if(data != this.firstXAixs){
-                                alert("别乱拖")
-                                this.dropFilter.pop()
-                                return;
-                            }
+                            // if(data != this.firstXAixs){
+                            //     alert("别乱拖")
+                            //     this.dropFilter.pop()
+                            //     return;
+                            // }
                             this.textDialogVisible = true
                         }
                         this.dropName = data
@@ -352,7 +352,15 @@ import dropFilterTextItem from './dropFilterTextItem'
     white-space: nowrap;
 }
 .el-tag {
-    font-size: 13px
+  border:1px solid #5bc0de;
+  display: inline-block;
+  text-align: center;
+  border-radius: 3px;
+  margin-right: 10px;
+  cursor:pointer;
+  padding: 6px 20px;
+  color: #5bc0de;
+  width: 75px;
 }
 .box-style {
     background-color: #fff;

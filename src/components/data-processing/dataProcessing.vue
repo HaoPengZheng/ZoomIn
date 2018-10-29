@@ -623,7 +623,7 @@ export default {
       var c = confirm("是否保存处理结果？");
       if (c) {
         this.$router.push({
-          name: "data-mining",
+          name: "data-analysis",
           params: { dataSetId: this.dataSetId }
         });
       }

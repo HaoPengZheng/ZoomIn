@@ -203,7 +203,7 @@ import  'echarts/theme/macarons.js'
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
     .TitleStyle {
         margin-left: 5px;
     }
@@ -218,4 +218,11 @@ import  'echarts/theme/macarons.js'
         text-align: left;
         border: 0px
     }
+    .el-tag {
+    color: #fff;
+    border: 0px;
+    font-size: 13px;
+    background: #6495ed;
+    background: linear-gradient(-135deg, transparent 8px, #6495ed 0) top right;
+}
 </style>

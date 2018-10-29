@@ -65,7 +65,8 @@ export default {
       input: "",
       featureConfigurationFlag: false,
       activeNames: ['1','2','3','4','5','6','7'],
-      rightVisiable:true
+      rightVisiable:true,
+      dataSetId:184
     };
   },
   mounted() {
@@ -74,6 +75,9 @@ export default {
     });
     Bus.$on('leftChange',(Visiable)=>{
       this.rightVisiable = !Visiable
+    })
+    Bus.$on('getDataSetId',(e)=>{
+      this.dataSetId = e
     })
     this.autoDivSize();
   },
@@ -100,7 +104,7 @@ export default {
     nextClick() {
       this.$router.push({
         name: "data-mining",
-        params: {}
+        params: { dataSetId: this.dataSetId }
       });
     }
   }

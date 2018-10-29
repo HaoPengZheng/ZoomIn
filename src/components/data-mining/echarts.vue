@@ -2,27 +2,21 @@
 	<div>
 		<div class="box-card miningCardStyle" id="echartsCard">
 
-			<el-popover  placement="bottom" trigger="hover" style="float:right">
+			<!-- <el-popover  placement="bottom" trigger="hover" style="float:right">
 				<a v-if="errorSumFlag">{{errorSumTips}}</a>
 				<img :src="errorSumTips" v-if="!errorSumFlag" style="width:105%;height:105%">
 			<el-button slot="reference" size="small" ><i class="el-icon-info" style="float:left"></i>&nbsp;误差信息</el-button>
-			</el-popover>
+			</el-popover> -->
 
-			<div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart"  v-loading="loading">
 
-				<!-- 未显示图表时 -->
+<el-tabs type="border-card"  id="myChart">
+  <el-tab-pane>
+    <span slot="label"><i class="el-icon-date"></i> 图表数据</span>
+    <!-- 未显示图表时 -->
 				<div class="echarts-font" id="font-position"  v-show="bgFlag" v-loading="loading">当前图表无数据</div>
-				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:45px;margin-top:10px"  v-show="bgFlag">
-
+				<!-- <img src="@/assets/chartBg.png" style="width:90%;height:20%;"  v-show="bgFlag"> -->
 				<!-- 这里单独定义显示变量 -->
 				<img :src="picPath" style="width:90%;height:90%;margin:45px;"  v-show="regressionFlag">
-
-				<el-carousel indicator-position="outside" :height="ClusterHeight" v-if="ClusterFlag">
-					<el-carousel-item v-for="item in 3" :key="item">
-					<img :src="picPath" style="width:100%;height:100%;">
-					</el-carousel-item>
-				</el-carousel>
-
 				<!-- 表格部分 -->
 				<el-table
 				:data="tableData"
@@ -38,7 +32,47 @@
 					>
 				</el-table-column>
 				</el-table>
-			</div>
+  </el-tab-pane>
+
+  <el-tab-pane label="误差信息">
+	  <a v-if="errorSumFlag">{{errorSumTips}}</a>
+	  <img :src="errorSumTips" v-if="!errorSumFlag" style="width:100%;height:100%">
+	  
+ </el-tab-pane>
+</el-tabs>
+
+
+			<!-- <div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart"  v-loading="loading"> -->
+
+				<!-- 未显示图表时 -->
+				<!-- <div class="echarts-font" id="font-position"  v-show="bgFlag" v-loading="loading">当前图表无数据</div>
+				<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:45px;margin-top:10px"  v-show="bgFlag"> -->
+
+				<!-- 这里单独定义显示变量 -->
+				<!-- <img :src="picPath" style="width:90%;height:90%;margin:45px;"  v-show="regressionFlag"> -->
+
+				<!-- <el-carousel indicator-position="outside" :height="ClusterHeight" v-if="ClusterFlag">
+					<el-carousel-item v-for="item in 3" :key="item">
+					<img :src="picPath" style="width:100%;height:100%;">
+					</el-carousel-item>
+				</el-carousel> -->
+
+				<!-- 表格部分 -->
+				<!-- <el-table
+				:data="tableData"
+				stripe border
+				style="width: 100%"
+				v-if="tableVisible">
+				<el-table-column
+				v-for="(item,index) in fields"
+					:key="index"
+					:prop= item
+					:label= item
+					align="center"
+					>
+				</el-table-column>
+				</el-table> -->
+			<!-- </div> -->
 
 
 		</div>
@@ -96,11 +130,21 @@ export default {
 	  ClusterHeight:'100px',
 	  bgFlag:true,
 	  xAxisLabel:'',
-	  yAxisLabel:''
+	  yAxisLabel:'',
+	  clusterItemName:[],
+	  clusterString:'',
+	  randomState:80,
+      k_clustering:3,
+	  Datacsv_list:"",
+	  dataSetId:184
     }
   },
   mounted(){
-
+	  	Bus.$on('getMiningDataSetId',(e)=>{
+			  this.dataSetId = e
+			  alert(this.dataSetId)
+		  })
+	  	//this.drawCluster()
 		Bus.$on('modelParmsFlag',(modelType)=>{
 		switch (modelType) {
 			case '线性回归':
@@ -113,7 +157,7 @@ export default {
 			break;
 			case 'K-Means聚类':
 			this.ClusterFlag = true
-			this.regressionFlag = false
+			this.regressionFlag = true
 			break;
 			case 'Mini Batch K-Means聚类':
 			this.ClusterFlag = true
@@ -224,6 +268,20 @@ export default {
 
 		})
 
+		//1.监听聚类轴
+		Bus.$on('getClusterParms',(e)=>{
+			this.clusterItemName = e["Datacsv_list"]
+			console.log(e)
+			//拼聚类字符串
+			this.clusterString = this.clusterItemName[0]; 
+			for (let i = 1; i < this.clusterItemName.length; i++) {
+				this.clusterString = this.clusterString + ',' + this.clusterItemName[i] 
+			}
+			this.k_clustering = e["k_clustering"]
+			this.randomState = e["random_state"]
+	 		this.Datacsv_list = this.clusterString
+			this.drawCluster()
+		})
 	   
 	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
        Bus.$on('rowdataRemove', (e) => {
@@ -267,49 +325,106 @@ export default {
   methods: {
 
 	autoDivSize(){
-		if (window.innerHeight)
-            this.winHeight = window.innerHeight;
-        else if ((document.body) && (document.body.clientHeight))//通过深入Document内部对body进行检测，获取浏览器窗口高度
-            this.winHeight = document.body.clientHeight;
-        if (document.documentElement && document.documentElement.clientHeight)
-			this.winHeight = document.documentElement.clientHeight;
+			if (window.innerHeight)
+				this.winHeight = window.innerHeight;
+			else if ((document.body) && (document.body.clientHeight))//通过深入Document内部对body进行检测，获取浏览器窗口高度
+				this.winHeight = document.body.clientHeight;
+			if (document.documentElement && document.documentElement.clientHeight)
+				this.winHeight = document.documentElement.clientHeight;
+				
 			
-		
-		if (window.innerWidth)
-            this.winWidth = window.innerWidth;
-        else if ((document.body) && (document.body.clientWidth))//通过深入Document内部对body进行检测，获取浏览器窗口高度
-            this.winWidth = document.body.clientWidth;
-        if (document.documentElement && document.documentElement.clientWidth)
-            this.winWidth = document.documentElement.clientWidth;
+			if (window.innerWidth)
+				this.winWidth = window.innerWidth;
+			else if ((document.body) && (document.body.clientWidth))//通过深入Document内部对body进行检测，获取浏览器窗口高度
+				this.winWidth = document.body.clientWidth;
+			if (document.documentElement && document.documentElement.clientWidth)
+				this.winWidth = document.documentElement.clientWidth;
 
-        //DIV高度为浏览器窗口的高度
-		document.getElementById("myChart").style.height= this.winHeight*0.8	 + "px";
-		document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
-		document.getElementById("echartsCard").style.height= this.winHeight*0.84 + "px";
-		document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
-		this.ClusterHeight = this.winHeight*0.7	 + "px";
-		document.getElementById("font-position").style.marginTop= this.winHeight*0.30 + "px";
+			//DIV高度为浏览器窗口的高度
+			document.getElementById("myChart").style.height= this.winHeight*0.8	 + "px";
+			document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
+			document.getElementById("echartsCard").style.height= this.winHeight*0.84 + "px";
+			document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
+			this.ClusterHeight = this.winHeight*0.7	 + "px";
+			document.getElementById("font-position").style.marginTop= this.winHeight*0.30 + "px";	
+	},
+	
+	drawModel(){
+		this.loading = false//打开加载条动画
+		this.tableVisible = false
+		//发送请求
+		this.$axios
+		.post(
+		"http://120.79.146.91:8000/dataMining/regression/",
+			{
+				data_set:this.dataSetId,//是data_set_id,要和Axios.vue的id保持一致
+				title : Math.floor(Math.random()*(1000000-1+1)+1),
+				desc: "zzzzz3",
+				category: this.category,
+				xlabel: this.xAxisLabel,
+				ylabel: this.yAxisLabel,
+				x_axis: this.xAxisString,
+				y_axis: this.yAxisString,
+				test_size: this.test_size,
+				mth_power: this.mth_power,
+				error_type : this.error_type
+			},
+			{
+				headers: {
+				Authorization: "JWT " + localStorage.getItem("token")
+				}
+			}
+		)
+		.then(r => {
+			console.log(r)
+			this.$message({
+				message: r.data.message,
+				type: 'success'
+			});
+			//console.log(r.data.data[0])
+			this.picPath = "http://120.79.146.91:8000"+r.data.data[0].slice(15,r.data.data[0].length);
+			// this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+			// console.log(r.data.data[1])
+			if(r.data.data[1][0]=='c'){
+				this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+				this.errorSumFlag = false
+			}
+			else{
+				if(this.error_type == 1)this.errorSumTips = 'MSE(平均绝对误差):' + r.data.data[1].slice(10,r.data.data[1].length)
+				if(this.error_type == 2)this.errorSumTips = 'MAE(均方误差):' + r.data.data[1].slice(10,r.data.data[1].length)
+				if(this.error_type == 3)this.errorSumTips = 'RMSE(均方根误差):' + r.data.data[1].slice(10,r.data.data[1].length)
+				this.errorSumFlag = true
+			}
+			
+			console.log(this.errorSumTips)
+			this.loading = false
+			if(!this.ClusterFlag)this.regressionFlag = true //这句不好
+		})
+		.catch(response => {
+			console.log(response)
+			this.$message({
+				message: '操作失败，请重试',
+				showClose: true,
+				type: 'warning',
+				duration:1000
+			});
+		});
+	},
+
+	drawCluster(){
 		
-		},
-		drawModel(){
-			this.loading = false//打开加载条动画
-			this.tableVisible = false
-			//发送请求
-			this.$axios
+		this.$axios
 			.post(
-			"http://120.79.146.91:8000/dataMining/regression/",
+			"http://120.79.146.91:8000/dataMining/clustering/",
 				{
-					data_set:15,//是data_set_id,要和Axios.vue的id保持一致
-					title : Math.floor(Math.random()*(1000000-1+1)+1),
-					desc: "zzzzz3",
-					category: this.category,
-					xlabel: this.xAxisLabel,
-					ylabel: this.yAxisLabel,
-					x_axis: this.xAxisString,
-					y_axis: this.yAxisString,
-					test_size: this.test_size,
-					mth_power: this.mth_power,
-					error_type : this.error_type
+					data_set: this.dataSetId,
+					title: Math.floor(Math.random()*(1000000-1+1)+1),
+					desc: "zzzzz",
+					category: 13,
+					random_state: this.randomState,
+					k_clustering: this.k_clustering,
+					Datacsv_list: this.Datacsv_list,
+					error_type: 2
 				},
 				{
 					headers: {
@@ -318,29 +433,15 @@ export default {
 				}
 			)
 			.then(r => {
-				console.log(r)
-			 	this.$message({
+				this.$message({
 					message: r.data.message,
 					type: 'success'
 				});
-				//console.log(r.data.data[0])
+				console.log(r)
 				this.picPath = "http://120.79.146.91:8000"+r.data.data[0].slice(15,r.data.data[0].length);
-				// this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
-				// console.log(r.data.data[1])
-				if(r.data.data[1][0]=='c'){
-					this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
-					this.errorSumFlag = false
-				}
-				else{
-					if(this.error_type == 1)this.errorSumTips = 'MSE(平均绝对误差):' + r.data.data[1].slice(10,r.data.data[1].length)
-					if(this.error_type == 2)this.errorSumTips = 'MAE(均方误差):' + r.data.data[1].slice(10,r.data.data[1].length)
-					if(this.error_type == 3)this.errorSumTips = 'RMSE(均方根误差):' + r.data.data[1].slice(10,r.data.data[1].length)
-					this.errorSumFlag = true
-				}
-				
-				console.log(this.errorSumTips)
-				this.loading = false
-				if(!this.ClusterFlag)this.regressionFlag = true //这句不好
+				console.log(this.picPath)
+				this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+				this.errorSumFlag = false
 			})
 			.catch(response => {
 				console.log(response)
@@ -351,7 +452,8 @@ export default {
 					duration:1000
 				});
 			});
-		}
+	}
+
 
   	}
 }
