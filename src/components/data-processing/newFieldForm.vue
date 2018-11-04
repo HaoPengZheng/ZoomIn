@@ -16,43 +16,13 @@
           <h5 style="text-align:center">函数</h5>
           <vue-scroll :ops="ops">
             <div class='chooseFun'>
-              <el-menu  style="max-height:200px;border:0px" class="el-menu-vertical-demo">
-                <el-menu-item index="1">
+              <el-menu style="max-height:200px;border:0px" class="el-menu-vertical-demo">
+                <el-menu-item index="1" v-for="(expression,index) in expressions" :key="index">
                   <span slot="title">
                     <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px">expression:a+b<br />作用:相加<br />例子:语文+数学+...</div>
-                      <el-button type="text">
-                        <i class="el-icon-menu"></i>ADD
-                      </el-button>
-                    </el-tooltip>
-                  </span>
-                </el-menu-item>
-                <el-menu-item index="2">
-                  <span slot="title" >
-                    <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px">expression:a-b<br />作用:相减<br />例子:总成绩-数学</div>
-                      <el-button type="text">
-                        <i class="el-icon-menu"></i>SUB
-                      </el-button>
-                    </el-tooltip>
-                  </span>
-                </el-menu-item>
-                <el-menu-item index="3">
-                  <span slot="title" >
-                    <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px">expression:a*b<br />作用:相乘<br />例子:平均分*3</div>
-                      <el-button type="text">
-                        <i class="el-icon-menu"></i>MUL
-                      </el-button>
-                    </el-tooltip>
-                  </span>
-                </el-menu-item>
-                     <el-menu-item index="4">
-                  <span slot="title" >
-                    <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px">expression:a/b<br />作用:相除<br />例子:数学/总成绩</div>
-                      <el-button type="text">
-                        <i class="el-icon-menu"></i>DEV
+                      <div slot="content" style="font-size:16px">expression:a+b<br />{{expression.affect}}<br />{{expression.example}}</div>
+                      <el-button type="text" @click="addFunction(`${expression.name}`)">
+                        <i class="el-icon-menu"></i>{{expression.name}}
                       </el-button>
                     </el-tooltip>
                   </span>
@@ -65,7 +35,7 @@
           <h5 style="text-align:center">字段</h5>
           <vue-scroll :ops="ops">
             <div class='your-content'>
-              <el-menu  style="max-height:200px;border:0px" class="el-menu-vertical-demo">
+              <el-menu style="max-height:200px;border:0px" class="el-menu-vertical-demo">
                 <el-menu-item :index="index.toString()" v-for="(field,index) in fields " :key="index">
                   <span slot="title">
                     <a @click="chooseField(field)">
@@ -86,6 +56,46 @@
 </template>
 <script>
 import typeSelect from "../common/typeSelect.vue";
+
+const exampleLable = "例子：";
+const affectLable = "作用：";
+const expressions = [
+  {
+    name: "Expression",
+    affect: `${affectLable}四则运算`,
+    example: `${exampleLable}Expression('__EMPTY+__EMPTY')`
+  },
+  {
+    name: "Layer_average1",
+    affect: `${affectLable}根据某一分层列，生成平均值,layer_name为指定的分层列，C_name为以相对应的分层列求均值的列 `,
+    example: `${exampleLable}Layer_average1('layer_name', 'C_name')`
+  },
+  {
+    name: "Layer",
+    affect: `${affectLable}layers为层数，实现分层，并生成每个学生所在的层列 `,
+    example: `${exampleLable}Layer(layers, 'C_name')`
+  },
+  {
+    name: "RANK",
+    affect: `${affectLable}生成排名 `,
+    example: `${exampleLable} Rank('C_name') `
+  }
+  // {
+  //   name:"RANKit",
+  //   affect:`${affectLable}生成排名 `,
+  //   example:`${exampleLable} Rank(C_name) `,
+  // },
+];
+// <el-menu-item index="1">
+//                   <span slot="title">
+//                     <el-tooltip placement="left">
+//                       <div slot="content" style="font-size:16px">expression:a+b<br />作用:相加<br />例子:语文+数学+...</div>
+//                       <el-button type="text">
+//                         <i class="el-icon-menu"></i>ADD
+//                       </el-button>
+//                     </el-tooltip>
+//                   </span>
+//                 </el-menu-item>
 export default {
   components: {
     typeSelect
@@ -109,13 +119,14 @@ export default {
           onlyShowBarOnScroll: false,
           background: "#90929880"
         }
-      }
+      },
+      expressions: expressions
     };
   },
   props: {
     fields: Array,
     types: Array,
-    dataSetId:"",
+    dataSetId: ""
   },
   methods: {
     chooseField: function(field) {
@@ -124,23 +135,33 @@ export default {
     chooseFunction: function(fun) {
       this.expression = this.expression + `${fun}()`.trim();
     },
-    addField:function(){
-      if(typeof this.dataSetId == 'number'){
+    addFunction: function(name) {
+      this.expression = this.expression + `${name}`.trim();
+    },
+    addField: function() {
+      let that = this;
+      if (typeof this.dataSetId == "number") {
         alert("number");
       }
-      this.$post('/task/dataProcessing/Expression',{
-        data_set_id:this.dataSetId,
-        newColumnName:this.newFieldName,
-        expression:this.expression
-      }).then(()=>{
-         alert("number");
-        this.$emit('refreshData');
-      })
+      this.$post("/task/dataProcessing/zoomin_eval", {
+        data_set_id: this.dataSetId,
+        newColumnName: this.newFieldName,
+        function: this.expression
+      }).then(response => {
+        if (response.message == "表达式错误") {
+          that.$message({
+            message: "表达式错误",
+            type: "warning",
+            duration: 1500
+          });
+        } else {
+          this.$emit("refreshData");
+        }
+      });
     }
   }
 };
 </script>
-
 <style  scoped>
 </style>
 

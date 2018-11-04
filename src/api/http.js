@@ -13,8 +13,10 @@ axios.defaults.baseURL = 'http://120.79.146.91:8000';
 axios.interceptors.request.use(
   config => {
     let token = localStorage.getItem("token");
-    config.headers = {
-      'Authorization': "JWT " + token
+    if (config.url!='/users/') {
+      config.headers = {
+        'Authorization': "JWT " + token
+      }
     }
     return config;
   },
@@ -38,8 +40,8 @@ axios.interceptors.response.use(
   }
 )
 
-function useDefaultErrorMessage(isUseDefaultErrorMessage){
-  if(isUseDefaultErrorMessage==true){
+function useDefaultErrorMessage(isUseDefaultErrorMessage) {
+  if (isUseDefaultErrorMessage == true) {
     Message({
       message: "出错了",
       type: "error",
@@ -78,7 +80,7 @@ export function get(url, params = {}) {
  * @returns {Promise}
  */
 
-export function post(url, data = {}, isUseDefaultErrorMessage=true) {
+export function post(url, data = {}, isUseDefaultErrorMessage = true) {
   return new Promise((resolve, reject) => {
     axios.post(url, data)
       .then(response => {
@@ -134,13 +136,13 @@ export function put(url, data = {}) {
 * @returns {Promise}
 */
 
-export function toDelete(url, data = {},isUseDefaultErrorMessage=true) {
+export function toDelete(url, data = {}, isUseDefaultErrorMessage = true) {
   return new Promise((resolve, reject) => {
     axios.delete(url, data)
       .then(response => {
         resolve(response.data);
       }, err => {
-        if(useDefaultErrorMessage == true){
+        if (useDefaultErrorMessage == true) {
           useDefaultErrorMessage(isUseDefaultErrorMessage);
         }
         reject(err)

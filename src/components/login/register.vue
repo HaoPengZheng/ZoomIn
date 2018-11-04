@@ -47,11 +47,7 @@ export default {
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          this.$post("/users/", this.loginForm, {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          })
+          this.$post("/users/", this.loginForm)
             .then(response => {
               console.log(response);
               this.$router.push({ path: "/" });
