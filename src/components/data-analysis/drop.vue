@@ -5,7 +5,7 @@
 
             <el-col :span="12" >
                 <!-- 字段框 -->
-                <div class="el-input el-input-group el-input-group--prepend"><div class="el-input-group__prepend">维度<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wenzi"></use></svg></div>
+                <div class=" analysisDropStyle el-input el-input-group el-input-group--prepend"><div class="el-input-group__prepend">维度<svg class="icon" aria-hidden="true"><use xlink:href="#icon-wenzi"></use></svg></div>
                     <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left" @drop='rowDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         <el-tag v-for="(item,index) in dropRow" :key="index" 
                             closable
