@@ -275,7 +275,7 @@ import Bus from './Bus.js'
     border: 1px solid rgba(64,158,255,.2);
     white-space: nowrap;
 }
-.el-tag {
+.miningDropStyle .el-tag {
     color: #fff;
     border: 0px;
     font-size: 13px;

@@ -4,15 +4,17 @@
         <el-row>
             <el-col :span="24" >
                 <!-- 字段框 -->
-                <div class="el-input el-input-group el-input-group--prepend" style="margin-left:1px;">
+                <div class="analysisDropFilterStyle el-input el-input-group el-input-group--prepend" style="margin-left:1px;">
                     <div class="el-input-group__prepend" style="border: 0px solid #dcdfe6" >筛选<svg class="icon" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg></div>
                     <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left;margin-top:0px" @drop='filterDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
-                        <el-tag v-for="(item,index) in dropFilter" :key="index" 
+                        <el-tooltip class="item" effect="dark"  v-for="(item,index) in dropFilter" :key="index" :content="filterFlag[index]" placement="bottom">
+                        <el-tag
                             closable
                             :disable-transitions="false"
-                            @close="filterRemove(item)"
+                            @close="filterRemove(index)"
                             style="margin:3px">{{item}}
                         </el-tag>
+                        </el-tooltip>
                         <svg class="icon" aria-hidden="true" style="float:right;margin:10px;margin-top:15px" @click="filterCancel"><use xlink:href="#icon-qingkong"></use></svg>
                         <div>
                             <div class="insert-tag"></div>
@@ -126,7 +128,8 @@ import dropFilterTextItem from './dropFilterTextItem'
             textTraArrayValue:[],
             xAixsValueArray:[],
             firstXAixs:'',
-            xAixsData:[]
+            xAixsData:[],
+            filterFlag:[]
         }
     },
     components:{
@@ -177,7 +180,7 @@ import dropFilterTextItem from './dropFilterTextItem'
                             // Object.keys(this.xAixsData).forEach((arrayItem,index)=>{
                             // this.textTransferData.push
                             // })
-                            console.log(this.xAixsValueArray)
+                            //console.log(this.xAixsValueArray)
                             // if(data != this.firstXAixs){
                             //     alert("别乱拖")
                             //     this.dropFilter.pop()
@@ -188,14 +191,16 @@ import dropFilterTextItem from './dropFilterTextItem'
                         this.dropName = data
                         Bus.$emit('filterdata', data)
                         //给字段筛选的精确筛选穿梭框赋值
+                        //console.log(this.dropFilter)
                         
             },
             allowDrop:function(event){
               event.preventDefault();
             },
-            filterRemove(tag) {
-                Bus.$emit('numberFilterRemove', tag);
-                this.dropFilter.splice(this.dropFilter.indexOf(tag), 1);
+            filterRemove(index) {
+                Bus.$emit('numberFilterRemove', index);
+                this.dropFilter.splice(index, 1);
+                this.filterFlag.splice(index,1)
             },
             itemAdd(e,itemIndex){
                 if(e=='加行'){
@@ -252,6 +257,7 @@ import dropFilterTextItem from './dropFilterTextItem'
             },
             numberFilter(){
                 this.dialogVisible = false
+                this.filterFlag.push(this.dropName+" "+this.numberTypeSelect+" "+this.numberInput)
                 Bus.$emit('numberFilter',this.numberInput,this.numberTypeSelect,this.dropName)
                 for(let i = 0;i<this.rowArray.length;i++){
                     if(this.rowArray[i] == true){
@@ -261,9 +267,14 @@ import dropFilterTextItem from './dropFilterTextItem'
                 }
                 this.rowArray.push(true)
                 this.rowArrayLength++
+                console.log(this.dropFilter)
+                this.numberInput = []
+                this.numberTypeSelect = []
+                this.dropName = []
             },
             textFilter(){
                 this.textDialogVisible = false
+                this.filterFlag.push(this.dropName+" "+this.textTypeSelect+" "+this.textInput)
                 Bus.$emit('textFilter',this.textInput,this.textTypeSelect,this.dropName)
                 for(let i = 0;i<this.textRowArray.length;i++){
                     if(this.textRowArray[i] == true){
@@ -277,8 +288,11 @@ import dropFilterTextItem from './dropFilterTextItem'
                 for(let i=0;i<this.textTransferValue.length;i++){
                     choiceArray.push(this.xAixsData[this.textTransferValue[i]])
                 }
-                Bus.$emit('textFilterAccuracy',choiceArray)
+                //Bus.$emit('textFilterAccuracy',choiceArray)
                 this.textTransferValue = []
+                this.textInput = []
+                this.textTypeSelect = []
+                this.dropName = []
             },
             numberFilterChange(numberInput,numberTypeSelect,itemIndex){
                 this.numberInput[itemIndex] = numberInput
@@ -294,14 +308,28 @@ import dropFilterTextItem from './dropFilterTextItem'
                 this.dropFilter.pop()
             },
             filterCancel(){
-                this.dropFilter = []
-                Bus.$emit('filterCancel','filterCancel')
+               // this.dropFilter = []
+                Bus.$emit('filterCancel','filterCancel')//这个地方是真的真的迷。。。。。删掉的话y轴会少一条数据
             }
 
 		    
     }
     }
 </script>
+<style>
+.analysisDropFilterStyle .el-tag {
+    color: #fff;
+    border: 0px;
+    font-size: 13px;
+    background: #6495ed;
+    background: linear-gradient(-135deg, transparent 8px, #6495ed 0) top right;
+}
+.analysisDropFilterStyle .el-input-group__prepend{
+    background-color: #ffffff;
+    border: 0px solid;
+    border-bottom: 0px solid #dcdfe6; 
+}
+</style>
 
 <style scoped>
 .select-item-drop {
@@ -351,17 +379,7 @@ import dropFilterTextItem from './dropFilterTextItem'
     border: 1px solid rgba(64,158,255,.2);
     white-space: nowrap;
 }
-.el-tag {
-  border:1px solid #5bc0de;
-  display: inline-block;
-  text-align: center;
-  border-radius: 3px;
-  margin-right: 10px;
-  cursor:pointer;
-  padding: 6px 20px;
-  color: #5bc0de;
-  width: 75px;
-}
+
 .box-style {
     background-color: #fff;
     color: #909399;
@@ -377,11 +395,7 @@ import dropFilterTextItem from './dropFilterTextItem'
     box-sizing: border-box;
     white-space: nowrap;
 }
-.analysisDropFilterStyle .el-input-group__prepend{
-    background-color: #ffffff;
-    border: 0px solid;
-    border-bottom: 0px solid #dcdfe6; 
-}
+
 [v-cloak]{
     display:none;
 }

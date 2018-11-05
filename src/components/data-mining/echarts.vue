@@ -9,12 +9,12 @@
 			</el-popover> -->
 
 
-<el-tabs type="border-card"  id="myChart">
-  <el-tab-pane>
+<el-tabs type="border-card"  id="myChart"  v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
+  <el-tab-pane id="chartData">
     <span slot="label"><i class="el-icon-date"></i> 图表数据</span>
     <!-- 未显示图表时 -->
-				<div class="echarts-font" id="font-position"  v-show="bgFlag" v-loading="loading">当前图表无数据</div>
-				<!-- <img src="@/assets/chartBg.png" style="width:90%;height:20%;"  v-show="bgFlag"> -->
+				<div class="echarts-font" id="font-position"  v-show="bgFlag"></div>
+				<img src="@/assets/chartBg.png" style="width:90%;height:90%;"  v-show="bgFlag">
 				<!-- 这里单独定义显示变量 -->
 				<img :src="picPath" style="width:90%;height:90%;margin:45px;"  v-show="regressionFlag">
 				<!-- 表格部分 -->
@@ -32,9 +32,22 @@
 					>
 				</el-table-column>
 				</el-table>
+
+				<img :src="clusterImg[0]" style="width:90%;height:90%;margin:45px;"  v-show="axisClusterFlag">
+				<el-carousel v-show="carouselFlag" :height="ClusterHeight">
+					<el-carousel-item>
+						<img :src="clusterImg[0]" style="width:90%;height:90%;margin:45px;">
+					</el-carousel-item>
+					<el-carousel-item>
+						<img :src="clusterImg[1]" style="width:90%;height:90%;margin:45px;">
+					</el-carousel-item>
+					<el-carousel-item>
+						<img :src="clusterImg[2]" style="width:90%;height:90%;margin:45px;">
+					</el-carousel-item>
+				</el-carousel>
   </el-tab-pane>
 
-  <el-tab-pane label="误差信息">
+  <el-tab-pane label="误差信息" id="errorInfo">
 	  <a v-if="errorSumFlag">{{errorSumTips}}</a>
 	  <img :src="errorSumTips" v-if="!errorSumFlag" style="width:100%;height:100%">
 	  
@@ -116,33 +129,41 @@ export default {
 	  chartYAxis:[{name : '',type : 'value'}],
 	  chartId:1,
 	  picPath:bg,
+	  clusterImg:[bg,bg,bg],
 	  xAxisString:'',
 	  yAxisString:'',
 	  test_size: 0.7,
 	  mth_power: 0,
 	  error_type : 1,
 	  category:11,
+	  clusterCategory:13,
 	  errorSumTips:'',
 	  errorSumFlag:true,
 	  loading:false,
 	  regressionFlag:false,
+	  carouselFlag:false,
 	  ClusterFlag:false,
+	  axisClusterFlag:false,			//根据聚类的维度数量，控制图片的数量
 	  ClusterHeight:'100px',
 	  bgFlag:true,
 	  xAxisLabel:'',
 	  yAxisLabel:'',
 	  clusterItemName:[],
 	  clusterString:'',
-	  randomState:80,
       k_clustering:3,
 	  Datacsv_list:"",
-	  dataSetId:184
+	  maxIter:300,
+	  randomState:80,
+	  nInit:10,			
+	  batchSize:100,
+	  reassignmentRatio:0.01,
+	  dataSetId:2
     }
   },
   mounted(){
 	  	Bus.$on('getMiningDataSetId',(e)=>{
 			  this.dataSetId = e
-			  alert(this.dataSetId)
+			  //alert(this.dataSetId)
 		  })
 	  	//this.drawCluster()
 		Bus.$on('modelParmsFlag',(modelType)=>{
@@ -150,18 +171,28 @@ export default {
 			case '线性回归':
 			this.regressionFlag = true
 			this.ClusterFlag = false
+			this.carouselFlag = false
 			break;
 			case '非线性回归':
 			this.regressionFlag = true
 			this.ClusterFlag = false
+			this.carouselFlag = false
 			break;
 			case 'K-Means聚类':
-			this.ClusterFlag = true
-			this.regressionFlag = true
-			break;
-			case 'Mini Batch K-Means聚类':
+			this.carouselFlag = true
 			this.ClusterFlag = true
 			this.regressionFlag = false
+			this.bgFlag = false   //关掉背景图
+			this.xAxisItem = []			//清空x,y避免切回线性回归时出错
+			this.yAxisItemName = []		//清空x,y避免切回线性回归时出错
+			break;
+			case 'Mini Batch K-Means聚类':
+			this.carouselFlag = true
+			this.ClusterFlag = true
+			this.regressionFlag = false
+			this.bgFlag = false   //关掉背景图
+			this.xAxisItem = []			//清空x,y避免切回线性回归时出错
+			this.yAxisItemName = []		//清空x,y避免切回线性回归时出错
 			break;
 		
 			default:
@@ -196,17 +227,37 @@ export default {
                     case '线性回归':
                         this.mth_power = 0
 						this.category = 11
+						this.picPath = ""
+						this.errorSumTips = ""
+						this.drawModel()
                         break;
                     case '非线性回归':
                         if(this.mth_power==0)this.mth_power = 2
-				  		this.category = 12 
-                        break;
+						  this.category = 12 
+						  this.picPath = ""
+							this.errorSumTips = ""
+						  this.drawModel()
+						break;
+					case 'K-Means聚类':
+						this.picPath = ""
+						this.errorSumTips = ""
+						this.xAxisItem = []			//清空x,y避免切回线性回归时出错
+						this.yAxisItemName = []		//清空x,y避免切回线性回归时出错
+						//if(this.xAxisItem.length != 0)this.drawCluster()	//如果x轴已经有了，就生成图，以实现来回切换
+						break;
+						case 'Mini Batch K-Means聚类':
+						this.picPath = ""
+						this.errorSumTips = ""
+						this.xAxisItem = []			//清空x,y避免切回线性回归时出错
+						this.yAxisItemName = []		//清空x,y避免切回线性回归时出错
+						//if(this.xAxisItem.length != 0)this.drawCluster()	//如果x轴已经有了，就生成图，以实现来回切换
+						break;
 				  default:
 					  break;
 			  }
 
 
-			  this.drawModel()
+			  
 			  this.tableVisible = false
 		})
 		Bus.$on('test_size',(e)=>{
@@ -277,10 +328,19 @@ export default {
 			for (let i = 1; i < this.clusterItemName.length; i++) {
 				this.clusterString = this.clusterString + ',' + this.clusterItemName[i] 
 			}
-			this.k_clustering = e["k_clustering"]
-			this.randomState = e["random_state"]
-	 		this.Datacsv_list = this.clusterString
+			this.clusterCategory = e["category"]			//聚类类型（mini和k-means)
+			this.Datacsv_list = this.clusterString			//聚类轴的值
+			this.k_clustering = e["k_clustering"]			//聚类数  
+			this.maxIter = e["max_iter"]					//迭代次数
+			this.randomState = e["random_state"]			//随机种子 
+			this.nInit = e["n_init"]						//初始簇中心迭代次数
+			this.batchSize = e["batch_size"]				//采集样大小
+			this.reassignmentRatio = e['reassignment_ratio']//reassignment ration
+
+			if(this.clusterItemName.length>1){this.carouselFlag = false;this.axisClusterFlag = true}	//根据聚类的维度数量，控制图片的数量
+			if(this.clusterItemName.length<=1){this.carouselFlag = true;this.axisClusterFlag = false}	//根据聚类的维度数量，控制图片的数量
 			this.drawCluster()
+
 		})
 	   
 	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
@@ -342,7 +402,11 @@ export default {
 
 			//DIV高度为浏览器窗口的高度
 			document.getElementById("myChart").style.height= this.winHeight*0.8	 + "px";
-			document.getElementById("myChart").style.width= this.winWidth*0.67 + "px";
+			document.getElementById("myChart").style.width= this.winWidth*0.685 + "px";
+			document.getElementById("chartData").style.height= this.winHeight*0.7	 + "px";
+			document.getElementById("chartData").style.width= this.winWidth*0.67 + "px";
+			document.getElementById("errorInfo").style.height= this.winHeight*0.7	 + "px";
+			document.getElementById("errorInfo").style.width= this.winWidth*0.67 + "px";
 			document.getElementById("echartsCard").style.height= this.winHeight*0.84 + "px";
 			document.getElementById("echartsCard").style.width= this.winWidth*0.692 + "px";
 			this.ClusterHeight = this.winHeight*0.7	 + "px";
@@ -350,7 +414,7 @@ export default {
 	},
 	
 	drawModel(){
-		this.loading = false//打开加载条动画
+		this.loading = true//打开加载条动画
 		this.tableVisible = false
 		//发送请求
 		this.$axios
@@ -412,7 +476,8 @@ export default {
 	},
 
 	drawCluster(){
-		
+		//alert(this.clusterCategory)
+		this.loading = true
 		this.$axios
 			.post(
 			"http://120.79.146.91:8000/dataMining/clustering/",
@@ -420,11 +485,14 @@ export default {
 					data_set: this.dataSetId,
 					title: Math.floor(Math.random()*(1000000-1+1)+1),
 					desc: "zzzzz",
-					category: 13,
-					random_state: this.randomState,
-					k_clustering: this.k_clustering,
-					Datacsv_list: this.Datacsv_list,
-					error_type: 2
+					category: this.clusterCategory,
+					k_clustering:this.k_clustering,
+					Datacsv_list:this.Datacsv_list,
+					random_state:this.randomState,
+					max_iter:this.maxIter,
+					batch_size:this.batchSize,
+					n_init:this.nInit,
+					reassignment_ratio:this.reassignmentRatio
 				},
 				{
 					headers: {
@@ -438,19 +506,15 @@ export default {
 					type: 'success'
 				});
 				console.log(r)
-				this.picPath = "http://120.79.146.91:8000"+r.data.data[0].slice(15,r.data.data[0].length);
-				console.log(this.picPath)
-				this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+				this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[0].slice(15,r.data.data[0].length);
+				this.clusterImg[0] = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+				this.clusterImg[1] = "http://120.79.146.91:8000"+r.data.data[2].slice(15,r.data.data[2].length);
+				this.clusterImg[2] = "http://120.79.146.91:8000"+r.data.data[3].slice(15,r.data.data[3].length);
 				this.errorSumFlag = false
+				this.loading = false
 			})
 			.catch(response => {
-				console.log(response)
-				this.$message({
-					message: '操作失败，请重试',
-					showClose: true,
-					type: 'warning',
-					duration:1000
-				});
+				this.loading = false
 			});
 	}
 

@@ -13,9 +13,10 @@
           </div>
           <div style="clear:both"></div>
         </div>
+        <draggable v-model="list">
         <el-row :gutter="20">
           <el-col :span="12">
-            <MyChart :domId="'id1'" :option="option"></MyChart>
+              <MyChart :domId="'id1'" :option="option"></MyChart>
           </el-col>
           <el-col :span="12">
             <MyChart :domId="'id2'" :option="option2"></MyChart>
@@ -29,6 +30,7 @@
             <MyChart :domId="'id4'" :option="option4"></MyChart>
           </el-col>
         </el-row>
+        </draggable>
       </el-main>
     </el-container>
     <el-dialog title="新建图表-选择数据源" :visible.sync="newChartDialogVisible" width="30%">

@@ -14,7 +14,7 @@ axios.defaults.withCredentials = true;   // axios 默认不发送cookie，需要
 export default {
     data(){
         return{
-            dataSetId:184,
+            dataSetId:2,
             chartTitle:'图表标题',
             chartId:1
         }
@@ -24,7 +24,7 @@ export default {
     },
     mounted(){
       if(this.$route.params.dataSetId === undefined){
-        this.dataSetId = 184
+        this.dataSetId = 2
       }
       else{
         this.dataSetId = this.$route.params.dataSetId;

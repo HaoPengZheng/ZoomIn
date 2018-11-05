@@ -23,8 +23,10 @@
       <div class="app-border">
         <!-- 由于导航栏的问题，临时下降1px -->
         <el-row style="margin-top:1px"> 
-          <el-col :span="24"><div style="margin-left:15px;margin-right:20px"><drop></drop></div></el-col>
-          <el-col :span="24"><div style="margin-left:15px;margin-right:20px"><drop-filter></drop-filter></div></el-col>
+          <el-card style="margin:15px;margin-bottom:-5px">
+            <el-col :span="24"><div style="margin-left:15px;margin-right:20px;margin-top:-15px"><drop></drop></div></el-col>
+            <el-col :span="24"><div style="margin-left:15px;margin-right:20px;margin-bottom:5px"><drop-filter></drop-filter></div></el-col>
+          </el-card>
         </el-row>
 
         <el-row>
