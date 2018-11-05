@@ -2,7 +2,7 @@
   <!-- 一个用来展示图表的组件 -->
   <div style="margin-bottom:20px">
     <el-card class="box-card" :body-style="{padding:'20px'}" >
-      <div :id="domId" style="width:100%;height:400px;">111 </div>
+      <div :id="domId" style="width:100%;height:400px;"></div>
     </el-card>
   </div>
 </template>

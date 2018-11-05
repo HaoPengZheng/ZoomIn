@@ -13,9 +13,10 @@
           </div>
           <div style="clear:both"></div>
         </div>
+        <draggable v-model="list">
         <el-row :gutter="20">
           <el-col :span="12">
-            <MyChart :domId="'id1'" :option="option"></MyChart>
+              <MyChart :domId="'id1'" :option="option"></MyChart>
           </el-col>
           <el-col :span="12">
             <MyChart :domId="'id2'" :option="option2"></MyChart>
@@ -29,6 +30,7 @@
             <MyChart :domId="'id4'" :option="option4"></MyChart>
           </el-col>
         </el-row>
+        </draggable>
       </el-main>
     </el-container>
   </el-container>
@@ -36,10 +38,12 @@
 <script>
 import Left from "../common/task_left.vue";
 import MyChart from "./mychart.vue";
+import draggable from 'vuedraggable'
 export default {
   components: {
     Left,
-    MyChart
+    MyChart,
+    draggable
   },
   created:function(){
     this.$store.commit('changeIndex',{index:"taskRelease"});
@@ -47,6 +51,32 @@ export default {
   data() {
     return {
       taskId: "",
+      list:[
+        {
+          id: 1,
+          name: 'a'
+        },
+        {
+          id: 2,
+          name: 'b'
+        },
+        {
+          id: 3,
+          name: 'c'
+        },
+        {
+          id: 4,
+          name: 'd'
+        },
+        {
+          id: 5,
+          name: 'e'
+        },
+        {
+          id: 6,
+          name: 'f'
+        },
+      ],
       option: {
         xAxis: {
           type: "category",
