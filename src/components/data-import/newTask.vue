@@ -18,11 +18,11 @@
         <el-form-item label="任务名称" prop="name">
           <el-input type="text" v-model="newTaskModel.name"></el-input>
         </el-form-item>
-          <el-form-item label="数据集名" prop="title">
+        <el-form-item label="数据集名" prop="title">
           <el-input type="text" v-model="newTaskModel.title"></el-input>
         </el-form-item>
         <el-form-item label="数据源">
-          <input type="file" ref="obj" @change="importf()" id="excel-input" :accept="accept" />
+          <input type="file" ref="obj" @change="importfile()" id="excel-input" :accept="accept" />
         </el-form-item>
         <el-form-item label="任务描述">
           <el-input type="textarea" :rows="4" placeholder="请输入内容" v-model="newTaskModel.describe">
@@ -47,11 +47,9 @@
 
 </template>
 <script>
-import XLSX from "xlsx";
 import PreviewTable from "./PrviewTable.vue";
-let wb; //读取完成的数据
-let rABS = false; //是否将文件读取为二进制字符串
-let filename;
+const csv = require('csvtojson')
+import { converterFileToJson } from "../common/fileToJson.js";
 export default {
   components: {
     PreviewTable
@@ -67,7 +65,7 @@ export default {
         callback();
       }
     };
-     var validateTitle = (rule, value, callback) => {
+    var validateTitle = (rule, value, callback) => {
       if (value == "" || typeof value == "undefined") {
         callback(new Error("数据集名不能为空！"));
       } else {
@@ -84,9 +82,9 @@ export default {
         name: "",
         describe: "",
         file: "",
-        title:"",//数据集名，与新建任务无关 
+        title: "" //数据集名，与新建任务无关
       },
-   
+
       tablejsons: null,
       titleIndex: 1,
       accept:
@@ -95,16 +93,18 @@ export default {
       newTaskRules: {},
       rules2: {
         name: [{ validator: validateName, trigger: "blur" }],
-        title:[{ validator: validateTitle, trigger: "blur" }],
+        title: [{ validator: validateTitle, trigger: "blur" }]
       }
     };
   },
   methods: {
-    converterJsonBlank:function(objArray){
-      objArray.forEach(element => {
-        for(let key in element){
-          element[key]=element[key].trim();
-        }
+    importfile: function() {
+      let obj = this.$refs.obj;
+      console.log(obj);
+      
+      let jsonPromise = converterFileToJson(obj);
+      jsonPromise.then(data => {
+        this.tablejsons = data;
       });
     },
     submitTask: function(e) {
@@ -142,74 +142,24 @@ export default {
             let query = this.$post("/taskinfo/", {
               task_name: this.newTaskModel.name,
               task_desc: this.newTaskModel.describe
-            });
+            },false);
             query.then(response => {
               console.log(response);
               this.taskid = response.data.id;
               this.tablePreviewVisable = true;
               this.newTaskDialogVisable = false;
               loading.close();
+            }).catch(err =>{
+              loading.close();
+              this.$message({
+              message: err.response.data.non_field_errors[0],
+              type: "warning",
+              duration: 1500
+            });
             });
           }
         }
       });
-    },
-    importf() {
-      //导入
-      let obj = this.$refs.obj;
-      this.filename = obj.value.substring(
-        obj.value.lastIndexOf("\\") + 1,
-        obj.value.lastIndexOf(".")
-      );
-      if (!obj.files) {
-        return;
-      }
-      var f = obj.files[0];
-      var reader = new FileReader();
-      let _this = this;
-      reader.onload = function(e) {
-        var data = e.target.result;
-        if (rABS) {
-          wb = XLSX.read(btoa(fixdata(data)), {
-            //手动转化
-            type: "base64"
-          });
-        } else {
-          wb = XLSX.read(data, {
-            type: "binary"
-          });
-        }
-        //wb.SheetNames[0]是获取Sheets中第一个Sheet的名字
-        //wb.Sheets[Sheet名]获取第一个Sheet的数据
-        _this.tablejsons = XLSX.utils.sheet_to_json(
-          wb.Sheets[wb.SheetNames[0]],
-          {
-            blankRows: false,
-            defval: ""
-          }
-        );
-        _this.converterJsonBlank(_this.tablejsons);
-        console.log(_this.tablejsons);
-      };
-
-      if (rABS) {
-        reader.readAsArrayBuffer(f);
-      } else {
-        reader.readAsBinaryString(f);
-      }
-    },
-    fixdata(data) {
-      //文件流转BinaryString
-      var o = "",
-        l = 0,
-        w = 10240;
-      for (; l < data.byteLength / w; ++l)
-        o += String.fromCharCode.apply(
-          null,
-          new Uint8Array(data.slice(l * w, l * w + w))
-        );
-      o += String.fromCharCode.apply(null, new Uint8Array(data.slice(l * w)));
-      return o;
     },
     setTitleIndex: function(index) {
       this.titleIndex = index;

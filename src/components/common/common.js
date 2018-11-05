@@ -62,4 +62,12 @@ export const JsonParse = {
     return Function('"use strict";return (' + obj + ')')();
   }  
 }
+
+export const converterJsonBlank=function(objArray){
+  objArray.forEach(element => {
+    for(let key in element){
+      element[key]=element[key].trim();
+    }
+  });
+}
 export default UIUtils;

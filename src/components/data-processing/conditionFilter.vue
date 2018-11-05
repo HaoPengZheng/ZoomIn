@@ -28,7 +28,7 @@ export default {
     ConditionItem
   },
   props: {
-    dataSetId: Number,
+    dataSetId: "",
     keys: Array,
     keyTypes: Array
   },

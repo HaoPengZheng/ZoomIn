@@ -512,12 +512,13 @@ export default {
           });
           this.refreshData();
         });
-      } else {
-        this.$message({
-          type: "info",
-          message: "已取消删除"
-        });
-      }
+      } 
+      // else {
+      //   this.$message({
+      //     type: "info",
+      //     message: "已取消删除"
+      //   });
+      // }
     },
     updateTableProperty: function(
       oldTablePropertysObject,

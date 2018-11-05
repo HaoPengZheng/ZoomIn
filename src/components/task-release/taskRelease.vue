@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <Left :active="activeIndex" v-on:updateDetail="updateDetail">
+    <Left>
     </Left>
     <el-container>
       <el-main style="margin-top:20px;padding:0 10%;">
@@ -9,7 +9,7 @@
             任务名
           </div>
           <div class="task-title-new">
-            <el-button type="primary" icon="el-icon-picture">新建图表</el-button>
+            <el-button type="primary" icon="el-icon-picture" @click="newChartDialogVisible=true">新建图表</el-button>
           </div>
           <div style="clear:both"></div>
         </div>
@@ -31,22 +31,89 @@
         </el-row>
       </el-main>
     </el-container>
+    <el-dialog title="新建图表-选择数据源" :visible.sync="newChartDialogVisible" width="30%">
+      <el-form :model="newChartForm" ref="newChartForm" status-icon label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
+        <el-form-item label="数据集名" prop="title">
+          <el-input type="text"></el-input>
+        </el-form-item>
+        <el-form-item label="任务名称" prop="name">
+          <el-radio-group v-model="newChartForm.IsChooseHistory">
+            <el-radio :label="true">历史数据集</el-radio>
+            <el-radio :label="false">新建数据集</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item v-if="newChartForm.IsChooseHistory" label="数据集" prop="name">
+          <el-select v-model="newChartForm.historyDataSet" placeholder="请选择数据集">
+            <el-option :label="`ssssss`" :value="1">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="!newChartForm.IsChooseHistory" label="数据集" prop="name">
+          <input type="file" ref="obj" @change="importFile()" :accept="accept" />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="newChartDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="nextStep()">下一步</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="新建图表-任务设置" :visible.sync="newChartTaskDialogVisible" width="30%">
+      <el-form :model="newTaskModel" status-icon :rules="rules2" label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
+        <el-form-item label="任务名" prop="title">
+          <el-input type="text"></el-input>
+        </el-form-item>
+        <el-form-item label="任务属性" prop="title">
+          <el-input type="text"></el-input>
+        </el-form-item>
+        <el-form-item label="创建者" prop="title">
+          <el-input type="text"></el-input>
+        </el-form-item>
+        <el-form-item label="任务描述" prop="title">
+          <el-input type="text"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="newChartTaskDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="nextStep()">下一步</el-button>
+      </span>
+    </el-dialog>
+    <!-- 数据预览模态框 -->
+    <el-dialog :visible.sync="tablePreviewVisable" width="50%" title="数据预览" top="5vh">
+      <preview-table :json="tablejsons" v-on:setTitleIndex="setTitleIndex"></preview-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="tablePreviewVisable = false">取 消</el-button>
+        <el-button type="primary" @click="toCreateDataSet">下一步</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 <script>
 import Left from "../common/task_left.vue";
 import MyChart from "./mychart.vue";
+import PreviewTable from "../data-import/PrviewTable";
+import { converterFileToJson } from "../common/fileToJson.js";
+let wb; //读取完成的数据
+let rABS = false; //是否将文件读取为二进制字符串
+let filename;
 export default {
   components: {
     Left,
-    MyChart
+    MyChart,
+    PreviewTable
   },
-  created:function(){
-    this.$store.commit('changeIndex',{index:"taskRelease"});
+  created: function() {
+    this.$store.commit("changeIndex", { index: "taskRelease" });
   },
   data() {
     return {
       taskId: "",
+      newChartDialogVisible: true,
+      newChartTaskDialogVisible: true,
+      newChartForm: {
+        dataSetTitle: "",
+        IsChooseHistory: true,
+        historyDataSet: ""
+      },
       option: {
         xAxis: {
           type: "category",
@@ -284,27 +351,37 @@ export default {
     },
     handleClick(tab, event) {
       console.log(tab, event);
+    },
+    nextStep: function() {
+      if (this.newChartForm.IsChooseHistory) {
+        this.newChartTaskDialogVisible = true;
+      } else {
+      }
+    },
+    importFile:function(){
+      let obj = this.$refs.obj;
+      converterFileToJson(obj);
     }
   }
 };
 </script>
 
 <style>
-  .task-title{
-    border-bottom: 2px solid #ccc;
-    padding-bottom: 5px;
-    margin-bottom: 20px;
-  }
-  .task-title-new{
-    float: right;
-  }
-  .task-title-name{
-    float: left;
-    line-height: 42px;
-    font-size: 20px;
-    font-weight: 550;
-    color: #1f2f3d;
-    font-family: "Microsoft YaHei","微软雅黑",Arial,sans-serif;
-  }
+.task-title {
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+  margin-bottom: 20px;
+}
+.task-title-new {
+  float: right;
+}
+.task-title-name {
+  float: left;
+  line-height: 42px;
+  font-size: 20px;
+  font-weight: 550;
+  color: #1f2f3d;
+  font-family: "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
 </style>
 
