@@ -140,6 +140,7 @@ import Bus from './Bus.js'
             axisFlag:false,
             addIconFlag:true,
             ClusterParmsFlag:false,
+            category:13,
             num1:3, 
             num2:300, 
             num3:80, 
@@ -156,20 +157,21 @@ import Bus from './Bus.js'
 			  switch (type) {
                     case 'K-Means聚类':
                         // this.mth_power = 0
-                        // this.category = 11
+                        this.category = 13
                         this.ClusterParmsFlag = false
+                        this.clusterParmsChange()
                         break;
                     case 'Mini Batch K-Means聚类':
                         // if(this.mth_power==0)this.mth_power = 2
-                        // this.category = 12 
+                        this.category = 14 
                         this.ClusterParmsFlag = true
+                        this.clusterParmsChange()
                         break;
 				  default:
 					  break;
 			  }
 
 
-			  this.drawModel()
 			  this.tableVisible = false
 		})
     },
@@ -246,10 +248,14 @@ import Bus from './Bus.js'
             },
             clusterParmsChange(){
                 let clusterParms = {
-                    "Datacsv_list":this.dropRow,//聚类轴的值
-                    "random_state":this.num3, //随机种子 
-                    "k_clustering":this.num1 //聚类数  
-                    //后续再补上 
+                    "category":this.category,
+                    "Datacsv_list":this.dropRow,    //聚类轴的值
+                    "k_clustering":this.num1,       //聚类数  
+                    "max_iter":this.num2,           //迭代次数
+                    "random_state":this.num3,       //随机种子 
+                    "n_init":this.num4,             //初始簇中心迭代次数
+                    "batch_size":this.num5,         //采集样大小
+                    'reassignment_ratio':this.num6  //reassignment ration
                 }
                 Bus.$emit('getClusterParms',clusterParms)
             }

@@ -14,9 +14,11 @@
       <div class="app-border" >
         <!-- 由于导航栏的问题，临时下降1px -->
         <el-row style="margin-top:1px;" > 
-          <el-col :span="24" v-if="status=='回归分析'"><div style="margin-left:15px;margin-right:20px"><drop></drop></div></el-col>
-          <el-col :span="24" v-if="status=='回归分析'"><div style="margin-top:5px;margin-left:15px"><model-parms></model-parms></div></el-col>
-          <ClusterParms v-else-if="status=='聚类分析'"></ClusterParms>
+          <el-card style="margin:15px;margin-bottom:-5px">
+            <el-col :span="24" v-if="status=='回归分析'"><div style="margin-left:15px;margin-right:20px;margin-top:-15px"><drop></drop></div></el-col>
+            <el-col :span="24" v-if="status=='回归分析'"><div style="margin-top:5px;margin-left:15px;margin-bottom:10px"><model-parms></model-parms></div></el-col>
+            <ClusterParms v-else-if="status=='聚类分析'" style="margin:-15px"></ClusterParms>
+          </el-card>
         </el-row>
 
         <el-row>
@@ -107,15 +109,18 @@ export default {
 </script>
 
 <style scoped>
+html {
+  overflow-x: hidden;
+  overflow-y: hidden;
+
+}
 
 #app {
   font-family: "Microsoft YaHei","微软雅黑";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-    color: #5A616A;
-  
-
+  color: #5A616A;
 }
 
 .app-border{
@@ -153,4 +158,6 @@ export default {
   background:#fff;
   position: relative;
 }
+
 </style>
+
