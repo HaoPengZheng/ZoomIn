@@ -144,7 +144,7 @@ export default {
     addField: function() {
       let that = this;
       if (typeof this.dataSetId == "number") {
-        alert("number");
+        
       }
       this.$post("/task/dataProcessing/zoomin_eval", {
         data_set_id: this.dataSetId,

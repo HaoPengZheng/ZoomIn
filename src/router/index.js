@@ -56,6 +56,14 @@ const router = new Router({
             meta: {
                 requireAuth: true
             }
+        },
+        {
+            path: 'task-release/:id',
+            name: 'task-release',
+            component: TaskRelease,
+            meta: {
+                requireAuth: true
+            }
         }, {
             path: 'data-analysis',
             name: 'data-analysis',

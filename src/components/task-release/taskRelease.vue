@@ -1,12 +1,11 @@
 <template>
   <el-container>
-    <Left>
-    </Left>
+    <left></left>
     <el-container>
       <el-main style="margin-top:20px;padding:0 10%;">
         <div class="task-title">
           <div class="task-title-name">
-            任务名
+            {{newTaskModel.taskName}}
           </div>
           <div class="task-title-new">
             <el-button type="primary" icon="el-icon-picture" @click="newChartDialogVisible=true">新建图表</el-button>
@@ -32,7 +31,6 @@
       </el-main>
     </el-container>
 
-
     <el-dialog title="新建图表-选择数据源" :visible.sync="newChartDialogVisible" width="30%">
       <el-form :model="newChartModel" ref="newChartModel" :rules="chartModelRules" status-icon label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
         <el-form-item label="数据集名" prop="dataSetTitle">
@@ -47,7 +45,7 @@
         <el-form-item v-if="newChartModel.IsChooseHistory" label="数据集" prop="historyDataSet">
           <el-input v-model="newChartModel.historyDataSet" v-show="false"></el-input>
           <el-select v-model="newChartModel.historyDataSet" placeholder="请选择数据集">
-            <el-option :label="`ssssss`" :value="1">
+            <el-option v-for="dataSet in dataSetList" :label="dataSet.title" :value="dataSet.id" :key="dataSet.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -107,13 +105,6 @@ export default {
     MyChart,
     PreviewTable
   },
-  created: function() {
-    this.$store.commit("changeIndex", { index: "taskRelease" });
-    let query = this.fetchAllDataSet();
-    query.then((req)=>{
-      console.log(req);
-    })
-  },
   data() {
     return {
       taskId: "",
@@ -133,6 +124,8 @@ export default {
       },
       tablejsons: "",
       titleIndex: 0,
+      taskList: "",
+      dataSetList:"",
       chartModelRules: {
         dataSetTitle: [
           { validator: validateObj.validateTitle, trigger: "change" }
@@ -376,9 +369,36 @@ export default {
       }
     };
   },
+  created: function() {
+    this.$store.commit("changeIndex", { index: "taskRelease" });
+    let query = this.fetchAllTaskInfo();
+    query.then(req => {
+      this.taskList = req;
+      if (this.$route.params.id == undefined || this.$route.params.id == "") {
+        this.$router.push("/home/task-release/" + this.taskList[0].id);
+      }else{
+        this.taskId = this.$route.params.id;
+        this.fetchTaskInfo();
+      }
+    });
+    this.fetchAllDataSet();
+  },
   methods: {
+    fetchTaskInfo:function(){
+      this.$get('/taskinfo/'+this.taskId).then(response=>{
+        console.log(response);
+        this.newTaskModel.taskName=response.task_name;
+        this.newTaskModel.taskDesc=response.task_desc;
+      })
+    },
+    fetchAllTaskInfo: function() {
+      return this.$get("/taskinfo/");
+    },
     fetchAllDataSet: function() {
-      return this.$get("/dataSet/");
+      this.$get("/dataSet/").then(response=>{
+        console.log(response)
+        this.dataSetList = response;
+      });
     },
     handleClick(tab, event) {
       console.log(tab, event);
@@ -433,12 +453,22 @@ export default {
       this.titleIndex = index;
     },
     createDataSet: function() {},
-    watchChoose:function(){
-      if(!this.newChartModel.IsChooseHistory){
+    watchChoose: function() {
+      if (!this.newChartModel.IsChooseHistory) {
         this.$refs.newChartModel.clearValidate();
       }
     }
   },
+  watch: {
+    $route(to, from) {
+      // 对路由变化作出响应...
+      this.taskId = to.params.id;
+      if(this.taskId==undefined){
+        this.$router.push('/home/task-release/'+this.taskList[0].id);
+      }
+      this.fetchTaskInfo();
+    }
+  }
 };
 </script>
 

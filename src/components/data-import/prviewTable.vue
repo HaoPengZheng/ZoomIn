@@ -1,40 +1,40 @@
 <template>
-    <div>
-        <p>
-            当前选中的表头为第
-            <span class="titleIndexStyle">
-                {{titleIndex+2}}
-            </span>
-            行,表头前的数据，将不会保留
-        </p>
-        <div class="preview-table-warp ">
-            <table class="preview-table">
-                <tbody>
-                    <tr @click="changeTitleIndex(-1)" :class="{'setTitle':titleIndex==-1,'disabled':titleIndex>-1,'hov':hoverIndex==-1}">
-                        {{setTitle}}
-                        <td>{{0}}
-                            <span class='set-thread'>表头
-                                <span class='triangle_right'></span>
-                            </span>
-                        </td>
-                        <td v-for="(key,index) in tableTitle" :key="index">
-                            {{key}}
-                        </td>
-                    </tr>
-                    <tr v-for="(tr,index) in json" :key="index" @mouseenter="enter(index)" @click="changeTitleIndex(index)" :class="{'setTitle':titleIndex==index,'disabled':titleIndex>index}">
-                        <td>{{index+1}}
-                            <span class='set-thread'>表头
-                                <span class='triangle_right'></span>
-                            </span>
-                        </td>
-                        <td v-for="(value,index) in tr" :key="index">
-                            {{value}}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+  <div>
+    <p style="margin:10px 0">
+      当前选中的表头为第
+      <span class="titleIndexStyle">
+        {{titleIndex+2}}
+      </span>
+      行,表头前的数据，将不会保留
+    </p>
+    <div class="preview-table-warp " ref="preDiv" @scroll="scrollDiv">
+      <table class="preview-table">
+        <tbody>
+          <tr @click="changeTitleIndex(-1)" :class="{'setTitle':titleIndex==-1,'disabled':titleIndex>-1,'hov':hoverIndex==-1}">
+            {{setTitle}}
+            <td>{{0}}
+              <span class='set-thread'>表头
+                <span class='triangle_right'></span>
+              </span>
+            </td>
+            <td v-for="(key,index) in tableTitle" :key="index">
+              {{key}}
+            </td>
+          </tr>
+          <tr v-for="(tr,index) in tempJson" :key="index" @mouseenter="enter(index)" @click="changeTitleIndex(index)" :class="{'setTitle':titleIndex==index,'disabled':titleIndex>index}">
+            <td>{{index+1}}
+              <span class='set-thread'>表头
+                <span class='triangle_right'></span>
+              </span>
+            </td>
+            <td v-for="(value,index) in tr" :key="index">
+              {{value}}
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+  </div>
 
 </template>
 <script>
@@ -46,8 +46,17 @@ export default {
     return {
       tableTitle: "",
       titleIndex: -1,
-      hoverIndex: 3
+      hoverIndex: 3,
+      tempJson: Array,
+      showIndex: 0,
+      scroll: 0
     };
+  },
+  created: function() {
+    this.addMore();
+  },
+  mounted: function() {
+    this.scroll = this.$refs.preDiv.scrollTop;
   },
   methods: {
     changeTitleIndex: function(index) {
@@ -56,6 +65,18 @@ export default {
     },
     enter: function(index) {
       this.hoverIndex = index;
+    },
+    addMore: function() {
+      this.showIndex += 100;
+      let length = this.json.length;
+      this.showIndex = length > this.showIndex ? this.showIndex : length;
+      this.tempJson = this.json.slice(0, this.showIndex);
+    },
+    scrollDiv: function() {
+      this.scroll = this.$refs.preDiv.scrollTop;
+      if (this.scroll > this.$refs.preDiv.scrollHeight - 800) {
+        this.addMore();
+      }
     }
   },
   computed: {
