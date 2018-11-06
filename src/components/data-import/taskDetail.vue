@@ -1,6 +1,6 @@
 <template>
   <el-container>
-    <Left :active="activeIndex" v-on:updateDetail="updateDetail" :taskInfo="taskInfo">
+    <Left :active="activeIndex"  :taskInfo="taskInfo">
     </Left>
     <el-container>
       <el-main style="margin-top:20px;padding:0 10%;">
@@ -76,7 +76,7 @@ export default {
   },
   created: function() {
     this.fetchTask();
-    this.updateDetail(this.$route.params.taskId);
+    this.updateDetail(this.$route.params.id);
   },
   methods: {
     fetchTask: function() {
@@ -116,6 +116,13 @@ export default {
         });
         this.fetchTask();
       });
+    }
+  },
+  watch: {
+    $route(to, from) {
+      // 对路由变化作出响应...
+      this.taskId = to.params.id;
+      this.updateDetail(this.taskId);
     }
   }
 };

@@ -61,7 +61,7 @@
       </span>
     </el-dialog>
     <el-dialog title="新建图表-任务设置" :visible.sync="newChartTaskDialogVisible" width="30%">
-      <el-form :model="newTaskModel" status-icon :rules="rules2" label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
+      <el-form :model="newTaskModel" status-icon label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
         <el-form-item label="任务名" prop="taskName">
           <el-input type="text" v-model="newTaskModel.taskName"></el-input>
         </el-form-item>
@@ -109,6 +109,10 @@ export default {
   },
   created: function() {
     this.$store.commit("changeIndex", { index: "taskRelease" });
+    let query = this.fetchAllDataSet();
+    query.then((req)=>{
+      console.log(req);
+    })
   },
   data() {
     return {
@@ -373,8 +377,8 @@ export default {
     };
   },
   methods: {
-    fetchTaskById: function() {
-      this.$axios.post("");
+    fetchAllDataSet: function() {
+      return this.$get("/dataSet/");
     },
     handleClick(tab, event) {
       console.log(tab, event);
