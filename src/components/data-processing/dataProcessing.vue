@@ -44,7 +44,7 @@
                       </template>
                     </EmptyTask>
                   </div>
-                   <div v-if="IsEmptyDataSet&&!IsEmptyDataSetList">
+                  <div v-if="IsEmptyDataSet&&!IsEmptyDataSetList">
                     <EmptyTask>
                       <template slot="404Message">
                         <p>数据集内容空空如也！</p>
@@ -158,7 +158,7 @@ export default {
       activeName: "first",
       dialogVisible: false,
       addFieldDialogVisible: false,
-      IsEmptyDataSetList:false,
+      IsEmptyDataSetList: false,
       IsEmptyDataSet: false,
       tableLoading: true,
       tableOption: {
@@ -324,10 +324,10 @@ export default {
         .then(response => {
           this.allItems = response.data.length;
           this.tableData = response.data.slice(0, 100);
-          this.IsEmptyDataSet = this.tableData.length <=0?true:false;
-          if(this.IsEmptyDataSet){
-            this.tableData=[];
-            return ;
+          this.IsEmptyDataSet = this.tableData.length <= 0 ? true : false;
+          if (this.IsEmptyDataSet) {
+            this.tableData = [];
+            return;
           }
           console.log(this.tableData);
           this.tableKeys = Object.keys(this.tableData[0]);
@@ -373,7 +373,8 @@ export default {
         })
         .catch(response => {
           alert("获取数据失败");
-        }).then(()=>{
+        })
+        .then(() => {
           this.tableLoading = false;
         });
     },
@@ -412,30 +413,7 @@ export default {
       }
       //可以抽出新方法来
       let oldKey = this.tableKeys[this.changeColumnIndex]; //旧的键值
-      this.tableKeysTypeObject[this.newColumnName] = this.newColumnType;
 
-      this.originKeyObject[this.newColumnName] = this.originKeyObject[oldKey];
-
-      this.keyDesc[this.newColumnName] = this.keyDesc[oldKey];
-
-      this.keyVisibilitysObject[this.newColumnName] = this.keyVisibilitysObject[
-        oldKey
-      ];
-
-      this.tablePropertys[this.newColumnName] = new tableProperty(
-        true,
-        this.originKeyObject[oldKey],
-        this.newColumnName,
-        this.newColumnType,
-        this.keyDesc[oldKey]
-      );
-      delete this.tablePropertys[oldKey];
-      if (oldKey != this.newColumnName) {
-        delete this.tableKeysTypeObject[oldKey];
-        delete this.originKeyObject[oldKey];
-        delete this.keyDesc[oldKey];
-        delete this.keyVisibilitysObject[oldKey];
-      }
       //发送修改请求。
       let query = this.$post("/task/dataProcessing/resetColumns_name_type", {
         data_set_id: this.dataSetId,
@@ -453,32 +431,62 @@ export default {
         ]
       });
       query.then(response => {
-        console.log(response);
-        this.$set(this.tableKeys, this.changeColumnIndex, this.newColumnName);
-        //set方法。数组更新，但是试图不更新的问题，遇到类似的可以使用vue.set为解决方案
-        this.$set(
-          this.tableKeysType,
-          this.changeColumnIndex,
-          this.newColumnType
-        );
-        // 为data重新赋值
-        let newData = [];
-        for (var i = 0; i < this.tableData.length; i++) {
-          let objs = this.tableData[i];
-          var o = new Object();
-          for (var obj in objs) {
-            if (obj == oldKey) {
-              o[this.newColumnName] = objs[obj];
-            } else {
-              o[obj] = objs[obj];
-            }
+        if (response.message != "类型修改失败") {
+          this.tableKeysTypeObject[this.newColumnName] = this.newColumnType;
+          this.originKeyObject[this.newColumnName] = this.originKeyObject[
+            oldKey
+          ];
+
+          this.keyDesc[this.newColumnName] = this.keyDesc[oldKey];
+
+          this.keyVisibilitysObject[
+            this.newColumnName
+          ] = this.keyVisibilitysObject[oldKey];
+
+          this.tablePropertys[this.newColumnName] = new tableProperty(
+            true,
+            this.originKeyObject[oldKey],
+            this.newColumnName,
+            this.newColumnType,
+            this.keyDesc[oldKey]
+          );
+          delete this.tablePropertys[oldKey];
+          if (oldKey != this.newColumnName) {
+            delete this.tableKeysTypeObject[oldKey];
+            delete this.originKeyObject[oldKey];
+            delete this.keyDesc[oldKey];
+            delete this.keyVisibilitysObject[oldKey];
           }
-          newData.push(o);
+          this.$set(this.tableKeys, this.changeColumnIndex, this.newColumnName);
+          //set方法。数组更新，但是试图不更新的问题，遇到类似的可以使用vue.set为解决方案
+          this.$set(
+            this.tableKeysType,
+            this.changeColumnIndex,
+            this.newColumnType
+          );
+          // 为data重新赋值
+          let newData = [];
+          for (var i = 0; i < this.tableData.length; i++) {
+            let objs = this.tableData[i];
+            var o = new Object();
+            for (var obj in objs) {
+              if (obj == oldKey) {
+                o[this.newColumnName] = objs[obj];
+              } else {
+                o[obj] = objs[obj];
+              }
+            }
+            newData.push(o);
+          }
+          this.tableData = newData;
+          this.tableKeys = Object.keys(this.tableData[0]);
+          this.newColumnName = "";
+          this.dialogVisible = false;
+        } else {
+          let obj = JsonParse.looseJsonParse(response.违规率);
+          let key = Object.keys(obj);
+          alert(`${response.message},错误率为${obj[key[0]] * 100}%`);
         }
-        this.tableData = newData;
-        this.tableKeys = Object.keys(this.tableData[0]);
-        this.newColumnName = "";
-        this.dialogVisible = false;
       });
     },
     updateTableKeys: function(newKeys) {
@@ -512,7 +520,7 @@ export default {
           });
           this.refreshData();
         });
-      } 
+      }
       // else {
       //   this.$message({
       //     type: "info",
