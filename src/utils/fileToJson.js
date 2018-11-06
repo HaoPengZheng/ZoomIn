@@ -2,6 +2,24 @@ import XLSX from "xlsx";
 let wb; //读取完成的数据
 let rABS = false; //是否将文件读取为二进制字符串
 
+//将二维数组转换成一维数组对象
+export const converterTwoDimArrayToObjectArray=function(array){
+  let key = array[0];
+  console.log(key);
+  let data = [];
+  for(let i = 1;i<array.length;i++){
+    let object = new Object();
+    for(let j=0;j<key.length;j++){
+      if(array[i][j]==undefined){
+        array[i][j]="";
+      }
+      let k = key[j].trim();
+      object[k]=array[i][j];
+    }
+    data.push(object)
+  }
+  return data;
+}
 // 将上传的文件转化成JSON
 export const converterFileToJson = async function (obj) {
   let jsonPromise = await importf(obj);

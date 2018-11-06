@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import { TYPECONVERTER } from "./common.js";
+import { TYPECONVERTER } from "@/utils/common.js";
 export default {
   data() {
     return {

@@ -104,7 +104,7 @@ import BatchOperation from "./BatchOperation.vue";
 import NewFieldForm from "./NewFieldForm.vue";
 import typeSelect from "../common/typeSelect.vue";
 import EmptyTask from "../common/EmptyTask";
-import { TYPECONVERTER, JsonParse } from "../common/common.js";
+import { TYPECONVERTER, JsonParse } from "@/utils/common.js";
 function tableProperty(
   keyVisibility,
   originKey,

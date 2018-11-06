@@ -49,7 +49,7 @@
 
 <script>
 import typeSelect from "../common/typeSelect.vue";
-import {TYPECONVERTER} from "../common/common.js";
+import {TYPECONVERTER} from "@/utils/common.js";
 export default {
   components:{
     typeSelect

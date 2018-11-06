@@ -48,33 +48,14 @@
 </template>
 <script>
 import PreviewTable from "./PrviewTable.vue";
-const csv = require('csvtojson')
-import { converterFileToJson } from "../common/fileToJson.js";
+import { converterTwoDimArrayToObjectArray,converterFileToJson, importf } from "@/utils/fileToJson.js";
+import validateObj from "@/utils/validate.js";
+import Papa from 'papaparse';
 export default {
   components: {
     PreviewTable
   },
   data() {
-    var validateName = (rule, value, callback) => {
-      if (value == "" || typeof value == "undefined") {
-        callback(new Error("任务名不能为空！"));
-      } else {
-        if (value.length > 15) {
-          callback(new Error("任务名不能超过15个字符！"));
-        }
-        callback();
-      }
-    };
-    var validateTitle = (rule, value, callback) => {
-      if (value == "" || typeof value == "undefined") {
-        callback(new Error("数据集名不能为空！"));
-      } else {
-        if (value.length > 15) {
-          callback(new Error("数据集名不能超过15个字符！"));
-        }
-        callback();
-      }
-    };
     return {
       newTaskDialogVisable: false,
       tablePreviewVisable: false,
@@ -92,20 +73,34 @@ export default {
       taskid: 0,
       newTaskRules: {},
       rules2: {
-        name: [{ validator: validateName, trigger: "blur" }],
-        title: [{ validator: validateTitle, trigger: "blur" }]
+        name: [{ validator: validateObj.validateName, trigger: "blur" }],
+        title: [{ validator: validateObj.validateTitle, trigger: "blur" }]
       }
     };
   },
   methods: {
+    
     importfile: function() {
       let obj = this.$refs.obj;
-      console.log(obj);
-      
-      let jsonPromise = converterFileToJson(obj);
-      jsonPromise.then(data => {
-        this.tablejsons = data;
-      });
+      let filetype = obj.value.substring(
+        obj.value.lastIndexOf("."),
+        obj.value.length
+      );
+      let _this = this;
+      if (filetype == ".csv") {
+        var file = obj.files[0];
+        Papa.parse(file, {
+          complete: function(results) {
+            _this.tablejsons = converterTwoDimArrayToObjectArray(results.data);
+            console.log(_this.tablejsons);
+          }
+        });
+      } else {
+        let jsonPromise = converterFileToJson(obj);
+        jsonPromise.then(data => {
+          this.tablejsons = data;
+        });
+      }
     },
     submitTask: function(e) {
       // key.Code === 13表示回车键
@@ -139,24 +134,30 @@ export default {
               spinner: "el-icon-loading",
               background: "rgba(0, 0, 0, 0.7)"
             });
-            let query = this.$post("/taskinfo/", {
-              task_name: this.newTaskModel.name,
-              task_desc: this.newTaskModel.describe
-            },false);
-            query.then(response => {
-              console.log(response);
-              this.taskid = response.data.id;
-              this.tablePreviewVisable = true;
-              this.newTaskDialogVisable = false;
-              loading.close();
-            }).catch(err =>{
-              loading.close();
-              this.$message({
-              message: err.response.data.non_field_errors[0],
-              type: "warning",
-              duration: 1500
-            });
-            });
+            let query = this.$post(
+              "/taskinfo/",
+              {
+                task_name: this.newTaskModel.name,
+                task_desc: this.newTaskModel.describe
+              },
+              false
+            );
+            query
+              .then(response => {
+                console.log(response);
+                this.taskid = response.data.id;
+                this.tablePreviewVisable = true;
+                this.newTaskDialogVisable = false;
+                loading.close();
+              })
+              .catch(err => {
+                loading.close();
+                this.$message({
+                  message: err.response.data.non_field_errors[0],
+                  type: "warning",
+                  duration: 1500
+                });
+              });
           }
         }
       });

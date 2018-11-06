@@ -18,7 +18,7 @@ import './assets/icons/zhp-icon/iconfont.js'
 import './assets/icons/zhp-icon/iconfont.css'
 import GeminiScrollbar from 'vue-gemini-scrollbar'
 // 自定义公共方法
-import Utils from './components/common/common.js'
+import Utils from "@/utils/common.js";
 // 滚动条插件
 import vuescroll from 'vuescroll/dist/vuescroll-native';
 // 导入css文件

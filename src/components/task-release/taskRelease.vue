@@ -13,10 +13,9 @@
           </div>
           <div style="clear:both"></div>
         </div>
-        <draggable v-model="list">
         <el-row :gutter="20">
           <el-col :span="12">
-              <MyChart :domId="'id1'" :option="option"></MyChart>
+            <MyChart :domId="'id1'" :option="option"></MyChart>
           </el-col>
           <el-col :span="12">
             <MyChart :domId="'id2'" :option="option2"></MyChart>
@@ -30,28 +29,30 @@
             <MyChart :domId="'id4'" :option="option4"></MyChart>
           </el-col>
         </el-row>
-        </draggable>
       </el-main>
     </el-container>
+
+
     <el-dialog title="新建图表-选择数据源" :visible.sync="newChartDialogVisible" width="30%">
-      <el-form :model="newChartForm" ref="newChartForm" status-icon label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
-        <el-form-item label="数据集名" prop="title">
-          <el-input type="text"></el-input>
+      <el-form :model="newChartModel" ref="newChartModel" :rules="chartModelRules" status-icon label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
+        <el-form-item label="数据集名" prop="dataSetTitle">
+          <el-input type="text" v-model="newChartModel.dataSetTitle"></el-input>
         </el-form-item>
-        <el-form-item label="任务名称" prop="name">
-          <el-radio-group v-model="newChartForm.IsChooseHistory">
+        <el-form-item label="数据源" prop="IsChooseHistory">
+          <el-radio-group v-model="newChartModel.IsChooseHistory" @change="watchChoose">
             <el-radio :label="true">历史数据集</el-radio>
             <el-radio :label="false">新建数据集</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item v-if="newChartForm.IsChooseHistory" label="数据集" prop="name">
-          <el-select v-model="newChartForm.historyDataSet" placeholder="请选择数据集">
+        <el-form-item v-if="newChartModel.IsChooseHistory" label="数据集" prop="historyDataSet">
+          <el-input v-model="newChartModel.historyDataSet" v-show="false"></el-input>
+          <el-select v-model="newChartModel.historyDataSet" placeholder="请选择数据集">
             <el-option :label="`ssssss`" :value="1">
             </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="!newChartForm.IsChooseHistory" label="数据集" prop="name">
-          <input type="file" ref="obj" @change="importFile()" :accept="accept" />
+        <el-form-item v-if="!newChartModel.IsChooseHistory" label="数据集">
+          <input type="file" ref="obj" @change="importFile()" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -61,22 +62,22 @@
     </el-dialog>
     <el-dialog title="新建图表-任务设置" :visible.sync="newChartTaskDialogVisible" width="30%">
       <el-form :model="newTaskModel" status-icon :rules="rules2" label-width="80px" class="demo-ruleForm" label-position="left" @keyup.native="submitTask($event)">
-        <el-form-item label="任务名" prop="title">
-          <el-input type="text"></el-input>
+        <el-form-item label="任务名" prop="taskName">
+          <el-input type="text" v-model="newTaskModel.taskName"></el-input>
         </el-form-item>
-        <el-form-item label="任务属性" prop="title">
-          <el-input type="text"></el-input>
+        <el-form-item label="任务属性" prop="taskProperty">
+          <el-input type="text" v-model="newTaskModel.taskProperty"></el-input>
         </el-form-item>
-        <el-form-item label="创建者" prop="title">
-          <el-input type="text"></el-input>
+        <el-form-item label="创建者" prop="creator">
+          <el-input type="text" v-model="newTaskModel.creator"></el-input>
         </el-form-item>
-        <el-form-item label="任务描述" prop="title">
-          <el-input type="text"></el-input>
+        <el-form-item label="任务描述" prop="taskDesc">
+          <el-input type="textarea" v-model="newTaskModel.taskDesc"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="newChartTaskDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="nextStep()">下一步</el-button>
+        <el-button type="primary" @click="nextStep()">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 数据预览模态框 -->
@@ -84,7 +85,7 @@
       <preview-table :json="tablejsons" v-on:setTitleIndex="setTitleIndex"></preview-table>
       <span slot="footer" class="dialog-footer">
         <el-button @click="tablePreviewVisable = false">取 消</el-button>
-        <el-button type="primary" @click="toCreateDataSet">下一步</el-button>
+        <el-button type="primary" @click="tablePreviewVisable=false;newChartTaskDialogVisible=true">下一步</el-button>
       </span>
     </el-dialog>
   </el-container>
@@ -93,10 +94,13 @@
 import Left from "../common/task_left.vue";
 import MyChart from "./mychart.vue";
 import PreviewTable from "../data-import/PrviewTable";
-import { converterFileToJson } from "../common/fileToJson.js";
-let wb; //读取完成的数据
-let rABS = false; //是否将文件读取为二进制字符串
-let filename;
+import Papa from "papaparse";
+import {
+  converterTwoDimArrayToObjectArray,
+  converterFileToJson,
+  importf
+} from "@/utils/fileToJson.js";
+import validateObj from "@/utils/validate.js";
 export default {
   components: {
     Left,
@@ -109,13 +113,34 @@ export default {
   data() {
     return {
       taskId: "",
-      newChartDialogVisible: true,
-      newChartTaskDialogVisible: true,
-      newChartForm: {
+      newChartDialogVisible: false,
+      newChartTaskDialogVisible: false,
+      tablePreviewVisable: false,
+      newChartModel: {
         dataSetTitle: "",
         IsChooseHistory: true,
         historyDataSet: ""
       },
+      newTaskModel: {
+        taskName: "",
+        taskProperty: "",
+        creator: "",
+        taskDesc: ""
+      },
+      tablejsons: "",
+      titleIndex: 0,
+      chartModelRules: {
+        dataSetTitle: [
+          { validator: validateObj.validateTitle, trigger: "change" }
+        ],
+        historyDataSet: [
+          {
+            validator: validateObj.validateNoNullOrUndefined,
+            trigger: "change"
+          }
+        ]
+      },
+      // 图表option，暂时无用
       option: {
         xAxis: {
           type: "category",
@@ -355,16 +380,61 @@ export default {
       console.log(tab, event);
     },
     nextStep: function() {
-      if (this.newChartForm.IsChooseHistory) {
-        this.newChartTaskDialogVisible = true;
+      this.$refs.newChartModel.validate(vaild => {
+        if (vaild) {
+          if (
+            !this.newChartModel.IsChooseHistory &&
+            this.$refs.obj.value == ""
+          ) {
+            this.$message({
+              message: "请选择数据源！",
+              type: "warning",
+              duration: 1500
+            });
+          } else {
+            this.newChartDialogVisible = false;
+            if (this.newChartModel.IsChooseHistory) {
+              this.newChartTaskDialogVisible = true;
+            } else {
+              this.tablePreviewVisable = true;
+            }
+          }
+        }
+      });
+    },
+    importFile: function() {
+      let obj = this.$refs.obj;
+      let filetype = obj.value.substring(
+        obj.value.lastIndexOf("."),
+        obj.value.length
+      );
+      let _this = this;
+      if (filetype == ".csv") {
+        var file = obj.files[0];
+        Papa.parse(file, {
+          complete: function(results) {
+            _this.tablejsons = converterTwoDimArrayToObjectArray(results.data);
+            console.log(_this.tablejsons);
+          }
+        });
       } else {
+        let jsonPromise = converterFileToJson(obj);
+        jsonPromise.then(data => {
+          this.tablejsons = data;
+        });
       }
     },
-    importFile:function(){
-      let obj = this.$refs.obj;
-      converterFileToJson(obj);
+    //设置表头
+    setTitleIndex: function(index) {
+      this.titleIndex = index;
+    },
+    createDataSet: function() {},
+    watchChoose:function(){
+      if(!this.newChartModel.IsChooseHistory){
+        this.$refs.newChartModel.clearValidate();
+      }
     }
-  }
+  },
 };
 </script>
 
