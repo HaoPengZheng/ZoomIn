@@ -14,6 +14,9 @@ export const converterTwoDimArrayToObjectArray=function(array){
         array[i][j]="";
       }
       let k = key[j].trim();
+      if(k==""){
+        k="Empty"+j;
+      }
       object[k]=array[i][j];
     }
     data.push(object)

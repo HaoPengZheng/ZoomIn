@@ -4,8 +4,7 @@
     </Left>
     <el-container>
       <el-main>
-        <el-tabs v-model="activeName" style="padding:0 50px">
-
+        <el-tabs v-model="activeName" type="border-card">
           <el-tab-pane label="数据预览" name="first">
             <div>
               <el-row :gutter="20" style="text-align:left;padding-left:20px;margin-bottom: 0px;">
@@ -28,7 +27,7 @@
                   <el-radio v-model="filtrateType" label="2">语句筛选</el-radio>
                 </div>
                 <el-row>
-                  <div v-if="filtrateType=='1'&&filtrateVisable">
+                  <div v-if="filtrateType=='1'&&filtrateVisable" style="padding-right:30px;">
                     <ConditionFilter :dataSetId="dataSetId" :keys="tableKeys" :keyTypes="tableKeysType" v-on:refresh="refreshData"></ConditionFilter>
                   </div>
                   <div v-if="filtrateType=='2'&&filtrateVisable">

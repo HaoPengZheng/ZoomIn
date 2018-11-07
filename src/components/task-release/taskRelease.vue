@@ -75,7 +75,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="newChartTaskDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="nextStep()">确 定</el-button>
+        <el-button type="primary" @click="createNewDataSet">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 数据预览模态框 -->
@@ -89,7 +89,7 @@
   </el-container>
 </template>
 <script>
-import Left from "../common/task_left.vue";
+import Left from "../common/ReleastLeft.vue";
 import MyChart from "./mychart.vue";
 import PreviewTable from "../data-import/PrviewTable";
 import Papa from "papaparse";
@@ -125,7 +125,7 @@ export default {
       tablejsons: "",
       titleIndex: 0,
       taskList: "",
-      dataSetList:"",
+      dataSetList: "",
       chartModelRules: {
         dataSetTitle: [
           { validator: validateObj.validateTitle, trigger: "change" }
@@ -376,27 +376,28 @@ export default {
       this.taskList = req;
       if (this.$route.params.id == undefined || this.$route.params.id == "") {
         this.$router.push("/home/task-release/" + this.taskList[0].id);
-      }else{
+      } else {
         this.taskId = this.$route.params.id;
         this.fetchTaskInfo();
       }
     });
+    console.log("?????");
     this.fetchAllDataSet();
   },
   methods: {
-    fetchTaskInfo:function(){
-      this.$get('/taskinfo/'+this.taskId).then(response=>{
+    fetchTaskInfo: function() {
+      this.$get("/taskinfo/" + this.taskId).then(response => {
         console.log(response);
-        this.newTaskModel.taskName=response.task_name;
-        this.newTaskModel.taskDesc=response.task_desc;
-      })
+        this.newTaskModel.taskName = response.task_name;
+        this.newTaskModel.taskDesc = response.task_desc;
+      });
     },
     fetchAllTaskInfo: function() {
       return this.$get("/taskinfo/");
     },
     fetchAllDataSet: function() {
-      this.$get("/dataSet/").then(response=>{
-        console.log(response)
+      this.$get("/dataSet/").then(response => {
+        console.log(response);
         this.dataSetList = response;
       });
     },
@@ -457,14 +458,37 @@ export default {
       if (!this.newChartModel.IsChooseHistory) {
         this.$refs.newChartModel.clearValidate();
       }
+    },
+    createNewDataSet: function() {
+      alert("createNewDataSet")
+      if (!this.IsChooseHistory) {
+        this.$post("/dataSet/", {
+          task: this.taskId,
+          step1: "1",
+          step2: "2",
+          step3: "3",
+          stepX1: "x1",
+          title: this.newChartModel.dataSetTitle,
+          row_num: (this.titleIndex - 1).toString(),
+          data_set: this.tablejsons
+        })
+          .then(response => {
+            var dataSetId = response.data.id;
+            //创建完成之后，跳转到数据处理页面，传任务ID
+            this.$router.push(`/home/data-processing/${dataSetId}`);
+          })
+          .catch(err => {
+            console.log(err);
+          });
+      }
     }
   },
   watch: {
     $route(to, from) {
       // 对路由变化作出响应...
       this.taskId = to.params.id;
-      if(this.taskId==undefined){
-        this.$router.push('/home/task-release/'+this.taskList[0].id);
+      if (this.taskId == undefined) {
+        this.$router.push("/home/task-release/" + this.taskList[0].id);
       }
       this.fetchTaskInfo();
     }

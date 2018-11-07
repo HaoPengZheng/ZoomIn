@@ -9,7 +9,7 @@ let defaultErrorMessage = {
 }
 
 axios.defaults.baseURL = 'http://120.79.146.91:8000';
-
+axios.defaults.timeout = 250000; 
 axios.interceptors.request.use(
   config => {
     let token = localStorage.getItem("token");

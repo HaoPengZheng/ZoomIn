@@ -14,11 +14,12 @@
   },
   "dependencies": {
     "axios": "^0.18.0",
+    "c": "^4.6.1",
     "csvtojson": "^2.0.8",
     "echarts": "^4.1.0",
     "element-ui": "^2.4.0",
     "linq": "^3.1.0",
-    "c": "^4.6.1",
+    "papaparse": "^4.6.1",
     "v-contextmenu": "^2.8.0",
     "vue": "^2.5.2",
     "vue-awesome": "^2.3.7",
@@ -27,7 +28,7 @@
     "vue-js-grid": "^1.0.1",
     "vue-router": "^3.0.1",
     "vuedraggable": "^2.16.0",
-    "vuescroll": "^4.7.4",
+    "vuescroll": "^4.8.13",
     "vuex": "^3.0.1",
     "xlsx": "^0.13.0"
   },

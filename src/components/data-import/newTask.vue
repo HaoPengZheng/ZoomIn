@@ -190,6 +190,7 @@ export default {
           this.$router.push(`/home/data-processing/${dataSetId}`);
         })
         .catch(err => {
+          console.log(err);
           loading.close();
         });
     }
