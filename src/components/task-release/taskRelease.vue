@@ -2,13 +2,14 @@
   <el-container>
     <left></left>
     <el-container>
-      <el-main style="margin-top:20px;padding:0 10%;">
+      <el-main style="padding-top:30px;padding:0 5%;">
         <div class="task-title">
           <div class="task-title-name">
             {{newTaskModel.taskName}}
           </div>
           <div class="task-title-new">
             <el-button type="primary" icon="el-icon-picture" @click="newChartDialogVisible=true">新建图表</el-button>
+            <el-button type="primary" icon="el-icon-picture" @click="generateReportVisable=true">生成报告</el-button>
           </div>
           <div style="clear:both"></div>
         </div>
@@ -86,12 +87,22 @@
         <el-button type="primary" @click="tablePreviewVisable=false;newChartTaskDialogVisible=true">下一步</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="生成预览" :visible.sync="generateReportVisable" width="60%">
+      <Report ref="report"></Report>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="generateReportVisable = false">取 消</el-button>
+        <el-button type="primary" @click="generateWord()" style="">生成html链接</el-button>
+        <el-button type="primary" @click="generateWord()" style="">导出pdf</el-button>
+        <el-button type="primary" @click="generateWord()" style="">导出word</el-button>
+      </span>
+    </el-dialog>
   </el-container>
 </template>
 <script>
 import Left from "../common/ReleastLeft.vue";
 import MyChart from "./mychart.vue";
-import PreviewTable from "../data-import/PrviewTable";
+import PreviewTable from "../data-import/PrviewTable.vue";
+import Report from "./Report.vue";
 import Papa from "papaparse";
 import {
   converterTwoDimArrayToObjectArray,
@@ -103,7 +114,8 @@ export default {
   components: {
     Left,
     MyChart,
-    PreviewTable
+    PreviewTable,
+    Report
   },
   data() {
     return {
@@ -111,6 +123,7 @@ export default {
       newChartDialogVisible: false,
       newChartTaskDialogVisible: false,
       tablePreviewVisable: false,
+      generateReportVisable: true,
       newChartModel: {
         dataSetTitle: "",
         IsChooseHistory: true,
@@ -460,7 +473,7 @@ export default {
       }
     },
     createNewDataSet: function() {
-      alert("createNewDataSet")
+      alert("createNewDataSet");
       if (!this.IsChooseHistory) {
         this.$post("/dataSet/", {
           task: this.taskId,
@@ -481,6 +494,9 @@ export default {
             console.log(err);
           });
       }
+    },
+    generateWord:function(){
+      this.$refs.report.generateWord();
     }
   },
   watch: {

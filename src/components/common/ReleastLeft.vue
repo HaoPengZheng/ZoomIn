@@ -1,6 +1,6 @@
 <template>
-  <el-aside :style="{width:width+'px'}">
-    <div class="aside-warp">
+  <el-aside :style="{width:width+'px'}" class="shadow-border">
+    <div class="aside-warp" style="">
       <vue-scroll :ops="ops">
         <div style="width:100%;height:100%;">
           <div class="left-search">
@@ -156,7 +156,12 @@ export default {
       newTitle: "",
       isShowMyTask: true,
       isShowShareTask: true,
-      ops: ops
+      ops: ops,
+      report:{
+        baseInfo:{
+          
+        }
+      }
     };
   },
   computed: {
@@ -182,13 +187,17 @@ export default {
 };
 </script>
 <style solid>
+.shadow-border {
+  border: 1px solid #ebeef5;
+  -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+}
 .aside-warp {
   position: relative;
   height: 100%;
   background-color: #fff;
   overflow: hidden;
-  border-right: 1px solid rgb(204, 204, 204);
-  background-color: #fafafa;
+  padding: 0;
 }
 .hide {
   display: none;
