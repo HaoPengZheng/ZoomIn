@@ -168,7 +168,7 @@ export default {
       }
     };
   },
-  computed: {
+   computed: {
     width: function() {
       if (this.isShow) {
         return 275;
@@ -190,7 +190,7 @@ export default {
   }
 };
 </script>
-<style solid>
+<style scoped>
 .warp {
   overflow: hidden;
   position: relative;
@@ -251,10 +251,14 @@ export default {
   justify-content: space-between;
   display: flex;
 }
-.openAndClose {
+.openAndClose{
   cursor: pointer;
   position: absolute;
   right: 0px;
+  color: #777;
   z-index: 999;
+}
+.openAndClose:hover{
+  color:#000;
 }
 </style>

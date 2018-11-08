@@ -289,7 +289,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .warp {
   min-width: 800px;
 }

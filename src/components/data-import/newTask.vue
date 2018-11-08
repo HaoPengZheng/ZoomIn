@@ -198,7 +198,7 @@ export default {
 };
 </script>
 
-<style >
+<style scoped>
 .tip-text {
   color: #999;
   font-size: 15px;
@@ -206,6 +206,8 @@ export default {
 .warp {
   min-width: 800px;
 }
+</style>
+<style>
 .el-main {
   line-height: 40px;
 }
