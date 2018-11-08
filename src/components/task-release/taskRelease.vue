@@ -2,7 +2,9 @@
   <el-container>
     <left></left>
     <el-container>
-      <el-main style="padding-top:30px;padding:0 5%;">
+      <el-main style="padding:0 5%;">
+        <div style="margin-top:20px;">
+        </div>
         <div class="task-title">
           <div class="task-title-name">
             {{newTaskModel.taskName}}
@@ -123,7 +125,7 @@ export default {
       newChartDialogVisible: false,
       newChartTaskDialogVisible: false,
       tablePreviewVisable: false,
-      generateReportVisable: true,
+      generateReportVisable: false,
       newChartModel: {
         dataSetTitle: "",
         IsChooseHistory: true,
