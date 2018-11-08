@@ -1,5 +1,5 @@
 <template>
-  <el-container>
+  <el-container style="height:100%">
     <left></left>
     <el-container>
       <el-main style="padding:0 5%;">

@@ -1,137 +1,144 @@
 <template>
-  <el-aside :style="{width:width+'px'}" class="shadow-border">
-    <div class="aside-warp" style="">
-      <vue-scroll :ops="ops">
-        <div style="width:100%;height:100%;">
-          <div class="left-search">
-            <el-select v-model="dataSetName" v-show="!isShrink" filterable reserve-keyword placeholder="搜索任务" style="padding:5px">
-              <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.id">
-              </el-option>
-            </el-select>
-          </div>
-          <hr style="height:1px;border:none;border-top:1px solid #ccc">
-          <div>
-            <div class="menu-title" @click="showMyTask">
-              <a>
-                <span class="icon-color">
-                  <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-wenjianjia"></use>
-                  </svg>
-                </span>
-                <span>我的任务</span>
-              </a>
-              <Arrow :isUp="isShowMyTask"></Arrow>
+  <el-aside :style="{width:width+'px'}" class="warp">
+    <div class="openAndClose" @click="toggleShow">
+      <svg class="icon" aria-hidden="true">
+        <use xlink:href="#icon-caidan"></use>
+      </svg>
+    </div>
+    <div class="shadow-border" style="overflow:hidden;" v-show="isShow">
+      <div class="aside-warp">
+        <vue-scroll :ops="ops">
+          <div style="width:100%;height:100%;">
+            <div class="left-search">
+              <el-select v-model="dataSetName" v-show="!isShrink" filterable reserve-keyword placeholder="搜索任务" style="padding:5px">
+                <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.id">
+                </el-option>
+              </el-select>
             </div>
-            <ul class="my-menu" v-show="isShowMyTask">
-              <li class="active">
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-            </ul>
-          </div>
-          <div>
-            <div class="menu-title" @click="showShareTask">
-              <a>
-                <span class="icon-color">
-                  <svg class="icon" aria-hidden="true">
-                    <use xlink:href="#icon-fenxiang"></use>
-                  </svg>
-                </span>
-                分享的任务
-              </a>
-              <Arrow :isUp="isShowShareTask"></Arrow>
+            <hr style="height:1px;border:none;border-top:1px solid #ccc">
+            <div>
+              <div class="menu-title" @click="showMyTask">
+                <a>
+                  <span class="icon-color">
+                    <svg class="icon" aria-hidden="true">
+                      <use xlink:href="#icon-wenjianjia"></use>
+                    </svg>
+                  </span>
+                  <span>我的任务</span>
+                </a>
+                <Arrow :isUp="isShowMyTask"></Arrow>
+              </div>
+              <ul class="my-menu" v-show="isShowMyTask">
+                <li class="active">
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+              </ul>
             </div>
-            <ul class="my-menu" v-show="isShowShareTask">
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-              <li>
-                我的任务1
-              </li>
-              <li>
-                我的任务2
-              </li>
-              <li>
-                我的任务3
-              </li>
-            </ul>
+            <div>
+              <div class="menu-title" @click="showShareTask">
+                <a>
+                  <span class="icon-color">
+                    <svg class="icon" aria-hidden="true">
+                      <use xlink:href="#icon-fenxiang"></use>
+                    </svg>
+                  </span>
+                  分享的任务
+                </a>
+                <Arrow :isUp="isShowShareTask"></Arrow>
+              </div>
+              <ul class="my-menu" v-show="isShowShareTask">
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+                <li>
+                  我的任务1
+                </li>
+                <li>
+                  我的任务2
+                </li>
+                <li>
+                  我的任务3
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </vue-scroll>
+        </vue-scroll>
+      </div>
     </div>
   </el-aside>
 </template>
@@ -148,8 +155,7 @@ export default {
   },
   data() {
     return {
-      width: 275,
-      isShrink: false,
+      isShow: true,
       toggleTitle: "隐藏侧边栏",
       dataSetName: "",
       target: "",
@@ -157,23 +163,18 @@ export default {
       isShowMyTask: true,
       isShowShareTask: true,
       ops: ops,
-      report:{
-        baseInfo:{
-          
-        }
+      report: {
+        baseInfo: {}
       }
     };
   },
   computed: {
-    showEdit: {
-      get: function() {
-        let showEdit = {};
-        this.dataSetList.forEach(element => {
-          showEdit[element.id] = false;
-        });
-        return showEdit;
-      },
-      set: function(val) {}
+    width: function() {
+      if (this.isShow) {
+        return 275;
+      } else {
+        return 10;
+      }
     }
   },
   methods: {
@@ -182,22 +183,35 @@ export default {
     },
     showShareTask: function() {
       this.isShowShareTask = !this.isShowShareTask;
+    },
+    toggleShow: function() {
+      this.isShow = !this.isShow;
     }
   }
 };
 </script>
 <style solid>
+.warp {
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  padding-right: 25px;
+  box-sizing: border-box;
+}
 .shadow-border {
+  height: 100%;
   border: 1px solid #ebeef5;
   -webkit-box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  position: relative;
+  margin-right: 5px;
 }
 .aside-warp {
   position: relative;
   height: 100%;
   background-color: #fff;
-  overflow: hidden;
   padding: 0;
+  overflow: unset;
 }
 .hide {
   display: none;
@@ -236,5 +250,11 @@ export default {
   line-height: 40px;
   justify-content: space-between;
   display: flex;
+}
+.openAndClose {
+  cursor: pointer;
+  position: absolute;
+  right: 0px;
+  z-index: 999;
 }
 </style>
