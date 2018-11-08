@@ -89,7 +89,7 @@
         <el-button type="primary" @click="tablePreviewVisable=false;newChartTaskDialogVisible=true">下一步</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="生成预览" :visible.sync="generateReportVisable" width="60%">
+    <el-dialog title="生成预览" :visible.sync="generateReportVisable" width="40%">
       <Report ref="report"></Report>
       <span slot="footer" class="dialog-footer">
         <el-button @click="generateReportVisable = false">取 消</el-button>
