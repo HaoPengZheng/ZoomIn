@@ -1,10 +1,10 @@
 <template>
-  <el-container>
+  <el-container style="height:100%;">
     <Left :active="activeIndex"  :taskInfo="taskInfo">
     </Left>
     <el-container>
       <el-main style="margin-top:20px;padding:0 10%;">
-        <el-tabs v-model="activeName" @tab-click="handleClick">
+        <el-tabs v-model="activeName" @tab-click="handleClick" >
           <el-tab-pane label="任务详情" name="first">
             <el-form ref="task-form" :model="form" label-width="100px">
               <el-form-item label="任务名称:">
@@ -53,7 +53,7 @@
   </el-container>
 </template>
 <script>
-import Left from "../common/task_left.vue";
+import Left from "./TaskLeft.vue";
 export default {
   components: {
     Left

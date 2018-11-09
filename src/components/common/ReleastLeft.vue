@@ -235,7 +235,11 @@ export default {
   background-color: #ebebeb;
 }
 .my-menu li.active {
-  background-color: #dcdcdc;
+  background-color: #f5f7fa;
+  color: #409EFF;
+}
+.my-menu li.active a{
+  color: #409EFF;
 }
 .left-search {
   display: flex;

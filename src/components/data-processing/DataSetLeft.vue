@@ -10,7 +10,7 @@
         <vue-scroll :ops="ops">
           <div style="width:100%;height:100%;">
             <div class="left-search">
-              <el-select v-model="dataSetName" filterable reserve-keyword placeholder="搜索数据集" style="padding:5px" @change="jumpDataSet">
+              <el-select v-model="dataSetName" filterable reserve-keyword placeholder="搜索数据集" style="padding:5px"  @change="jumpDataSet"> 
                 <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.id">
                 </el-option>
               </el-select>
@@ -19,7 +19,19 @@
             <div>
               <ul class="my-menu">
                 <li v-for="(dataSet) in dataSetList" :key="dataSet.id" :class="dataSet.id==dataSetId?'active':''">
-                  <router-link :to="`/home/data-processing/${dataSet.id}`">{{dataSet.title}}</router-link>
+                  <template v-if="target==dataSet.id">
+                    <el-input v-model="newTitle" size="mini" style="width:120px" @blur="saveChangeTitle" @keyup.native="keySaveChange($event)" @click.native="stop($event)"></el-input>
+                  </template>
+                  <router-link v-else :to="`/home/data-processing/${dataSet.id}`">{{dataSet.title}}</router-link>
+                  <el-dropdown style="position: absolute;right:20px;">
+                    <span class="el-dropdown-link">
+                      <i class="el-icon-more pointer" @click="stop($event)"></i>
+                    </span>
+                    <el-dropdown-menu slot="dropdown" style="margin:-5px 0px 0 0 !important">
+                      <el-dropdown-item @click.native="changeTitle(dataSet)">编辑</el-dropdown-item>
+                      <el-dropdown-item @click.native="deleteDataSet()">删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
                 </li>
               </ul>
             </div>
@@ -140,7 +152,7 @@ export default {
 };
 </script>
 <style scoped>
-a{
+a {
   text-decoration: none;
   color: #666;
 }
@@ -183,8 +195,8 @@ a{
   padding: 5px 50px;
   overflow: hidden;
   display: block;
-  text-overflow:ellipsis;
-  white-space:nowrap;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   max-width: 150px;
 }
 .my-menu li:hover {
@@ -193,7 +205,10 @@ a{
   background-color: #ebebeb;
 }
 .my-menu li.active {
-  background-color: #dcdcdc;
+  background-color: #f5f7fa;
+}
+.my-menu li.active a{
+  color: #409EFF;
 }
 .left-search {
   display: flex;
