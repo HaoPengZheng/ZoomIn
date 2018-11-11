@@ -194,11 +194,11 @@ import Bus from './Bus.js'
 			        obj.remove();
             },
             rowRemove(tag) {
-                Bus.$emit('rowdataRemove', tag);
+                Bus.$emit('rowMiningRemove', tag);
                 this.dropRow.splice(this.dropRow.indexOf(tag), 1);
             },
             colRemove(tag) {
-                Bus.$emit('coldataRemove', tag)
+                Bus.$emit('colMiningRemove', tag)
                 this.dropCol.splice(this.dropCol.indexOf(tag), 1);
             },
             summationType(){//没用等删
