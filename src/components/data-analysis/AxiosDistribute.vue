@@ -5,11 +5,16 @@
 <script>
 import axios from 'axios'
 import Bus from './Bus.js'
+<<<<<<< .mine
+||||||| .r208
+axios.defaults.timeout = 15000;  //超时响应
+axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'; // 配置请求头（推荐）
+// axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; // 配置请求头
+=======
 
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'; // 配置请求头（推荐）
 // axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; // 配置请求头
-
-axios.defaults.withCredentials = true;   // axios 默认不发送cookie，需要全局设置true发送cookie
+>>>>>>> .r215
 
 export default {
     data(){
@@ -108,7 +113,7 @@ export default {
       //   .patch(
       //     "http://120.79.146.91:8000/chart/" + this.chartId +"/", //这个id是图表的id
       //     {
-      //             id:12,
+      //             id:2,
       //             title:"柱x状x图",
       //             desc:"zzzxxxzz",
       //             chart_type:1,
