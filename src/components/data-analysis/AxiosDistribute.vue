@@ -5,16 +5,9 @@
 <script>
 import axios from 'axios'
 import Bus from './Bus.js'
-<<<<<<< .mine
-||||||| .r208
-axios.defaults.timeout = 15000;  //超时响应
-axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'; // 配置请求头（推荐）
-// axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; // 配置请求头
-=======
 
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded'; // 配置请求头（推荐）
 // axios.defaults.headers.post['Content-Type'] = 'application/json;charset=utf-8'; // 配置请求头
->>>>>>> .r215
 
 export default {
     data(){
