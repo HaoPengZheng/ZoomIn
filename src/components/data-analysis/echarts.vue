@@ -226,7 +226,7 @@ export default {
 					"http://120.79.146.91:8000/task/chart/result",
 						{
 							chart_id:this.chartId,
-							data_set:this.dataSetId,//这是data_set_id 
+							data_set:this.dataSetId,	//这是data_set_id 
 							chart_method:this.chartMethod,
 							chart_type:1,
 							x_axis:this.xAxisString,
@@ -243,6 +243,7 @@ export default {
 							secondary_axis:"",
 							chart_method_2nd:"2",
 							chart_type_2nd:2,
+							filter_past_logical_type:"&"
 						},
 						{
 							headers: {
@@ -268,6 +269,8 @@ export default {
 						});
 					});
 					Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
+					document.getElementById('myChart').style.display = 'block'
+					this.tableSecVisible = false
 					this.drawLine();
 				}
 		})
@@ -276,7 +279,12 @@ export default {
 
 		//1.监听Y轴传值
 		Bus.$on('coldata', (e) => {
-			//alert(this.dataSetId)
+			for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+			this.fields.push(e)
+			if(this.xAxisItem == 0){
+				this.tableVisible = true
+			}
+
 			//获得拖到y轴上的节点字段数组
 			this.yAxisItemName.push(e)
 			this.YAxisTitle.push(e)
@@ -300,6 +308,8 @@ export default {
 			for(let i =0;i<this.yAxisItemName.length;i++){
 				this.chartMethod.push("2")
 			}
+
+			if(this.xAxisItem.length>0){
 			this.chartMethod = this.chartMethod.join(',')
 			//发送求和请求
 			this.$axios
@@ -324,6 +334,7 @@ export default {
 							secondary_axis:"",
 							chart_method_2nd:"2",
 							chart_type_2nd:2,
+							filter_past_logical_type:"&"
 				},
 				{
 					headers: {
@@ -353,6 +364,7 @@ export default {
 			this.drawLine();
 			document.getElementById('myChart').style.display = 'block'
 			this.tableSecVisible = false
+			}
 		})
 		
 
@@ -403,6 +415,8 @@ export default {
 							chart_type:1,
 							x_axis:this.xAxisString,
 							y_axis:this.yAxisString,
+							filter_past_logical_type:"&"
+							
 						},
 						{
 							headers: {
@@ -508,6 +522,7 @@ export default {
 							chart_type:1,
 							x_axis:this.xAxisString,
 							y_axis:this.yAxisString,
+							filter_past_logical_type:"&"
 						},
 						{
 							headers: {
@@ -594,6 +609,7 @@ export default {
 					chart_type:1,
 					x_axis:this.xAxisString,
 					y_axis:this.yAxisString,
+					filter_past_logical_type:"&"
 				},
 				{
 					headers: {
@@ -649,85 +665,87 @@ export default {
        Bus.$on('rowdataRemove', (e) => {
 			this.xAxisItem.splice(e, 1);//这里删完之后要重新请求，所以要把请求写成方法
 			this.XAxisTitle.splice(e, 1)
-			//this.tableVisible = false
-			//表格
-			if(this.yAxisItemName.length<1){
-					this.tableVisible = true
-					for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
-					this.fields.splice(e, 1)
+			for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+			this.fields.splice(e, 1)
+
+			if(this.yAxisItemName.length<1||this.xAxisItem.length<1){
+				this.tableSecVisible = true
+				this.tableVisible = true
+				document.getElementById('myChart').style.display = 'none'
+			}
+			else{
+				//在新增拖动x轴，且y轴已经有值的时候，发送请求，重写数据
+				//拼x轴字符串
+				this.xAxisString = []
+				this.xAxisString = this.xAxisItem[0]; 
+				for (let i = 1; i < this.xAxisItem.length; i++) {
+					this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
 				}
-				else{
-					//在新增拖动x轴，且y轴已经有值的时候，发送请求，重写数据
-					//拼x轴字符串
-					this.xAxisString = []
-					this.xAxisString = this.xAxisItem[0]; 
-					for (let i = 1; i < this.xAxisItem.length; i++) {
-						this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
+
+				this.chartMethod = this.chartMethod.join(',')
+				//发送求和请求
+				this.$axios
+				.post(
+				"http://120.79.146.91:8000/task/chart/result",
+					{
+						chart_id:this.chartId,
+						data_set:this.dataSetId,
+						chart_method:this.chartMethod,
+						sort:-1,
+						secondary_axis:this.secondaryAxis,
+						chart_method_2nd:"2",
+						chart_type_2nd:2,
+						sort_value:"",
+						filter:[
+							{
+								field_type:0,
+								field_name:this.yAxisItemName[0],
+								filter_method:">",
+								filter_obj:"-100500"
+							}
+						],
+						filter_past:this.filterPast,
+						chart_type:1,
+						x_axis:this.xAxisString,
+						y_axis:this.yAxisString,
+						filter_past_logical_type:"&"
+					},
+					{
+						headers: {
+						Authorization: "JWT " + localStorage.getItem("token")
+						}
+					}
+				)
+				.then(r => {
+				
+					for(let i = 0;i<this.yAxisItemName.length;i++){
+						this.setData(r,this.yAxisItemName[i])
 					}
 
-					this.chartMethod = this.chartMethod.join(',')
-					//发送求和请求
+					this.chartMethod = this.chartMethod.split(',');
 
-					this.$axios
-					.post(
-					"http://120.79.146.91:8000/task/chart/result",
-						{
-							chart_id:this.chartId,
-							data_set:this.dataSetId,
-							chart_method:this.chartMethod,
-							sort:-1,
-							secondary_axis:this.secondaryAxis,
-							chart_method_2nd:"2",
-							chart_type_2nd:2,
-							sort_value:"",
-							filter:[
-								{
-									field_type:0,
-									field_name:this.yAxisItemName[0],
-									filter_method:">",
-									filter_obj:"-100500"
-								}
-							],
-							filter_past:this.filterPast,
-							chart_type:1,
-							x_axis:this.xAxisString,
-							y_axis:this.yAxisString,
-						},
-						{
-							headers: {
-							Authorization: "JWT " + localStorage.getItem("token")
-							}
-						}
-					)
-					.then(r => {
-					
-						for(let i = 0;i<this.yAxisItemName.length;i++){
-							this.setData(r,this.yAxisItemName[i])
-						}
-
-						this.chartMethod = this.chartMethod.split(',');
-
-					})
-					.catch(response => {
-						console.log(response)
-						this.$message({
-						message: '操作失败，请重试',
-						type: 'warning',
-						duration:1000
-						});
+				})
+				.catch(response => {
+					//alert("???")
+					console.log(response)
+					this.$message({
+					message: '操作失败，请重试',
+					type: 'warning',
+					duration:1000
 					});
-					Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
-					this.drawLine();
-				}
-			this.myChart.dispose()
-			this.drawLine();
+				});
+				Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
+				this.drawLine();
+			}
 			Bus.$emit('picFilterItem',this.xAxisItem.concat(this.yAxisItemName))
 	   })
 
 		//2.监听y轴移除事件(还没有PATCH)
        Bus.$on('coldataRemove', (e) => {
-		//    alert(e)
-		//    alert(this.yAxisItemName)
+			for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+			this.fields.splice(e, 1)
+			if(this.xAxisItem.length<1)this.tableVisible = true
+			
 			this.seriesData.splice(e, 1);
 			this.yAxisItemName.splice(e, 1);
 			this.YAxisTitle.splice(e, 1);
@@ -1003,6 +1021,7 @@ export default {
 					secondary_axis:"",
 					chart_method_2nd:"2",
 					chart_type_2nd:2,
+					filter_past_logical_type:"&"
 				},
 				{
 					headers: {
@@ -1165,6 +1184,7 @@ export default {
 					secondary_axis:"",
 					chart_method_2nd:"2",
 					chart_type_2nd:2,
+					filter_past_logical_type:"&"
 				},
 				{
 					headers: {
@@ -1228,6 +1248,7 @@ export default {
 					secondary_axis:"",
 					chart_method_2nd:"2",
 					chart_type_2nd:2,
+					filter_past_logical_type:"&"
 				},
 				{
 					headers: {
@@ -1393,19 +1414,7 @@ export default {
 					chart_type:1,
 					x_axis:this.xAxisString,
 					y_axis:this.yAxisString,
-
-					// [{
-					// 	field_type:0,
-					// 	field_name:'RANK',
-					// 	filter_method:">",
-					// 	filter_obj:'50000'
-					// },
-					// {
-					// 	field_type:0,
-					// 	field_name:'RANK_H',
-					// 	filter_method:"<",
-					// 	filter_obj:'600000'
-					// }]
+					filter_past_logical_type:"&"
 					
 				},
 				{
@@ -1441,6 +1450,67 @@ export default {
 
 
 		})
+
+		Bus.$on('deletePicFilter',(val)=>{
+			//val是删掉的'学校名称'
+			console.log(this.filterPast)
+			console.log(this.filter)
+			for(let i =0;i<this.filterPast.length;i++){
+				if(this.filterPast[i]['field_name']==val){
+					this.filterPast.splice(i, 1)
+				}
+			}
+			for(let i =0;i<this.filter.length;i++){
+				if(this.filter[i]['field_name']==val){
+					this.filter.splice(i, 1)
+				}
+			}
+						this.chartMethod = this.chartMethod.join(',')		
+			this.$axios
+			.post(
+			"http://120.79.146.91:8000/task/chart/result",
+				{
+					chart_id:this.chartId,
+					data_set:this.dataSetId,
+					chart_method:this.chartMethod,
+					sort:-1,
+					secondary_axis:this.secondaryAxis,
+					chart_method_2nd:"2",
+					chart_type_2nd:2,
+					sort_value:"",
+					filter:this.filter,
+					filter_past:this.filterPast,
+					chart_type:1,
+					x_axis:this.xAxisString,
+					y_axis:this.yAxisString,
+					filter_past_logical_type:"&"
+					
+				},
+				{
+					headers: {
+					Authorization: "JWT " + localStorage.getItem("token")
+					}
+				}
+			)
+			.then(r => {
+				for(let i = 0;i<this.yAxisItemName.length;i++){
+					this.setData(r,this.yAxisItemName[i])
+				}
+				
+			})
+			.catch(response => {
+				console.log(response)
+				this.$message({
+				message: '操作失败，请重试',
+				type: 'warning',
+                duration:1000
+				});
+			});
+			this.chartMethod = this.chartMethod.split(',');
+			console.log(this.filterPast)
+			console.log(this.filter)
+		})
+
 
 
 		//监听修改X轴Y轴的标题和的单位
@@ -1988,6 +2058,7 @@ export default {
 					chart_type:1,
 					x_axis:this.xAxisString,
 					y_axis:this.yAxisString,
+					filter_past_logical_type:"&"
 				},
 				{
 					headers: {
@@ -2055,6 +2126,7 @@ export default {
 					chart_type:1,
 					x_axis:this.xAxisString,
 					y_axis:this.yAxisString,
+					filter_past_logical_type:"&"
 				},
 				{
 					headers: {
