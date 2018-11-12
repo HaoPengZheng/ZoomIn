@@ -284,13 +284,32 @@ export default {
 
 		//1.监听X轴传值
 		Bus.$on('rowdata', (e) => {
+			this.bgFlag = false
 			this.xAxisItem.push(e)
+			for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+			this.fields.push(e)
 			if(this.yAxisItemName.length<1){
 					this.tableVisible = true
-					for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
-					this.fields.push(e)
 				}
-			this.bgFlag = false
+				else{
+					this.tableVisible = false
+					//拼x轴字符串
+					this.yAxisString = this.yAxisItemName[0]; 
+					for (let i = 1; i < this.yAxisItemName.length; i++) {
+						this.yAxisString = this.yAxisString + ',' + this.yAxisItemName[i] 
+					}
+					//拼Y轴字符串
+					this.xAxisString = this.xAxisItem[0]; 
+					for (let i = 1; i < this.xAxisItem.length; i++) {
+						this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
+					}
+
+
+					this.xAxisLabel = this.xAxisString
+					this.yAxisLabel = this.yAxisString
+					this.drawModel()
+				}
+			
 		})
 	   
 
@@ -298,24 +317,32 @@ export default {
 		//1.监听Y轴传值
 		Bus.$on('coldata', (e) => {
 			this.bgFlag = false
-			//获得拖到y轴上的节点字段数组
 			this.yAxisItemName.push(e)
-			//拼x轴字符串
-			this.yAxisString = this.yAxisItemName[0]; 
-			for (let i = 1; i < this.yAxisItemName.length; i++) {
-				this.yAxisString = this.yAxisString + ',' + this.yAxisItemName[i] 
-			}
-			//拼Y轴字符串
-			this.xAxisString = this.xAxisItem[0]; 
-			for (let i = 1; i < this.xAxisItem.length; i++) {
-				this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
-			}
+
+			for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+			this.fields.push(e)
+			if(this.yAxisItemName.length<1){
+					this.tableVisible = true
+				}
+
+			if(this.xAxisItem.length>0){
+				//拼x轴字符串
+				this.yAxisString = this.yAxisItemName[0]; 
+				for (let i = 1; i < this.yAxisItemName.length; i++) {
+					this.yAxisString = this.yAxisString + ',' + this.yAxisItemName[i] 
+				}
+				//拼Y轴字符串
+				this.xAxisString = this.xAxisItem[0]; 
+				for (let i = 1; i < this.xAxisItem.length; i++) {
+					this.xAxisString = this.xAxisString + ',' + this.xAxisItem[i] 
+				}
 
 
-			this.xAxisLabel = this.xAxisString
-			this.yAxisLabel = this.yAxisString
-			this.drawModel()
-			
+				this.xAxisLabel = this.xAxisString
+				this.yAxisLabel = this.yAxisString
+				this.drawModel()
+			}
+
 
 		})
 
@@ -344,19 +371,29 @@ export default {
 		})
 	   
 	   //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
-       Bus.$on('rowdataRemove', (e) => {
-			this.Xdata = [];
-			//this.Xdata.splice(e, 1);这种写法是错的，Xdata是18个学校的名字
-			this.tableVisible = false
+       Bus.$on('rowMiningRemove', (e) => {
+			this.xAxisItem.splice(e, 1);
+			if(this.yAxisItemName.length<1||this.xAxisItem.length<1){
+				this.tableVisible = true
+				this.regressionFlag = false
+				for(let j =0 ;j < 15;j++){this.tableData[j] = this.echartAxiosData[j];}
+				this.fields.splice(e, 1)
+				//alert(this.tableVisible)
+			}
+
 	   })
 
 
 		//2.监听y轴移除事件(还没有PATCH)
-       Bus.$on('coldataRemove', (e) => {
-			this.seriesData.splice(e, 1);
+       Bus.$on('colMiningRemove', (e) => {
 			this.yAxisItemName.splice(e, 1);
-			
-			this.tableVisible = false
+			if(this.yAxisItemName.length == 0){
+				this.tableSecVisible = true
+				this.tableVisible = true
+				this.regressionFlag = false
+				this.fields.splice(e, 1)
+				//document.getElementById('myChart').style.display = 'none'
+			}
 	
 	   })
 		
