@@ -16,42 +16,36 @@
           <div style="clear:both"></div>
         </div>
 
-
         <!-- CJW的拖拽和放大-开始 -->
 
         <draggable v-model="myArray" :options="{group:'people'}" @start="drag=true" @end="drag=false">
-          <div v-for="element in myArray" :key="element.id"  style="width:400px;float:left;margin:10px">
+          <div v-for="element in myArray" :key="element.id" style="width:400px;float:left;margin:10px">
             <el-card class="box-card">
               <div slot="header" class="clearfix">
                 <span>图表标题</span>
-                  <div class="dropdown" style="float: right;">
-                    <el-dropdown @command="extendClick">
-                      <span class="el-dropdown-link">
-                        <el-button style="float: right; padding: 3px 0" type="text"><i class="el-icon-more-outline"></i></el-button>
-                      </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item :command="element.name">放大</el-dropdown-item>
-                        <el-dropdown-item command="编辑">编辑</el-dropdown-item>
-                        <el-dropdown-item>删除</el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </div>
+                <div class="dropdown" style="float: right;">
+                  <el-dropdown @command="extendClick">
+                    <span class="el-dropdown-link">
+                      <el-button style="float: right; padding: 3px 0" type="text"><i class="el-icon-more-outline"></i></el-button>
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item :command="element.name">放大</el-dropdown-item>
+                      <el-dropdown-item command="编辑">编辑</el-dropdown-item>
+                      <el-dropdown-item>删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
               </div>
               <img :src="element.name" style="width:100%" class="image">
             </el-card>
           </div>
         </draggable>
 
-
-        <el-dialog
-          :visible.sync="picDialogVisible"
-          width="50%"
-          center>
+        <el-dialog :visible.sync="picDialogVisible" width="50%" center>
           <img :src="picPath" style="width:100%" class="image">
         </el-dialog>
 
         <!-- CJW的拖拽和放大-结束 -->
-
 
       </el-main>
     </el-container>
@@ -115,7 +109,7 @@
       <Report :dataAnalysisPic="myArray" ref="report"></Report>
       <span slot="footer" class="dialog-footer">
         <el-button @click="generateReportVisable = false">取 消</el-button>
-        <el-button type="primary" @click="generateWord()" style="">生成html链接</el-button>
+        <el-button type="primary" @click="generateHtml()" style="">生成html链接</el-button>
         <el-button type="primary" @click="generateWord()" style="">导出pdf</el-button>
         <el-button type="primary" @click="generateWord()" style="">导出word</el-button>
       </span>
@@ -134,7 +128,7 @@ import {
   importf
 } from "@/utils/fileToJson.js";
 import validateObj from "@/utils/validate.js";
-import draggable from 'vuedraggable'  /*CJW 引入拖拽 */
+import draggable from "vuedraggable"; /*CJW 引入拖拽 */
 export default {
   components: {
     Left,
@@ -146,18 +140,25 @@ export default {
   data() {
     return {
       /*CJW 新增data */
-      myArray: [{       
-        id:"1",
-        name:"http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/4413591.png",        
-      },{
-        id:"2",
-        name:"http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/4413593.png",        
-      },{
-        id:"3",
-        name:"http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/3251212.png",        
-      }],
-      picPath:'',
-      picDialogVisible:false,
+      myArray: [
+        {
+          id: "1",
+          name:
+            "http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/4413591.png"
+        },
+        {
+          id: "2",
+          name:
+            "http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/4413593.png"
+        },
+        {
+          id: "3",
+          name:
+            "http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/3251212.png"
+        }
+      ],
+      picPath: "",
+      picDialogVisible: false,
       /*CJW 新增data */
       taskId: "",
       newChartDialogVisible: false,
@@ -189,8 +190,7 @@ export default {
             trigger: "change"
           }
         ]
-      },
-      
+      }
     };
   },
   created: function() {
@@ -305,25 +305,25 @@ export default {
           });
       }
     },
-    generateWord:function(){
+    generateWord: function() {
       this.$refs.report.generateWord();
     },
-
+    generateHtml: function() {
+      this.$refs.report.generateHtml();
+    },
     //CJW 新增方法.........开始
-    extendClick(path){
-        if(path=='编辑'){
-          this.$router.push({
+    extendClick(path) {
+      if (path == "编辑") {
+        this.$router.push({
           name: "data-mining",
           params: {}
         });
-        }
-        else{
-        this.picPath = path
-        this.picDialogVisible = true
-        }
-    },
+      } else {
+        this.picPath = path;
+        this.picDialogVisible = true;
+      }
+    }
     //CJW 新增方法.........结束
-
   },
   watch: {
     $route(to, from) {

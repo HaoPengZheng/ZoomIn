@@ -630,6 +630,7 @@ export default {
     saveAndGoDataAnalysis: function() {
       var c = confirm("是否保存处理结果？");
       if (c) {
+        sessionStorage.setItem("dataSetId",this.dataSetId)
         this.$router.push({
           name: "data-analysis",
           params: { dataSetId: this.dataSetId }

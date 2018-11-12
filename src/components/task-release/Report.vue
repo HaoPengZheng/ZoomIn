@@ -26,7 +26,7 @@
           </span>
           <br>
           <div class="report-pic">
-            <img v-for="pic in dataAnalysisPic" :key="pic.id" :src="pic.name" />
+            <img v-for="pic in dataAnalysisPic" :key="pic.id" :src="pic.name" :ref="`pic${pic.id}`" />
           </div>
           <p class="pad-20">
             <el-form-item label="数据分析结论：">
@@ -66,7 +66,7 @@
 import { Packer, Image } from "docx";
 import { saveAs } from "file-saver";
 import { DocumentCreator } from "./generator.ts";
-import image2base64 from "image-to-base64";
+import cheerio from "cheerio";
 import ops from "@/utils/scrollOption.js";
 export default {
   data() {
@@ -95,16 +95,30 @@ export default {
     dataMiningPic: Array
   },
   methods: {
+    generateHtml: function() {
+      let html =
+        '<html> <head> <title>XX任务</title> <meta charset="utf-8"> <style> .label { font-weight: 600; } .base-item { margin: 5px 0; } </style> </head> <body style="font-size:20px;"> <div style="margin:0 auto;max-width:800px;"> <h1 id="taskName" style="text-align:center">学业分析报告（任务名称）</h1> <div> <h2>基本信息:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">编辑者：</span> <span id="editor">zhp</span> </div> <div class="base-item"> <span class="label">创建时间:</span> <span id="createTime">zhp</span> </div> <div class="base-item"> <span class="label">所用数据源</span> <span id="dataSet">zhp</span> </div> </div> </div> <div> <h2>数据分析:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">数据分析结论：</span> <span id="dataAnalysisConclusion">zhp</span> </div> </div> </div> <div> <h2>数据挖掘:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">数据挖掘结论：</span> <span id="dataMiningConclusion">zhp</span> </div> </div> </div> <div> <h2>总结:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">总结：</span> <span id="summaryConclusion">zhp</span> </div> </div> </div> </div> </body> </html>';
+      let $ = cheerio.load(html);
+      $("#editor").html("郑浩鹏");
+      $("#createTime").html(this.report.baseInfo.createTime);
+      $("#dataSet").html(this.report.baseInfo.dataSet);
+      $("#dataAnalysisConclusion").html(this.report.dataAnalysis.conclusion);
+      $("#dataMiningConclusion").html(this.report.dataMining.conclusion);
+      $("#summaryConclusion").html(this.report.summary.conclusion);
+      console.log($.html());
+      var eleLink = document.createElement("a");
+      eleLink.download = "text.html";
+      eleLink.style.display = "none";
+      // 字符内容转变成blob地址
+      var blob = new Blob([$.html()]);
+      eleLink.href = URL.createObjectURL(blob);
+      // 触发点击
+      document.body.appendChild(eleLink);
+      eleLink.click();
+      // 然后移除
+      document.body.removeChild(eleLink);
+    },
     generateWord: function() {
-      var url =
-        "http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/4413591.png";
-      image2base64(url) // you can also to use url
-        .then(response => {
-          console.log(response); //cGF0aC90by9maWxlLmpwZw==
-        })
-        .catch(error => {
-          console.log(error); //Exepection error....
-        });
       const documentCreator = new DocumentCreator();
       const doc = documentCreator.create(this.report);
       const packer = new Packer();
