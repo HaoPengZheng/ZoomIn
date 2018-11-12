@@ -124,7 +124,6 @@ export function put(url, data = {}) {
       .then(response => {
         resolve(response.data);
       }, err => {
-        console.log(err.response.data.non_field_errors[0]);
         reject(err)
       })
   })

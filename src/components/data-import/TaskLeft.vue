@@ -72,7 +72,6 @@ export default {
   },
   created: function() {
     this.fetchTask();
-    console.log(`taskInfo is ${this.taskInfo}`);
   },
   computed: {
     width: function() {
@@ -95,7 +94,6 @@ export default {
         if (this.activeNumber == undefined) {
           this.activeNumber = this.allTaskInfo[0].id;
         }
-        this.showTaskDetail(this.activeNumber);
       });
     },
     taskDetailInfo: function(id) {
@@ -110,7 +108,6 @@ export default {
           this.activeNumber = undefined;
         }
         this.fetchTask();
-        this.showTaskDetail(this.activeNumber);
         console.log(response);
       });
     },
@@ -135,7 +132,6 @@ export default {
     $route(to, from) {
       // 对路由变化作出响应...
       this.activeNumber = to.params.id;
-      this.showTaskDetail(to.params.id);
     }
   }
 };

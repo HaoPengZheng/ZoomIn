@@ -1,4 +1,5 @@
-import { Document, Paragraph, Packer, TextRun} from "docx";
+import { Document, Paragraph, Packer, TextRun, PictureRun, ImageParagraph} from "docx";
+import { Buffer } from "buffer";
 export class DocumentCreator {
   create(data) {
     console.log(data);
@@ -42,6 +43,7 @@ export class DocumentCreator {
     document.createParagraph().addRun(dataSetLabel).addRun(dataSet);
 
     document.createParagraph(defaultInfo.dataAnalysis.text).heading2();
+    
     var dataAnalysisconclusionLabel = new TextRun(defaultInfo.dataAnalysis.conclusionLabel).bold();
     var dataAnalysisconclusion = new TextRun(data.dataAnalysis.conclusion);
     document.createParagraph().addRun(dataAnalysisconclusionLabel).addRun(dataAnalysisconclusion);
@@ -55,5 +57,9 @@ export class DocumentCreator {
     document.createParagraph(defaultInfo.summary.text).heading2();
     document.createParagraph().addRun(summaryconclusion);
     return document;
+  }
+
+  createDataAnalysisPic(dataAnalysisInfo){
+    
   }
 }

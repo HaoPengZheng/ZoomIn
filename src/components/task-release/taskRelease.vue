@@ -112,7 +112,7 @@
       </span>
     </el-dialog>
     <el-dialog title="生成预览" :visible.sync="generateReportVisable" width="40%">
-      <Report ref="report"></Report>
+      <Report :dataAnalysisPic="myArray" ref="report"></Report>
       <span slot="footer" class="dialog-footer">
         <el-button @click="generateReportVisable = false">取 消</el-button>
         <el-button type="primary" @click="generateWord()" style="">生成html链接</el-button>
@@ -205,7 +205,6 @@ export default {
         this.fetchTaskInfo();
       }
     });
-    console.log("?????");
     this.fetchAllDataSet();
   },
   methods: {

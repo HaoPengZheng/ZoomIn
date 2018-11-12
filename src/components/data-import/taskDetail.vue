@@ -105,10 +105,10 @@ export default {
       });
     },
     updateTask: function() {
-      this.$put("/taskinfo/" + this.taskId + "/",this.$qs.stringify({
+      this.$put("/taskinfo/" + this.taskId + "/",{
         task_name: this.form.taskname,
         task_desc: this.form.remarks
-      })).then(response => {
+      }).then(response => {
         this.$message.success({
           message: "保存成功",
           showClose: true,
