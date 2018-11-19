@@ -79,6 +79,7 @@ export default {
           dataSet: "1.csv"
         },
         dataAnalysis: {
+          img:[],
           conclusion: "数据分析结论:"
         },
         dataMining: {
@@ -118,8 +119,9 @@ export default {
       // 然后移除
       document.body.removeChild(eleLink);
     },
-    generateWord: function() {
+    generateWord: function(imgList) {
       const documentCreator = new DocumentCreator();
+      this.report.dataAnalysis.img = imgList;
       const doc = documentCreator.create(this.report);
       const packer = new Packer();
       packer.toBlob(doc).then(blob => {

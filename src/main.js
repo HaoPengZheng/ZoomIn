@@ -56,7 +56,6 @@ Vue.config.productionTip = false
 const root = document.createElement('div')
 document.body.appendChild(root)
 
-/* eslint-disable no-new */
 new Vue({
     el: '#app',
     router,

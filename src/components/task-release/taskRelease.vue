@@ -110,7 +110,6 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="generateReportVisable = false">取 消</el-button>
         <el-button type="primary" @click="generateHtml()" style="">生成html链接</el-button>
-        <el-button type="primary" @click="generateWord()" style="">导出pdf</el-button>
         <el-button type="primary" @click="generateWord()" style="">导出word</el-button>
       </span>
     </el-dialog>
@@ -129,6 +128,8 @@ import {
 } from "@/utils/fileToJson.js";
 import validateObj from "@/utils/validate.js";
 import draggable from "vuedraggable"; /*CJW 引入拖拽 */
+import { rejects } from "assert";
+import { resolve } from "url";
 export default {
   components: {
     Left,
@@ -305,8 +306,19 @@ export default {
           });
       }
     },
+    converterUrlToBase64: function() {
+      return new Promise((resolve, rejects) => {
+        this.$post("/operation/image2base64", {
+          image_url: ["/home/ZoomInDataSet/2/Publish/3251212.png","/home/ZoomInDataSet/2/Publish/4413593.png"]
+        }).then(response => {
+          resolve(response)
+        });
+      });
+    },
     generateWord: function() {
-      this.$refs.report.generateWord();
+      this.converterUrlToBase64().then((response)=>{
+        this.$refs.report.generateWord(response.message);
+      })
     },
     generateHtml: function() {
       this.$refs.report.generateHtml();
