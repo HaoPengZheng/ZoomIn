@@ -195,6 +195,7 @@ export default {
     };
   },
   created: function() {
+    this.getSummary();
     this.$store.commit("changeIndex", { index: "taskRelease" });
     let query = this.fetchAllTaskInfo();
     query.then(req => {
@@ -315,7 +316,19 @@ export default {
         });
       });
     },
+    postSummary:function(){
+      this.$refs.report.postSummary(this.taskId);
+    },
+    getSummary:function(){
+      return new Promise((resolve, rejects) => {
+        this.$get("/summary/", {
+        }).then(response => {
+          resolve(response)
+        });
+      });
+    },
     generateWord: function() {
+      this.$refs.report.postSummary(this.taskId);
       this.converterUrlToBase64().then((response)=>{
         this.$refs.report.generateWord(response.message);
       })

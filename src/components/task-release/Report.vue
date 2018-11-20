@@ -129,6 +129,14 @@ export default {
         saveAs(blob, "报告.docx");
         console.log("Document created successfully");
       });
+    },
+    postSummary:function(taskid){
+         this.$post("/summary/",{
+        task:this.taskid,
+        dataAnalyze_Summary:this.report.dataAnalysis.conclusion,
+        dataMining_Summary:this.report.dataMining.conclusion,
+        total_Summary:this.report.summary.conclusion
+      })
     }
   }
 };
