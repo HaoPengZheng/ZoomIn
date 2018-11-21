@@ -26,7 +26,7 @@ export class DocumentCreator {
       }
     }
     let d = {
-      taskName:"学业分析报告（任务名称）"
+      taskName:data.baseInfo.taskName
     }
     const document = new Document();
     document.Header.createParagraph(defaultInfo.header.text).center();
@@ -44,7 +44,6 @@ export class DocumentCreator {
 
     document.createParagraph(defaultInfo.dataAnalysis.text).heading2();
     
-    console.log(data.dataAnalysis.img);
     for(let i = 0 ; i < data.dataAnalysis.img.length;i++){
       var base = "data:image/png;base64,"+data.dataAnalysis.img[i];
       document.createImage(base,600,400);
@@ -54,6 +53,12 @@ export class DocumentCreator {
     var dataAnalysisconclusion = new TextRun(data.dataAnalysis.conclusion);
     document.createParagraph().addRun(dataAnalysisconclusionLabel).addRun(dataAnalysisconclusion);
 
+
+    // 数据挖掘部分
+    for(let i = 0 ; i < data.dataMining.img.length;i++){
+      var base = "data:image/png;base64,"+data.dataMining.img[i];
+      document.createImage(base,600,400);
+    }
     document.createParagraph(defaultInfo.dataMining.text).heading2();
     var dataMiningconclusionLabel = new TextRun(defaultInfo.dataMining.conclusionLabel).bold();
     var dataMiningconclusion = new TextRun(data.dataMining.conclusion);

@@ -106,7 +106,7 @@
       </span>
     </el-dialog>
     <el-dialog title="生成预览" :visible.sync="generateReportVisable" width="40%">
-      <Report :dataAnalysisPic="myArray" ref="report"></Report>
+      <Report :taskInfo="newTaskModel" :data="report" :dataAnalysisPic="dataAnalysisPic" :dataMiningPic="dataMiningPic" ref="report"></Report>
       <span slot="footer" class="dialog-footer">
         <el-button @click="generateReportVisable = false">取 消</el-button>
         <el-button type="primary" @click="generateHtml()" style="">生成html链接</el-button>
@@ -144,8 +144,7 @@ export default {
       myArray: [
         {
           id: "1",
-          name:
-            "http://120.79.146.91:8000/home/ZoomInDataSet/2/Publish/4413591.png"
+          name: "http://120.79.146.91:8000/home/ZoomInDataSet/8/Publish/173.png"
         },
         {
           id: "2",
@@ -191,12 +190,17 @@ export default {
             trigger: "change"
           }
         ]
-      }
+      },
+      report: Object,
+      dataAnalysisPicUrl: [],
+      dataMiningPicUrl: [],
+      dataAnalysisPic: [],
+      dataMiningPic: []
     };
   },
   created: function() {
-    this.getSummary();
     this.$store.commit("changeIndex", { index: "taskRelease" });
+
     let query = this.fetchAllTaskInfo();
     query.then(req => {
       this.taskList = req;
@@ -205,6 +209,7 @@ export default {
       } else {
         this.taskId = this.$route.params.id;
         this.fetchTaskInfo();
+        this.fetchReport();
       }
     });
     this.fetchAllDataSet();
@@ -307,34 +312,77 @@ export default {
           });
       }
     },
-    converterUrlToBase64: function() {
+    converterUrlToBase64: function(urlList) {
       return new Promise((resolve, rejects) => {
         this.$post("/operation/image2base64", {
-          image_url: ["/home/ZoomInDataSet/2/Publish/3251212.png","/home/ZoomInDataSet/2/Publish/4413593.png"]
+          image_url: urlList
         }).then(response => {
-          resolve(response)
+          resolve(response);
         });
       });
     },
-    postSummary:function(){
+    dealAllReportUrl() {
+      console.log(this.report.data_set.length);
+      for (let i = 0; i < this.report.data_set.length; i++) {
+        this.dataAnalysisPicUrl = this.dataAnalysisPicUrl.concat(
+          this.report.data_set[i].data_analyze
+        );
+        this.dataMiningPicUrl = this.dataMiningPicUrl.concat(
+          this.report.data_set[i].data_mining_clustering
+        );
+        this.dataMiningPicUrl = this.dataMiningPicUrl.concat(
+          this.report.data_set[i].data_mining_regression
+        );
+      }
+      this.converterUrlToBase64(this.dataAnalysisPicUrl)
+        .then(response => {
+          this.dataAnalysisPic = response.message;
+        })
+        .then(() => {
+          this.converterUrlToBase64(this.dataMiningPicUrl).then(response => {
+            this.dataMiningPic = response.message;
+          });
+        });
+    },
+    fetchReport: function() {
+      this.$post("/publish/", {
+        task_id: this.taskId
+      }).then(response => {
+        this.report = response;
+        this.dealAllReportUrl();
+      });
+    },
+    postSummary: function() {
       this.$refs.report.postSummary(this.taskId);
     },
-    getSummary:function(){
+    getSummary: function() {
       return new Promise((resolve, rejects) => {
-        this.$get("/summary/", {
-        }).then(response => {
-          resolve(response)
+        this.$get("/summary/", {}).then(response => {
+          resolve(response);
         });
       });
     },
     generateWord: function() {
-      this.$refs.report.postSummary(this.taskId);
-      this.converterUrlToBase64().then((response)=>{
-        this.$refs.report.generateWord(response.message);
-      })
+      this.postSummary();
+      this.converterUrlToBase64(this.dataAnalysisPicUrl)
+        .then(response => {
+          this.dataAnalysisPic = response.message;
+          this.converterUrlToBase64(this.dataMiningPicUrl).then(response => {
+            this.dataMiningPic = response.message;
+            this.$refs.report.generateWord();
+          });
+        });
     },
     generateHtml: function() {
-      this.$refs.report.generateHtml();
+      this.postSummary();
+      this.converterUrlToBase64(this.dataAnalysisPicUrl)
+        .then(response => {
+          this.dataAnalysisPic = response.message;
+          this.converterUrlToBase64(this.dataMiningPicUrl).then(response => {
+            this.dataMiningPic = response.message;
+            this.$refs.report.generateHtml();
+          });
+        })
     },
     //CJW 新增方法.........开始
     extendClick(path) {

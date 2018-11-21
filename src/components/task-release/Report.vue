@@ -1,7 +1,7 @@
 <template>
   <vue-scroll :ops="ops">
     <div style="min-height:300px;max-height:400px;padding-right:40px;">
-      <h1 class="center">学业分析报告（任务名称）</h1>
+      <h1 class="center">{{taskInfo.taskName}}</h1>
       <el-form label-width="120px">
         <div>
           <span class="small-title">
@@ -26,7 +26,7 @@
           </span>
           <br>
           <div class="report-pic">
-            <img v-for="pic in dataAnalysisPic" :key="pic.id" :src="pic.name" :ref="`pic${pic.id}`" />
+            <img v-for="(pic,index) in dataAnalysisPic" :key="index" :src="`data:iamge/jpeg;base64,${pic}`" />
           </div>
           <p class="pad-20">
             <el-form-item label="数据分析结论：">
@@ -40,7 +40,7 @@
           </span>
           <br>
           <div class="report-pic">
-            <img v-for="pic in dataAnalysisPic" :key="pic.id" :src="pic.name" />
+            <img v-for="(pic,index) in dataMiningPic" :key="index" :src="`data:iamge/jpeg;base64,${pic}`" />
           </div>
           <p class="pad-20">
             <el-form-item label="数据挖掘结论:">
@@ -74,36 +74,47 @@ export default {
       ops: ops,
       report: {
         baseInfo: {
-          editor: "zhp",
-          createTime: "2018-11-8",
+          taskName:this.taskInfo.taskName,
+          editor: this.data.user_name,
+          createTime: this.data.add_time,
           dataSet: "1.csv"
         },
         dataAnalysis: {
           img:[],
-          conclusion: "数据分析结论:"
+          conclusion: this.data.dataAnalye_Summary==undefined?"":this.data.dataAnalye_Summary
         },
         dataMining: {
-          conclusion: "数据挖掘结论:"
+          img:[],
+          conclusion: this.data.dataMinging_Summary==undefined?"":this.data.dataMinging_Summary
         },
         summary: {
-          conclusion: "4.总结"
+          conclusion: this.data.total_Summary==undefined?"":this.data.total_Summary
         }
       }
     };
   },
   props: {
-    dataAnalysisPic: Array,
-    dataMiningPic: Array
+    taskInfo:"",
+    data:"",
+    dataAnalysisPic: "",
+    dataMiningPic: ""
   },
   methods: {
     generateHtml: function() {
-      let html =
-        '<html> <head> <title>XX任务</title> <meta charset="utf-8"> <style> .label { font-weight: 600; } .base-item { margin: 5px 0; } </style> </head> <body style="font-size:20px;"> <div style="margin:0 auto;max-width:800px;"> <h1 id="taskName" style="text-align:center">学业分析报告（任务名称）</h1> <div> <h2>基本信息:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">编辑者：</span> <span id="editor">zhp</span> </div> <div class="base-item"> <span class="label">创建时间:</span> <span id="createTime">zhp</span> </div> <div class="base-item"> <span class="label">所用数据源</span> <span id="dataSet">zhp</span> </div> </div> </div> <div> <h2>数据分析:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">数据分析结论：</span> <span id="dataAnalysisConclusion">zhp</span> </div> </div> </div> <div> <h2>数据挖掘:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">数据挖掘结论：</span> <span id="dataMiningConclusion">zhp</span> </div> </div> </div> <div> <h2>总结:</h2> <div style="padding-left:50px;"> <div class="base-item"> <span class="label">总结：</span> <span id="summaryConclusion">zhp</span> </div> </div> </div> </div> </body> </html>';
+      let html = '<html><head><title>XX任务</title><meta charset="utf-8"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><style>    .label {      color:#000;      font-weight: 600;    }    .base-item {      margin: 5px 0;    }    ul{      list-style:none;    }    img{      width:800px;    }</style></head><body style="font-size:20px;"><div class="panel panel-default"><div class="panel-heading"><h1 id="taskName" style="text-align:center">学业分析报告（任务名称）</h1></div><div class="panel-body"><div style="margin:0 auto;max-width:800px;"><div><h3>基本信息:</h3><div style="padding-left:50px;"><div class="base-item"><span class="label">编辑者：</span><span id="editor">zhp</span></div><div class="base-item"><span class="label">创建时间:</span><span id="createTime">zhp</span></div><div class="base-item"><span class="label">所用数据源</span><span id="dataSet">zhp</span></div></div></div><div><h3>数据分析:</h3><div style="padding-left:50px;"><ul id="data-analysis-pic"></ul><div class="base-item"><span class="label">数据分析结论：</span><span id="dataAnalysisConclusion">zhp</span></div></div></div><div><h3>数据挖掘:</h3><div style="padding-left:50px;"><ul id="data-mining-pic"></ul><div class="base-item"><span class="label">数据挖掘结论：</span><span id="dataMiningConclusion">zhp</span></div></div></div><div><h3>总结:</h3><div style="padding-left:50px;"><div class="base-item"><span class="label">总结：</span><span id="summaryConclusion">zhp</span></div></div></div></div></div></div></body></html>'
       let $ = cheerio.load(html);
-      $("#editor").html("郑浩鹏");
+      $("title").html(this.report.baseInfo.taskName);
+      $("#taskName").html(this.report.baseInfo.taskName);
+      $("#editor").html(this.report.baseInfo.editor);
       $("#createTime").html(this.report.baseInfo.createTime);
       $("#dataSet").html(this.report.baseInfo.dataSet);
+      for(let i = 0 ; i < this.dataAnalysisPic.length;i++){
+        $("#data-analysis-pic").append(`<li><img src='data:iamge/jpeg;base64,${this.dataAnalysisPic[i]}'/></li>`)
+      }
       $("#dataAnalysisConclusion").html(this.report.dataAnalysis.conclusion);
+      for(let i = 0 ; i < this.dataMiningPic.length;i++){
+        $("#data-mining-pic").append(`<li><img src='data:iamge/jpeg;base64,${this.dataMiningPic[i]}'/></li>`)
+      }
       $("#dataMiningConclusion").html(this.report.dataMining.conclusion);
       $("#summaryConclusion").html(this.report.summary.conclusion);
       console.log($.html());
@@ -119,20 +130,20 @@ export default {
       // 然后移除
       document.body.removeChild(eleLink);
     },
-    generateWord: function(imgList) {
+    generateWord: function() {
       const documentCreator = new DocumentCreator();
-      this.report.dataAnalysis.img = imgList;
+      this.report.dataAnalysis.img = this.dataAnalysisPic;
+      this.report.dataMining.img = this.dataMiningPic;
       const doc = documentCreator.create(this.report);
       const packer = new Packer();
       packer.toBlob(doc).then(blob => {
-        console.log(blob);
         saveAs(blob, "报告.docx");
         console.log("Document created successfully");
       });
     },
     postSummary:function(taskid){
          this.$post("/summary/",{
-        task:this.taskid,
+        task:taskid,
         dataAnalyze_Summary:this.report.dataAnalysis.conclusion,
         dataMining_Summary:this.report.dataMining.conclusion,
         total_Summary:this.report.summary.conclusion
