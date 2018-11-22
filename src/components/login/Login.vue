@@ -41,11 +41,7 @@ export default {
     };
   },
   created: function() {
-    this.$get(
-      "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=22&nc=1501558320736&pid=hp"
-    ).then(response => {
-      console.log(response);
-    });
+   
   },
   methods: {
     submitForm(formName) {
