@@ -99,6 +99,12 @@ export default {
     dataAnalysisPic: "",
     dataMiningPic: ""
   },
+  watch:{
+    data:function(val,newVal){
+      this.report.baseInfo.editor = this.data.user_name;
+      this.report.baseInfo.createTime = this.data.add_time;
+    }
+  },
   methods: {
     generateHtml: function() {
       let html = '<html><head><title>XX任务</title><meta charset="utf-8"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"><style>    .label {      color:#000;      font-weight: 600;    }    .base-item {      margin: 5px 0;    }    ul{      list-style:none;    }    img{      width:800px;    }</style></head><body style="font-size:20px;"><div class="panel panel-default"><div class="panel-heading"><h1 id="taskName" style="text-align:center">学业分析报告（任务名称）</h1></div><div class="panel-body"><div style="margin:0 auto;max-width:800px;"><div><h3>基本信息:</h3><div style="padding-left:50px;"><div class="base-item"><span class="label">编辑者：</span><span id="editor">zhp</span></div><div class="base-item"><span class="label">创建时间:</span><span id="createTime">zhp</span></div><div class="base-item"><span class="label">所用数据源</span><span id="dataSet">zhp</span></div></div></div><div><h3>数据分析:</h3><div style="padding-left:50px;"><ul id="data-analysis-pic"></ul><div class="base-item"><span class="label">数据分析结论：</span><span id="dataAnalysisConclusion">zhp</span></div></div></div><div><h3>数据挖掘:</h3><div style="padding-left:50px;"><ul id="data-mining-pic"></ul><div class="base-item"><span class="label">数据挖掘结论：</span><span id="dataMiningConclusion">zhp</span></div></div></div><div><h3>总结:</h3><div style="padding-left:50px;"><div class="base-item"><span class="label">总结：</span><span id="summaryConclusion">zhp</span></div></div></div></div></div></div></body></html>'

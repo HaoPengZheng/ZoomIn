@@ -20,7 +20,7 @@
                 <el-menu-item index="1" v-for="(expression,index) in expressions" :key="index">
                   <span slot="title">
                     <el-tooltip placement="left">
-                      <div slot="content" style="font-size:16px"><br />{{expression.affect}}<br />{{expression.example}}</div>
+                      <div slot="content" style="font-size:16px">{{expression.affect}}<br />{{expression.example}}</div>
                       <a style="" type="text" @click="addFunction(`${expression.name}`)">
                         <i class="el-icon-menu"></i>{{expression.name}}
                       </a>
@@ -81,13 +81,10 @@ const expressions = [
     example: `${exampleLable} Rank('C_name') `
   },
   {
-
-  }
-  // {
-  //   name:"RANKit",
-  //   affect:`${affectLable}生成排名 `,
-  //   example:`${exampleLable} Rank(C_name) `,
-  // },
+    name:"Rankit",
+    affect:`${affectLable}生成Rankit,C_name为列名 `,
+    example:`${exampleLable} Rankit(C_name) `,
+  },
 ];
 // <el-menu-item index="1">
 //                   <span slot="title">

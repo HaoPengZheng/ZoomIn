@@ -11,7 +11,7 @@
           </div>
           <div class="task-title-new">
             <el-button type="primary" icon="el-icon-picture" @click="newChartDialogVisible=true">新建图表</el-button>
-            <el-button type="primary" icon="el-icon-picture" @click="generateReportVisable=true">生成报告</el-button>
+            <el-button type="primary" icon="el-icon-picture" @click="generateReport">生成报告</el-button>
           </div>
           <div style="clear:both"></div>
         </div>
@@ -383,6 +383,12 @@ export default {
             this.$refs.report.generateHtml();
           });
         })
+    },
+    generateReport:function(){
+      this.generateReportVisable = true;
+      if(typeof this.report == "function"){
+        this.fetchReport();
+      }
     },
     //CJW 新增方法.........开始
     extendClick(path) {
