@@ -52,7 +52,7 @@ import TypeSelect from "../common/TypeSelect.vue";
 import { TYPECONVERTER } from "@/utils/common.js";
 export default {
   components: {
-    typeSelect
+    TypeSelect
   },
   data() {
     return {
