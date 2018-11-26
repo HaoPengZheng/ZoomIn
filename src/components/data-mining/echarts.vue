@@ -47,7 +47,7 @@
 				</el-carousel>
   </el-tab-pane>
 
-  <el-tab-pane label="误差信息" id="errorInfo">
+  <el-tab-pane :label="errorLabel" id="errorInfo">
 	  <a v-if="errorSumFlag">{{errorSumTips}}</a>
 	  <img :src="errorSumTips" v-if="!errorSumFlag" style="width:100%;height:100%">
 	  
@@ -157,7 +157,8 @@ export default {
 	  nInit:10,			
 	  batchSize:100,
 	  reassignmentRatio:0.01,
-	  dataSetId:2
+	  dataSetId:2,
+	  errorLabel:'误差分析'
     }
   },
   mounted(){
@@ -230,13 +231,15 @@ export default {
 						this.picPath = ""
 						this.errorSumTips = ""
 						this.drawModel()
+						this.errorLabel = '误差分析'
                         break;
                     case '非线性回归':
                         if(this.mth_power==0)this.mth_power = 2
 						  this.category = 12 
 						  this.picPath = ""
-							this.errorSumTips = ""
+						  this.errorSumTips = ""
 						  this.drawModel()
+						  this.errorLabel = '误差分析'
 						break;
 					case 'K-Means聚类':
 						this.picPath = ""
@@ -244,6 +247,7 @@ export default {
 						this.xAxisItem = []			//清空x,y避免切回线性回归时出错
 						this.yAxisItemName = []		//清空x,y避免切回线性回归时出错
 						//if(this.xAxisItem.length != 0)this.drawCluster()	//如果x轴已经有了，就生成图，以实现来回切换
+						this.errorLabel = 'k值分析'
 						break;
 						case 'Mini Batch K-Means聚类':
 						this.picPath = ""
@@ -251,6 +255,7 @@ export default {
 						this.xAxisItem = []			//清空x,y避免切回线性回归时出错
 						this.yAxisItemName = []		//清空x,y避免切回线性回归时出错
 						//if(this.xAxisItem.length != 0)this.drawCluster()	//如果x轴已经有了，就生成图，以实现来回切换
+						this.errorLabel = 'k值分析'
 						break;
 				  default:
 					  break;

@@ -12,8 +12,8 @@ import qs from 'qs'
 import 'vue-awesome/icons'
 import Icon from 'vue-awesome/components/Icon'
 import echarts from 'echarts'
-import './icon/iconfont.js'
-import './icon/icon.css'
+// import './icon/iconfont.js'
+// import './icon/icon.css'
 import './assets/icons/zhp-icon/iconfont.js'
 import './assets/icons/zhp-icon/iconfont.css'
 import GeminiScrollbar from 'vue-gemini-scrollbar'
@@ -26,7 +26,7 @@ import 'vuescroll/dist/vuescroll.css';
 //封装axios方法
 import {post,toDelete,get,patch,put} from './api/http.js'
 //引入VueX
-import store from './store/store.js';   
+import store from './store/store.js';
 
 
 //定义全局变量
@@ -37,7 +37,7 @@ Vue.prototype.$patch=patch;
 Vue.prototype.$put=put;
 Vue.prototype.$utils = Utils
 Vue.prototype.$toDelete = toDelete
-Vue.prototype.$echarts = echarts 
+Vue.prototype.$echarts = echarts
 Vue.prototype.$axios = axios
 Vue.prototype.$qs = qs
 

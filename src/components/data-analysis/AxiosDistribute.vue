@@ -22,11 +22,11 @@ export default {
 
     },
     mounted(){
-      if(this.$route.params.dataSetId === undefined){
-        this.dataSetId = 2
+      if(sessionStorage.getItem("dataSetId") === null){
+        this.dataSetId = 0
       }
       else{
-        this.dataSetId = this.$route.params.dataSetId;
+        this.dataSetId = sessionStorage.getItem("dataSetId")
         Bus.$emit('getDataSetId',this.dataSetId)
         //alert(this.dataSetId)
       }
@@ -66,7 +66,7 @@ export default {
         .post(
           "http://120.79.146.91:8000/chart/",
           {
-              data_set : 10001,//好像没用
+              data_set : this.dataSetId,
               title : this.chartTitle,
               desc: "",
               chart_type: 1,

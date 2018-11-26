@@ -1,240 +1,299 @@
 <template>
   <div>
     <div class="bg">
-      <div :class="{'bg-nav':true,'changeNav':isOverScroll}">
-        <div style="margin-right:200px;"><img src="../../assets/image/Logo.png"></div>
-        <ul class="bg-nav-menu">
-          <li>
+      <div :class="['bg-nav',{'changeNav':isOverScroll}]" id="bg-nav">
+        <div><img src="../../assets/image/Logo.png"></div>
+        <div class="bg-nav-menu">
+          <div>
             首页
-          </li>
-          <li>
+          </div>
+          <div>
             概览
-          </li>
-          <li>
+          </div>
+          <div>
             使用教程
-          </li>
-          <li>
+          </div>
+          <div>
             项目合作
-          </li>
-          <li>
+          </div>
+          <div>
             帮助
-          </li>
-        </ul>
-        <div>
-          <button class="login" @click="toLogin">登录</button>
+          </div>
         </div>
+        <button class="bg-nav-login" @click="toLogin">登录</button>
       </div>
-      <div class="bg-warp">
-        <div class="bg-left"><img src="https://me.bdp.cn/personal/img/banner/banner1_56d9c8b.png" width="600" height="400"> </div>
+      <div class="bg-warp" id="bg-warp">
+        <div class="banner-decoration"></div>
+        <div class="bg-left">
+          <img src="../../assets/welcomePage/banner.svg" width="600px" height="400px"/>
+        </div>
         <div class="bg-right">
-          <h3 class="title">Zoomin 学业分析系统</h3>
-          <h3 class="small-title">分析成绩、教研成果不再求人</h3>
-          <el-button type="primary" round>立即使用</el-button>
+          <div class="bg-right-title">
+            ZoomIn
+          </div>
+          <div class="bg-right-content">
+            Make Fun Every Day<br/>用心创造快乐，用爱感动世界<br/>打造一个最适合你的数据分析网站
+          </div>
+          <button class="bg-right-button">Learn More</button>
         </div>
       </div>
     </div>
-    <FeatureList :textList="featureTextLists"></FeatureList>
+    <FeatureList></FeatureList>
     <WelcomeFooter></WelcomeFooter>
   </div>
 </template>
 
 <script>
-import FeatureList from "./FeatureList.vue";
-import WelcomeFooter from "./WelcomeFooter.vue";
-const featureTextLists = [
-  {
-    title: "整合各类数据",
-    content: [
-      "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-      "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-    ],
-    pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-  },
-  {
-    title: "全面分析业务",
-    content: [
-      "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-      "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-    ],
-    pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-  },
-  {
-    title: "整合各类数据，全面分析业务",
-    content: [
-      "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-      "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-    ],
-    pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-  },
-  {
-    title: "全面分析业务",
-    content: [
-      "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-      "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-    ],
-    pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-  }
-];
-const overScrollHeight = 527;
-export default {
-  components: {
-    FeatureList,
-    WelcomeFooter
-  },
-  data() {
-    return {
-      featureTextLists: featureTextLists,
-      scrollY: 0
-    };
-  },
-  mounted: function() {
-    window.addEventListener("scroll", this.handleScroll);
-  },
-  computed: {
-    isOverScroll: function() {
-      return this.scrollY > overScrollHeight;
-    }
-  },
-  methods: {
-    handleScroll: function() {
-      this.scrollY = window.scrollY;
+  import FeatureList from "./FeatureList.vue";
+  import WelcomeFooter from "./WelcomeFooter.vue";
+  export default {
+    components: {
+      FeatureList,
+      WelcomeFooter
     },
-    toLogin: function() {
-      this.$router.push('/');
+    data() {
+      return {
+        scrollY: 0,
+        wrapHeight: 0,
+      };
+    },
+    mounted: function () {
+      window.addEventListener("scroll", this.handleScroll);
+      this.wrapHeight = document.getElementById('bg-warp').offsetHeight;
+    },
+    computed: {
+      isOverScroll: function () {
+        return this.scrollY > 0;
+      }
+    },
+    methods: {
+      handleScroll: function () {
+        this.scrollY = window.scrollY;
+      },
+      toLogin: function () {
+        this.$router.push('/login');
+      }
     }
-  }
-};
+  };
 </script>
 
 <style scoped>
-* {
-  padding: 0;
-  margin: 0;
-}
-body {
-  padding: 0;
-  margin: 0;
-  max-width: 100%;
-}
-.title {
-  line-height: 56px;
-  font-size: 40px;
-  font-weight: 200;
-  color: #fff;
-  margin: 0;
-}
-.bg {
-  margin: 0;
-  padding: 0;
-  padding-bottom: 20px;
-  background: linear-gradient(to top, #7ededeed 0, #66cccc 100%);
-}
-.bg-nav {
-  color: #fff;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-}
-.bg-nav-menu {
-  list-style: none;
-}
-.bg-nav-menu li {
-  float: left;
-  padding: 0 22px;
-  font-weight: 700;
-  position: relative;
-}
-.bg-nav-menu li:hover {
-  cursor: pointer;
-  color: #333;
-}
-.bg-nav-menu li.active::before {
-  content: "";
-  position: absolute;
-  bottom: -10px;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: #000;
-  transition: all 0.3s ease-in-out;
-  left: calc(50% - 10px);
-  width: 20px;
-}
-.bg-nav .logo {
-  margin-right: 200px;
-  border: 1px solid #fff;
-  font-weight: 600;
-  font-family: "微软雅黑", "黑体", "宋体";
-  width: 100px;
-  text-align: center;
-  padding: 5px;
-  border-radius: 6px;
-}
-.changeNav {
-  position: fixed;
-  background-color: #fff;
-  z-index: 999;
-  color: #888;
-  border-bottom: 1px solid #dcdfe6;
-}
-.changeNav li {
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
-    Microsoft YaHei, SimSun, sans-serif;
-}
-.bg-warp {
-  padding-top: 100px;
-  max-width: 1346px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.bg-left {
-  margin: 0 50px;
-  order: 1;
-}
-.bg-right {
-  margin: 0 50px;
-  order: 2;
-}
-.small-title {
-  padding: 10px 0;
-}
-.login {
-  line-height: 28px;
-  padding: 0 14px;
-  font-weight: 700;
-  font-size: 14px;
-  background: transparent;
-  color: #fff;
-  border: 1px solid #fff;
-  margin-left: 200px;
-  outline: none;
-}
-.login:hover {
-  cursor: pointer;
-  background: #fff;
-  color: #333;
-  border: 1px solid #466c6d;
-}
-.changeNav .login {
-  color: rgb(30, 153, 235) !important;
-  border: 1px solid rgb(30, 153, 235);
-}
-
-@media (max-width: 1100px) {
-  .title {
-    padding-top: 20px;
-  }
-  .bg-right {
-    float: none;
-  }
-  .bg-left {
+  * {
     padding: 0;
-    float: none;
+    margin: 0;
   }
-}
+
+  body {
+    padding: 0;
+    margin: 0;
+    max-width: 100%;
+    overflow: auto;
+  }
+
+  .bg {
+    margin: 0;
+    padding: 0 0 200px 0;
+    background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);
+    background-size: 100% 100%;
+    filter: alpha(opacity=50);
+  }
+
+  .bg-nav {
+    color: #fff;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    font-size: 20px;
+    padding: 5px 0;
+  }
+
+  .bg-nav-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-evenly;
+  }
+
+  .bg-nav-menu div {
+    float: left;
+    padding: 10px;
+    margin: 0 20px;
+    font-weight: 700;
+    position: relative;
+    transition: all .25s ease-in-out;
+  }
+
+  .bg-nav-menu div:hover {
+    cursor: pointer;
+    transform: translateY(-5px);
+    transition: all .25s ease-in-out;
+  }
+
+  .bg-nav-menu div.active::before {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: #000;
+    transition: all 0.3s ease-in-out;
+    left: calc(50% - 10px);
+    width: 20px;
+  }
+
+  .bg-nav .logo {
+    /*margin-right: 200px;*/
+    border: 1px solid #fff;
+    font-weight: 600;
+    font-family: "微软雅黑", "黑体", "宋体";
+    width: 100px;
+    text-align: center;
+    padding: 5px;
+    border-radius: 6px;
+  }
+
+  .bg-nav-login {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    height: 40px;
+    padding: 0 20px;
+    outline: none;
+    border-radius: 12px;
+    border: #fff 1px solid;
+    background: transparent;
+    box-shadow: #fff 0 0 10px 0;
+    transition: all .25s ease-in-out;
+  }
+
+  .bg-nav-login:hover {
+    box-shadow: #d7d7d7 0 0 20px 2px;
+    transition: all .25s ease-in-out;
+  }
+
+  .changeNav {
+    position: fixed;
+    background-color: #fff;
+    z-index: 999;
+    color: #888;
+    border-bottom: 1px solid #dcdfe6;
+    transition: all .25s ease-in-out;
+  }
+
+  .changeNav button{
+    opacity: 0.8;
+    color: #666;
+    box-shadow: #999 0 0 10px 0;
+  }
+  .changeNav button:hover{
+    opacity: 1.0;
+    color: #333;
+    box-shadow: #666 0 0 10px 0;
+  }
+
+  .changeNav li {
+    font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB,
+    Microsoft YaHei, SimSun, sans-serif;
+  }
+
+  .bg-warp {
+    padding: 100px 0 200px 0;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .banner-decoration {
+    opacity: 0.6;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background-image: linear-gradient(-225deg, #AC32E4 0%, #7918F2 48%, #4801FF 100%);
+    position: absolute;
+    left: 30px;
+    bottom: -200px;
+    box-shadow: rgba(215, 215, 215, 0.51) 0 2px 40px 5px;
+  }
+
+  .bg-left {
+    margin: 0;
+  }
+
+  .bg-right {
+    width: 600px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+  }
+
+  .bg-right-title {
+    font-size: 80px;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 20px;
+    text-shadow: 4px 8px 20px #d7d7d7;
+    -webkit-text-stroke: 1px #999;
+    background-image: linear-gradient(to top, #eef4fb 0%, white 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .bg-right-content {
+    font-size: 40px;
+    color: white;
+    font-weight: bold;
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+
+  .bg-right-button {
+    height: 56px;
+    border: none;
+    outline: none;
+    border-radius: 16px;
+    color: #fff;
+    width: 40%;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    background-image: linear-gradient(-225deg, #AC32E4 0%, #7918F2 48%, #4801FF 100%);
+    opacity: 0.7;
+    transition: all .25s ease-in-out;
+  }
+
+  .bg-right-button:hover {
+    opacity: 1.0;
+    transition: all .25s ease-in-out;
+    box-shadow: #666 0 4px 10px 0;
+  }
+
+  .changeNav .login {
+    color: rgb(30, 153, 235) !important;
+    border: 1px solid rgb(30, 153, 235);
+  }
+
+  @media (max-width: 1100px) {
+    .title {
+      padding-top: 20px;
+    }
+
+    .bg-right {
+      float: none;
+    }
+
+    .bg-left {
+      padding: 0;
+      float: none;
+    }
+  }
 </style>

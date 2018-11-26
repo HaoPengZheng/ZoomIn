@@ -20,11 +20,11 @@ export default {
 
     },
     mounted(){
-      if(this.$route.params.dataSetId === undefined){
-        this.dataSetId = 2
+      if(sessionStorage.getItem("dataSetId") === null){
+        this.dataSetId = 0
       }
       else{
-        this.dataSetId = this.$route.params.dataSetId;
+        this.dataSetId = sessionStorage.getItem("dataSetId")
         Bus.$emit('getMiningDataSetId',this.dataSetId)
         //alert(this.dataSetId)
       }

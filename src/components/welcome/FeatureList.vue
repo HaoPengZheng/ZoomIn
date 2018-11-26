@@ -1,32 +1,35 @@
 <template>
-    <div class="feature-warp">
-      <template v-for="(featureItem,index) in textList" >
-        <FeatureItem :featureText="featureItem" :featureOrder="index" :key="index"></FeatureItem>
-      </template>
+  <div class="feature-warp">
+    <FeatureChoose></FeatureChoose>
+    <div class="feature-banner">
+      <img src="../../assets/welcomePage/banner1.svg" width="800px" height="600px"/>
+    </div>
+    <FeatureTrait></FeatureTrait>
+    <FeatureBanner></FeatureBanner>
   </div>
 </template>
 <script>
-import FeatureItem from './FeatureItem.vue'
-export default {
-  components:{
-    FeatureItem,
-  },
-  props:{
-    textList:Array
-  },
-  data(){
-    return {
+  import FeatureChoose from './FeatureChoose';
+  import FeatureTrait from './FeatureTrait';
+  import FeatureBanner from './FeatureBanner';
 
-    }
-  },
-
-};
+  export default {
+    components: {
+      FeatureChoose,
+      FeatureTrait,
+      FeatureBanner
+    },
+  };
 </script>
 <style scoped>
-.feature-warp{
-  max-width: 1200px;
-  margin: 0 auto;
-  margin-bottom:100px;
-}
+  .feature-warp {
+    padding: 60px 0 0 0;
+    background-color: #ffffff;
+    position: relative;
+  }
 
+  .feature-banner {
+    margin-top: 500px;
+    text-align: center;
+  }
 </style>

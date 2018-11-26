@@ -85,12 +85,12 @@ const router = new Router({
         }
     },
     {
-        path:'/welcome',
+        path:'/',
         name:'welcome',
         component:Welcome,
     },
     {
-        path: '/',
+        path: '/login',
         name: 'login',
         component: Login,
         children: [{
