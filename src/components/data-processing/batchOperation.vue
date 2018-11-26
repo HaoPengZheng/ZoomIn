@@ -33,7 +33,7 @@
             </svg>
             {{TYPECONVERTER.convertTypeForText(scope.row.keyType)}}
           </span>
-          <typeSelect v-model="scope.row.keyType" :placeholder="scope.row.keyType" v-show="showEdit" :size="`mini`" ></typeSelect>
+          <type-select v-model="scope.row.keyType" :placeholder="scope.row.keyType" v-show="showEdit" :size="`mini`"></type-select>
         </template>
       </el-table-column>
       <el-table-column align="center" prop="keyDesc" label="描述">
@@ -48,20 +48,20 @@
 
 
 <script>
-import typeSelect from "../common/typeSelect.vue";
-import {TYPECONVERTER} from "@/utils/common.js";
+import TypeSelect from "../common/TypeSelect.vue";
+import { TYPECONVERTER } from "@/utils/common.js";
 export default {
-  components:{
+  components: {
     typeSelect
   },
   data() {
     return {
       showEdit: false,
-      TYPECONVERTER:TYPECONVERTER
+      TYPECONVERTER: TYPECONVERTER
     };
   },
   props: {
-    tablePropertys:Object,
+    tablePropertys: Object
   },
   computed: {
     tablePropertysForTable: function() {
@@ -69,7 +69,7 @@ export default {
       for (let key in this.tablePropertys) {
         var tableProperty = this.tablePropertys[key];
         tablePropertys.push(tableProperty);
-      };
+      }
       return tablePropertys;
     }
   },
@@ -91,8 +91,8 @@ export default {
 };
 </script>
 <style scoped>
-.cell{
-  line-height: 40px!important;
+.cell {
+  line-height: 40px !important;
 }
 .margin-20 {
   margin: 20px;

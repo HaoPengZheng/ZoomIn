@@ -12,7 +12,7 @@
     </div>
     <div style="padding:0 40px;">
       <div v-show="IsEmptyTask">
-        <EmptyTask></EmptyTask>
+        <empty-task></empty-task>
       </div>
       <el-carousel indicator-position="none" v-show="!IsEmptyTask">
         <el-carousel-item v-for="(tasks,index) in newTaskList" :key="index" interval=5000>

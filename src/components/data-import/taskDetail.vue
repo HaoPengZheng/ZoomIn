@@ -1,10 +1,10 @@
 <template>
   <el-container style="height:100%;">
-    <Left :active="activeIndex"  :taskInfo="taskInfo">
-    </Left>
+    <task-left :active="activeIndex" :taskInfo="taskInfo">
+    </task-left>
     <el-container>
       <el-main style="margin-top:20px;padding:0 10%;">
-        <el-tabs v-model="activeName" @tab-click="handleClick" >
+        <el-tabs v-model="activeName" @tab-click="handleClick">
           <el-tab-pane label="任务详情" name="first">
             <el-form ref="task-form" :model="form" label-width="100px">
               <el-form-item label="任务名称:">
@@ -53,10 +53,10 @@
   </el-container>
 </template>
 <script>
-import Left from "./TaskLeft.vue";
+import TaskLeft from "./TaskLeft.vue";
 export default {
   components: {
-    Left
+    TaskLeft
   },
   data() {
     return {
@@ -105,7 +105,7 @@ export default {
       });
     },
     updateTask: function() {
-      this.$put("/taskinfo/" + this.taskId + "/",{
+      this.$put("/taskinfo/" + this.taskId + "/", {
         task_name: this.form.taskname,
         task_desc: this.form.remarks
       }).then(response => {

@@ -32,14 +32,14 @@
 export default {
   props: {
     keys: Array, //表头KEYS
-    item: Object, //
-    count: Number, //用故意判断是否是最后一个的
+    item: Object,
+    count: Number, 
     end: Boolean,
     keyTypes: Array //字段类型
   },
   data() {
     return {
-      oldKeys: [], //旧的键值，需要优化watch
+      oldKeys: [], 
       conditionKey: "",
       operator: "",
       numberOperatorOption: [

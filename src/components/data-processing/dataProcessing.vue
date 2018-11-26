@@ -28,7 +28,7 @@
                 </div>
                 <el-row>
                   <div v-if="filtrateType=='1'&&filtrateVisable" style="padding-right:30px;">
-                    <ConditionFilter :dataSetId="dataSetId" :keys="tableKeys" :keyTypes="tableKeysType" v-on:refresh="refreshData"></ConditionFilter>
+                    <condition-filter :dataSetId="dataSetId" :keys="tableKeys" :keyTypes="tableKeysType" v-on:refresh="refreshData"></condition-filter>
                   </div>
                   <div v-if="filtrateType=='2'&&filtrateVisable">
                     语句筛选内容
@@ -36,33 +36,33 @@
                 </el-row>
                 <div style="padding-top:30px;width:100%;margin:0 auto">
                   <div v-if="IsEmptyDataSetList">
-                    <EmptyTask>
+                    <empty-task>
                       <template slot="404Message">
                         <p>数据集内容空空如也！</p>
                         <p>请重新新建任务，再进行数据处理！</p>
                       </template>
-                    </EmptyTask>
+                    </empty-task>
                   </div>
                   <div v-if="IsEmptyDataSet&&!IsEmptyDataSetList">
-                    <EmptyTask>
+                    <empty-task>
                       <template slot="404Message">
                         <p>数据集内容空空如也！</p>
                         <p>可能是被您过滤完了。</p>
                       </template>
-                    </EmptyTask>
+                    </empty-task>
                   </div>
                   <div class="items-text">当前显示<span class="emphasize-number">{{showItem}}</span>条,该数据集一共有<span class="emphasize-number">{{allItems}}</span>条数据</div>
-                  <wTable v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tempTableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysTypeObject" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
+                  <my-table v-show="!IsEmptyDataSet" :loading="tableLoading" :data="tempTableData" :header="tableKeys" :option="tableOption" :keyVisibilitys="keyVisibilitys" :types="tableKeysTypeObject" @changeHeaderName="changeHeaderName" @updateTableKeys="updateTableKeys" @updateTableTypes="updateTableTypes">
                     <el-table-column slot="fixed" fixed type="index" width="50">
                     </el-table-column>
-                  </wTable>
+                  </my-table>
                 </div>
               </el-row>
             </div>
           </el-tab-pane>
           <el-tab-pane label="字段设置" name="second">
             <el-row>
-              <BatchOperation :tablePropertys="tablePropertys" v-on:updateTableProperty="updateTableProperty"></BatchOperation>
+              <batch-operation :tablePropertys="tablePropertys" v-on:updateTableProperty="updateTableProperty"></batch-operation>
             </el-row>
           </el-tab-pane>
 
@@ -73,7 +73,7 @@
     <el-dialog title="修改列名/类型" :visible.sync="dialogVisible" width="30%">
       <el-form ref="form" label-width="80px">
         <el-form-item label="字段类型">
-          <typeSelect v-model="newColumnType" :placeholder="`请选择`"></typeSelect>
+          <type-select v-model="newColumnType" :placeholder="`请选择`"></type-select>
         </el-form-item>
         <el-form-item label="字段名称">
           <el-input v-model="newColumnName" placeholder="请输入内容"></el-input>
@@ -86,7 +86,7 @@
     </el-dialog>
 
     <el-dialog title="增加新字段" :visible.sync="addFieldDialogVisible" width="30%">
-      <newFieldForm ref="newFiledRef" :fields="tableKeys" :types="tableKeysType" :dataSetId="dataSetId" @refreshData="refreshData"></newFieldForm>
+      <new-field-form ref="newFiledRef" :fields="tableKeys" :types="tableKeysType" :dataSetId="dataSetId" @refreshData="refreshData"></new-field-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="addFieldDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addField">确 定</el-button>
@@ -98,10 +98,10 @@
   <script>
 import Left from "./DataSetLeft.vue";
 import ConditionFilter from "./ConditionFilter.vue";
-import wTable from "../common/mytable.vue";
+import MyTable from "../common/MyTable.vue";
 import BatchOperation from "./BatchOperation.vue";
 import NewFieldForm from "./NewFieldForm.vue";
-import typeSelect from "../common/typeSelect.vue";
+import TypeSelect from "../common/TypeSelect.vue";
 import EmptyTask from "../common/EmptyTask";
 import { TYPECONVERTER, JsonParse } from "@/utils/common.js";
 function tableProperty(
@@ -135,10 +135,10 @@ export default {
   components: {
     Left,
     ConditionFilter,
-    wTable,
+    MyTable,
     BatchOperation,
     NewFieldForm,
-    typeSelect,
+    TypeSelect,
     EmptyTask
   },
   data() {

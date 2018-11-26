@@ -4,7 +4,7 @@
       <el-input v-model="newFieldName" placeholder="字段名称"></el-input>
     </el-form-item>
     <el-form-item>
-      <typeSelect v-model="newFieldType" style="width:100%;" :placeholder="`请选择字段类型`"></typeSelect>
+      <type-select v-model="newFieldType" style="width:100%;" :placeholder="`请选择字段类型`"></type-select>
     </el-form-item>
     <el-form-item>
       <el-input type="textarea" :rows="2" placeholder="根据下面函数提示编写expression" v-model="expression" resize="none">
@@ -55,7 +55,7 @@
   </el-form>
 </template>
 <script>
-import typeSelect from "../common/typeSelect.vue";
+import TypeSelect from "../common/TypeSelect.vue";
 
 const exampleLable = "例子：";
 const affectLable = "作用：";
@@ -98,7 +98,7 @@ const expressions = [
 //                 </el-menu-item>
 export default {
   components: {
-    typeSelect
+    TypeSelect
   },
   data() {
     return {

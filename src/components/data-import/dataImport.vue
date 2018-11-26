@@ -4,27 +4,23 @@
       <el-main>
         <!-- 新建任务部分 -->
         <div>
-          <NewTask></NewTask>
+          <new-task></new-task>
         </div>
         <!-- 历史任务部分 -->
         <div>
-          <OldTask></OldTask>
+          <old-task></old-task>
         </div>
         <!-- 分享任务部分 -->
         <!-- <div>
           <ShareTask></ShareTask>
         </div> -->
-        <Myfooter style="margin-top:150px"></Myfooter>
+        <my-footer style="margin-top:150px"></my-footer>
       </el-main>
-
-      <!-- <el-footer>
-               
-            </el-footer> -->
     </el-container>
   </el-container>
 </template>
 <script>
-import Myfooter from "../common/footer.vue";
+import MyFooter from "../common/footer.vue";
 import NewTask from "./NewTask.vue";
 import OldTask from "./oldTask.vue";
 import ShareTask from "./shareTask.vue";
@@ -32,7 +28,7 @@ import ShareTask from "./shareTask.vue";
 
 export default {
   components: {
-    Myfooter,
+    MyFooter,
     NewTask,
     OldTask,
     ShareTask
@@ -43,7 +39,7 @@ export default {
     };
   },
   created: function() {
-    this.$store.commit('changeIndex',{index:"dataImport"})
+    this.$store.commit("changeIndex", { index: "dataImport" });
     // this.$axios
     //   .get("http://120.79.146.91:8000/taskinfo/", {
     //     headers: {
@@ -64,7 +60,8 @@ export default {
 };
 </script>
 <style scoped>
-html,body{
+html,
+body {
   min-width: 600px;
 }
 .el-footer {
@@ -81,7 +78,7 @@ html,body{
   line-height: 200px;
   margin: 0;
 }
-.el-main{
+.el-main {
   padding: 0 10%;
 }
 </style>

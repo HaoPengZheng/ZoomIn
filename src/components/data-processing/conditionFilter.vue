@@ -8,7 +8,7 @@
       </el-select>
     </el-row>
     <el-row :gutter="10" style="margin-bottom: -10px;">
-      <ConditionItem :ref="'item'+index" :keys="keys" v-for="(value,index) in itemCount" :key="value.index" :keyTypes="keyTypes" :end="index+1==itemCount.length" :count="itemCount.length" :item="value" v-on:addItem="addItem" v-on:removeItem="removeItem" v-on:updateItemData="updateItemData" v-on:filterData="sendfilterData"></ConditionItem>
+      <condition-item :ref="'item'+index" :keys="keys" v-for="(value,index) in itemCount" :key="value.index" :keyTypes="keyTypes" :end="index+1==itemCount.length" :count="itemCount.length" :item="value" v-on:addItem="addItem" v-on:removeItem="removeItem" v-on:updateItemData="updateItemData" v-on:filterData="sendfilterData"></condition-item>
     </el-row>
 
   </div>
@@ -51,7 +51,7 @@ export default {
           index: 1
         }
       ],
-      filterData: [],
+      filterData: []
     };
   },
   methods: {

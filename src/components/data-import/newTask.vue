@@ -37,7 +37,7 @@
     </el-dialog>
     <!-- 数据预览模态框 -->
     <el-dialog :visible.sync="tablePreviewVisable" width="50%" title="数据预览" top="5vh">
-      <previewTable :json="tablejsons" v-on:setTitleIndex="setTitleIndex"></previewTable>
+      <preview-table :json="tablejsons" v-on:setTitleIndex="setTitleIndex"></preview-table>
       <span slot="footer" class="dialog-footer">
         <el-button @click="tablePreviewVisable = false">取 消</el-button>
         <el-button type="primary" @click="createTask">创建任务</el-button>
@@ -48,9 +48,13 @@
 </template>
 <script>
 import PreviewTable from "./PrviewTable.vue";
-import { converterTwoDimArrayToObjectArray,converterFileToJson, importf } from "@/utils/fileToJson.js";
+import {
+  converterTwoDimArrayToObjectArray,
+  converterFileToJson,
+  importf
+} from "@/utils/fileToJson.js";
 import validateObj from "@/utils/validate.js";
-import Papa from 'papaparse';
+import Papa from "papaparse";
 export default {
   components: {
     PreviewTable
@@ -79,7 +83,6 @@ export default {
     };
   },
   methods: {
-    
     importfile: function() {
       let obj = this.$refs.obj;
       let filetype = obj.value.substring(
