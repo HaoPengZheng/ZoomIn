@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="bg">
-      <div :class="['bg-nav',{'changeNav':isOverScroll}]">
+      <div :class="['bg-nav',{'changeNav':isOverScroll}]" id="bg-nav">
         <div><img src="../../assets/image/Logo.png"></div>
         <div class="bg-nav-menu">
           <div>
@@ -20,50 +20,25 @@
             帮助
           </div>
         </div>
-        <!--<button class="login" @click="toLogin">登录</button>-->
+        <button class="bg-nav-login" @click="toLogin">登录</button>
       </div>
-      <div class="bg-warp">
-        <!--<div class="bg-left">-->
-        <!--<img src="https://me.bdp.cn/personal/img/banner/banner1_56d9c8b.png" width="600" height="400">-->
-        <!--</div>-->
-        <!--<div style="width: 400px"></div>-->
+      <div class="bg-warp" id="bg-warp">
+        <div class="banner-decoration"></div>
+        <div class="bg-left">
+          <img src="../../assets/welcomePage/banner.svg" width="600px" height="400px"/>
+        </div>
         <div class="bg-right">
           <div class="bg-right-title">
-            <img src="http://cdn.algbb.fun/ImageMessages/BB_1541900613936" width="250px"/>
-            <br>
-            <div>———— 一个更懂你的数据分析网站</div>
+            ZoomIn
           </div>
-          <div style="position: relative;width: 100%">
-            <i class="iconfont icon icon-yonghu"></i>
-            <input class="bg-right-input" placeholder="用户名"/>
+          <div class="bg-right-content">
+            Make Fun Every Day<br/>用心创造快乐，用爱感动世界<br/>打造一个最适合你的数据分析网站
           </div>
-          <div style="position: relative;width: 100%">
-            <i class="iconfont icon icon-mima"></i>
-            <input class="bg-right-input" placeholder="密码"/>
-          </div>
-          <!--<div>-->
-          <!--&lt;!&ndash;<p>用户名：</p>&ndash;&gt;-->
-          <!--<el-input class="bg-right-input" placeholder="请输入用户名"><span style="display: flex" slot="prefix"-->
-          <!--class="iconfont bg-right-icon">&#xe67c;</span>-->
-          <!--</el-input>-->
-          <!--</div>-->
-          <!--<div>-->
-          <!--&lt;!&ndash;<p>密码：</p>&ndash;&gt;-->
-          <!--<el-input class="bg-right-input" placeholder="请输入密码"><span style="display: flex" slot="prefix"-->
-          <!--class="iconfont bg-right-icon">&#xe601;</span>-->
-          <!--</el-input>-->
-          <!--</div>-->
-          <button class="bg-right-button">登&nbsp;&nbsp;&nbsp;&nbsp;录</button>
-
-          <!--<h3 class="title">Zoomin 学业分析系统</h3>-->
-          <!--<h3 class="small-title">分析成绩、教研成果不再求人</h3>-->
-          <!--<el-button type="primary" round>立即使用</el-button>-->
+          <button class="bg-right-button">Learn More</button>
         </div>
       </div>
-
     </div>
-    <!--<canvas id="canvas" style="transform:rotate(180deg);position:absolute;top:0px;left:0px;z-index:-1;opacity: 0.8"></canvas>-->
-    <FeatureList :textList="featureTextLists"></FeatureList>
+    <FeatureList></FeatureList>
     <WelcomeFooter></WelcomeFooter>
   </div>
 </template>
@@ -71,42 +46,6 @@
 <script>
   import FeatureList from "./FeatureList.vue";
   import WelcomeFooter from "./WelcomeFooter.vue";
-
-  const featureTextLists = [
-    {
-      title: "整合各类数据",
-      content: [
-        "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-        "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-      ],
-      pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-    },
-    {
-      title: "全面分析业务",
-      content: [
-        "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-        "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-      ],
-      pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-    },
-    {
-      title: "整合各类数据，全面分析业务",
-      content: [
-        "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-        "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-      ],
-      pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-    },
-    {
-      title: "全面分析业务",
-      content: [
-        "支持接入多种数据源，包括本地数据，网站统计、广告推广等各种第三方平台数据，同时还能连接各类数据库和同步工具。",
-        "Zoomin 学业分析系统分析成绩、教研成果不再求人"
-      ],
-      pictureUrl: "https://me.bdp.cn/personal/img/propaganda/computer_aa462ef.png"
-    }
-  ];
-  const overScrollHeight = 527;
   export default {
     components: {
       FeatureList,
@@ -114,37 +53,17 @@
     },
     data() {
       return {
-        featureTextLists: featureTextLists,
-        scrollY: 0
+        scrollY: 0,
+        wrapHeight: 0,
       };
     },
     mounted: function () {
       window.addEventListener("scroll", this.handleScroll);
-      // var canvas = document.getElementById('canvas');
-      // var ctx = canvas.getContext('2d');
-      // canvas.width = canvas.parentNode.offsetWidth;
-      // canvas.height = canvas.parentNode.offsetHeight;
-      // var boHeight = canvas.height / 10;
-      // var posHeight = canvas.height / 1.2;
-      // var step = 0;
-      // var j = 0;
-      // ctx.fillStyle = "#409eff";
-      // var angle = (step + j * 50) * Math.PI / 180;
-      // var deltaHeight = Math.sin(angle) * boHeight;
-      // var deltaHeightRight = Math.cos(angle) * boHeight;
-      // ctx.beginPath();
-      // ctx.moveTo(0, posHeight + deltaHeight);
-      // ctx.bezierCurveTo(canvas.width / 2, posHeight + deltaHeight - boHeight, canvas.width / 2, posHeight + deltaHeightRight - boHeight, canvas.width, posHeight + deltaHeightRight);
-      // ctx.lineTo(canvas.width, canvas.height);
-      // ctx.lineTo(0, canvas.height);
-      // ctx.lineTo(0, posHeight + deltaHeight);
-      // ctx.closePath();
-      // ctx.fill();
-
+      this.wrapHeight = document.getElementById('bg-warp').offsetHeight;
     },
     computed: {
       isOverScroll: function () {
-        return this.scrollY > overScrollHeight;
+        return this.scrollY > 0;
       }
     },
     methods: {
@@ -152,21 +71,13 @@
         this.scrollY = window.scrollY;
       },
       toLogin: function () {
-        this.$router.push('/');
+        this.$router.push('/login');
       }
     }
   };
 </script>
 
 <style scoped>
-  .icon {
-    color: #fff;
-    left: 2%;
-    font-size: 24px;
-    position: absolute;
-    top: 8px;
-  }
-
   * {
     padding: 0;
     margin: 0;
@@ -179,27 +90,12 @@
     overflow: auto;
   }
 
-  .title {
-    line-height: 56px;
-    font-size: 40px;
-    font-weight: 200;
-    color: #fff;
-    margin: 0;
-  }
-
   .bg {
     margin: 0;
-    padding: 0;
-    padding-bottom: 20px;
-    /*background: linear-gradient(to top, #7ededeed 0, #66cccc 100%);*/
-
-    /*background-image: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);*/
-    /*background-image: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);*/
-    /*background-image: linear-gradient(to right, #0acffe 0%, rgba(73, 90, 255, 0.7) 100%);*/
-
-    background-image: url(//cdn.suisuijiang.com/ImageMessage/5b4ee8321b53ec11c8505de5_1541903492986.jpeg?width=1920&height=1080);
+    padding: 0 0 200px 0;
+    background-image: linear-gradient(-225deg, #22E1FF 0%, #1D8FE1 48%, #625EB1 100%);
     background-size: 100% 100%;
-
+    filter: alpha(opacity=50);
   }
 
   .bg-nav {
@@ -210,6 +106,7 @@
     justify-content: space-around;
     width: 100%;
     font-size: 20px;
+    padding: 5px 0;
   }
 
   .bg-nav-menu {
@@ -222,7 +119,8 @@
 
   .bg-nav-menu div {
     float: left;
-    margin: 0 22px;
+    padding: 10px;
+    margin: 0 20px;
     font-weight: 700;
     position: relative;
     transition: all .25s ease-in-out;
@@ -230,7 +128,6 @@
 
   .bg-nav-menu div:hover {
     cursor: pointer;
-    /*color: #333;*/
     transform: translateY(-5px);
     transition: all .25s ease-in-out;
   }
@@ -259,13 +156,44 @@
     border-radius: 6px;
   }
 
+  .bg-nav-login {
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    height: 40px;
+    padding: 0 20px;
+    outline: none;
+    border-radius: 12px;
+    border: #fff 1px solid;
+    background: transparent;
+    box-shadow: #fff 0 0 10px 0;
+    transition: all .25s ease-in-out;
+  }
+
+  .bg-nav-login:hover {
+    box-shadow: #d7d7d7 0 0 20px 2px;
+    transition: all .25s ease-in-out;
+  }
+
   .changeNav {
     position: fixed;
     background-color: #fff;
     z-index: 999;
     color: #888;
     border-bottom: 1px solid #dcdfe6;
-    transition: all .3s ease-in-out;
+    transition: all .25s ease-in-out;
+  }
+
+  .changeNav button{
+    opacity: 0.8;
+    color: #666;
+    box-shadow: #999 0 0 10px 0;
+  }
+  .changeNav button:hover{
+    opacity: 1.0;
+    color: #333;
+    box-shadow: #666 0 0 10px 0;
   }
 
   .changeNav li {
@@ -274,144 +202,79 @@
   }
 
   .bg-warp {
-    padding: 100px 0 100px 0;
-    /*max-width: 1346px;*/
-    /*margin: 0 auto;*/
+    padding: 100px 0 200px 0;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
-    /*align-items: center;*/
+    justify-content: space-around;
     flex-wrap: wrap;
+    position: relative;
+  }
+
+  .banner-decoration {
+    opacity: 0.6;
+    width: 360px;
+    height: 360px;
+    border-radius: 50%;
+    background-image: linear-gradient(-225deg, #AC32E4 0%, #7918F2 48%, #4801FF 100%);
+    position: absolute;
+    left: 30px;
+    bottom: -200px;
+    box-shadow: rgba(215, 215, 215, 0.51) 0 2px 40px 5px;
   }
 
   .bg-left {
-    margin: 0 0px 0 0;
-    order: 1;
-    transition: all .25s ease-in-out;
-  }
-
-  .bg-left:hover {
-    transform: scale(1.05, 1.05);
-    transition: all .25s ease-in-out;
+    margin: 0;
   }
 
   .bg-right {
-    opacity: 0.9;
-    margin-right: 150px;
-    height: 450px;
-    width: 400px;
-    padding: 0 50px;
-    border: rgba(255, 255, 255, 0.5) 3px solid;
-    border-radius: 16px;
+    width: 600px;
+    height: 400px;
     display: flex;
-    justify-content: space-evenly;
-    align-items: center;
     flex-direction: column;
-    transition: all .25s ease-in-out;
-    /*background-color: #666;*/
-    /*background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.40) 0%, rgba(0,0,0,0.40) 120%) #989898;*/
-    /*background-blend-mode: multiply,multiply;*/
-    background-image: linear-gradient(to right, #434343 0%, black 100%);
-  }
-
-  .bg-right:hover {
-    transform: scale(1.05, 1.05);
-    transition: all .25s ease-in-out;
-    box-shadow: rgba(255, 255, 255, 0.51) 0 5px 30px;
-  }
-
-  .bg-right:active {
-    transform: scale(1.05, 1.05);
-    transition: all .25s ease-in-out;
-    box-shadow: rgba(255, 255, 255, 0.51) 0 5px 30px;
+    justify-content: space-evenly;
   }
 
   .bg-right-title {
-    width: 100%;
-  }
-
-  .bg-right-title div {
-    padding-top: 10px;
-    text-align: right;
-    color: #d7d7d7;
-    font-family: 宋体;
-    font-style: italic;
+    font-size: 80px;
+    color: white;
     font-weight: bold;
+    letter-spacing: 20px;
+    text-shadow: 4px 8px 20px #d7d7d7;
+    -webkit-text-stroke: 1px #999;
+    background-image: linear-gradient(to top, #eef4fb 0%, white 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  .bg-right-input {
-    width: 80%;
-    padding: 0 10%;
-    border: none;
-    border-bottom: #fff 2px solid;
-    height: 40px;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 20px;
+  .bg-right-content {
+    font-size: 40px;
+    color: white;
     font-weight: bold;
-    background-color: transparent;
-  }
-
-  .bg-right-input:focus {
-    outline: none;
-    /*border: transparent 1px solid;*/
-  }
-
-  .bg-right-input::-webkit-input-placeholder {
-    color: rgba(255, 255, 255, 0.6);
-  }
-
-  .bg-right p {
-    margin: 0 0 15px 0;
-    color: #fff;
-    font-weight: bold;
-    font-size: 20px;
+    margin-bottom: 20px;
+    opacity: 0.8;
   }
 
   .bg-right-button {
-    height: 40px;
-    width: 100%;
+    height: 56px;
     border: none;
+    outline: none;
     border-radius: 16px;
-    margin: 20px 0;
-    background-color: #fff;
+    color: #fff;
+    width: 40%;
     font-size: 20px;
-    color: #666;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-weight: bold;
+    background-image: linear-gradient(-225deg, #AC32E4 0%, #7918F2 48%, #4801FF 100%);
+    opacity: 0.7;
     transition: all .25s ease-in-out;
   }
 
   .bg-right-button:hover {
-    background-color: #666;
+    opacity: 1.0;
     transition: all .25s ease-in-out;
-    color: #fff;
-  }
-
-  .bg-right-button:focus {
-    outline: none;
-  }
-
-  .login {
-    line-height: 28px;
-    padding: 0 14px;
-    font-weight: 700;
-    font-size: 14px;
-    background: transparent;
-    color: #fff;
-    border-radius: 8px;
-    border: 2px solid #fff;
-    margin-left: 200px;
-    outline: none;
-    font-size: 20px;
-    transition: all .25s ease-in-out;
-  }
-
-  .login:hover {
-    cursor: pointer;
-    background: #fff;
-    color: #333;
-    border: 2px solid #666;
-    transition: all .25s ease-in-out;
+    box-shadow: #666 0 4px 10px 0;
   }
 
   .changeNav .login {

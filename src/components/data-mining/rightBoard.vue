@@ -16,10 +16,10 @@
       <el-collapse-item title="模型选择" name="2">
         <modelType/>
       </el-collapse-item>
-      <el-collapse-item title="模型2选择" name="3"  v-show="false">
+      <el-collapse-item title="模型选择" name="3"  v-show="false">
         <modelType/>
       </el-collapse-item>
-      <el-collapse-item title="坐标轴设置" name="4">
+      <el-collapse-item title="坐标轴设置" name="4" v-show="axisOptionVisible">
         <axisOption/>
       </el-collapse-item>
       <el-collapse-item title="图表备注" name="6">
@@ -57,13 +57,32 @@ import axisOption from './rightOption/axisOption'
         return {
         input: '',
         featureConfigurationFlag:false,
-        activeNames: ['1','2','3','4','5','6']
+        activeNames: ['1','2','3','4','5','6'],
+        axisOptionVisible:true
         }
     },
     mounted(){
       Bus.$on('featureConfigurationFlag',(e)=>{
         this.featureConfigurationFlag = e
       })
+      Bus.$on('modelParmsFlag',(type)=>{
+			  switch (type) {
+          case '线性回归':
+          this.axisOptionVisible = true
+          break;
+          case '非线性回归':
+          this.axisOptionVisible = true
+					break;
+					case 'K-Means聚类':
+					this.axisOptionVisible = false	//关闭坐标轴设置
+					break;
+          case 'Mini Batch K-Means聚类':  //关闭坐标轴设置
+          this.axisOptionVisible = false
+          break;
+				  default:
+					  break;
+			    }
+		  })
       this.autoDivSize()
     },
     methods:{

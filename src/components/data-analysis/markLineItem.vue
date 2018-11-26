@@ -59,7 +59,7 @@ export default {
     mounted(){
 
         Bus.$on('ensure',(e)=>{
-            Bus.$emit('markLineOption',this.featureValueObject);
+            Bus.$emit('markLine',this.featureValueObject);
         })
     },
     watch:{
@@ -82,7 +82,7 @@ export default {
     methods:{
         ensure(){
             //拼凑字符串
-           Bus.$emit('markLineOption',this.featureValueObject);
+           Bus.$emit('markLine',this.featureValueObject);
 
         },
         dialogPop(){

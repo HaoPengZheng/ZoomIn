@@ -1,6 +1,6 @@
   <template>
-  <el-container>
-    <Left :dataSetList="dataSetList" :dataSetId="dataSetId">
+  <el-container  style="height:100%">
+    <Left :dataSetList="dataSetList" :dataSetId="dataSetId"  >
     </Left>
     <el-container>
       <el-main>
@@ -96,7 +96,7 @@
   </el-container>
 </template>
   <script>
-import Left from "../common/data_set_list.vue";
+import Left from "./DataSetLeft.vue";
 import ConditionFilter from "./ConditionFilter.vue";
 import wTable from "../common/mytable.vue";
 import BatchOperation from "./BatchOperation.vue";
@@ -630,6 +630,7 @@ export default {
     saveAndGoDataAnalysis: function() {
       var c = confirm("是否保存处理结果？");
       if (c) {
+        sessionStorage.setItem("dataSetId",this.dataSetId)
         this.$router.push({
           name: "data-analysis",
           params: { dataSetId: this.dataSetId }
