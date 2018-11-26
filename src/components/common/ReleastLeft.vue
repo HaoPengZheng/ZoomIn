@@ -10,7 +10,7 @@
         <vue-scroll :ops="ops">
           <div style="width:100%;height:100%;">
             <div class="left-search">
-              <el-select v-model="dataSetName" v-show="!isShrink" filterable reserve-keyword placeholder="搜索任务" style="padding:5px">
+              <el-select v-model="dataSetName" filterable reserve-keyword placeholder="搜索任务" style="padding:5px">
                 <el-option v-for="item in dataSetList" :key="item.id" :label="item.title" :value="item.id">
                 </el-option>
               </el-select>
@@ -168,7 +168,7 @@ export default {
       }
     };
   },
-   computed: {
+  computed: {
     width: function() {
       if (this.isShow) {
         return 275;
@@ -235,7 +235,11 @@ export default {
   background-color: #ebebeb;
 }
 .my-menu li.active {
-  background-color: #dcdcdc;
+  background-color: #f5f7fa;
+  color: #409eff;
+}
+.my-menu li.active a {
+  color: #409eff;
 }
 .left-search {
   display: flex;
@@ -251,14 +255,14 @@ export default {
   justify-content: space-between;
   display: flex;
 }
-.openAndClose{
+.openAndClose {
   cursor: pointer;
   position: absolute;
   right: 0px;
   color: #777;
   z-index: 999;
 }
-.openAndClose:hover{
-  color:#000;
+.openAndClose:hover {
+  color: #000;
 }
 </style>
