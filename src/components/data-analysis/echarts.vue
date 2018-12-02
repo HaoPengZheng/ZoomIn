@@ -175,13 +175,13 @@
       Bus.$on('leftChange', (e) => {
         if (e) {
           document.getElementById("myChart").style.width = this.winWidth * 0.87 + "px";
-          document.getElementById("echartsCard").style.width = this.winWidth * 0.898 + "px";
+          // document.getElementById("echartsCard").style.width = this.winWidth * 0.898 + "px";
           this.myChart.dispose();
           this.drawLine();
         }
         else {
           document.getElementById("myChart").style.width = this.winWidth * 0.67 + "px";
-          document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
+          // document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
           this.myChart.dispose();
           this.drawLine();
         }
@@ -2173,10 +2173,10 @@
           this.winWidth = document.documentElement.clientWidth;
 
         //DIV高度为浏览器窗口的高度
-        document.getElementById("myChart").style.height = this.winHeight * 0.8 + "px";
+        document.getElementById("myChart").style.height = this.winHeight * 0.8-document.getElementById('drop').offsetHeight +15+ "px";
         document.getElementById("myChart").style.width = this.winWidth * 0.67 + "px";
-        document.getElementById("echartsCard").style.height = this.winHeight * 0.84 + "px";
-        document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
+        // document.getElementById("echartsCard").style.height = this.winHeight * 0.84 + "px";
+        // document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
         document.getElementById("font-position").style.marginTop = this.winHeight * 0.30 + "px";
 
       },
@@ -2200,7 +2200,7 @@
 </script>
 <style>
   .analysisCardStyle {
-    margin: 21px;
+    /*margin: 21px;*/
     margin-top: 20px;
 
   }

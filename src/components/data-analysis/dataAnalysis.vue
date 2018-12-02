@@ -12,17 +12,19 @@
           <div class="demo_line_02">
             <span>维度数值</span>
           </div>
-          <vue-scroll>
-              <drag style="margin-top:30px;height: 500px"></drag>
+          <vue-scroll style="margin-top:30px;">
+            <div>
+              <drag style="height: 500px"></drag>
+            </div>
           </vue-scroll>
         </div>
         <!-- </transition> -->
       </el-col>
 
       <el-col :span="spanParms[1]">
-        <div class="app-border">
+        <div class="app-border" id="app-border">
           <!-- 由于导航栏的问题，临时下降1px -->
-          <el-row style="margin-top:1px">
+          <el-row style="margin-top:1px" id="drop">
             <el-card style="margin:15px;margin-bottom:-5px">
               <el-col :span="24">
                 <div style="margin-left:15px;margin-right:20px;margin-top:-15px">
@@ -38,8 +40,8 @@
           </el-row>
 
           <el-row>
-            <el-col :span="8">
-              <div style="margin:-6px;width:80%">
+            <el-col :span="24">
+              <div>
                 <echarts></echarts>
               </div>
             </el-col>
@@ -121,7 +123,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #5A616A;
-    overflow-y: hidden;
+    overflow: hidden;
 
   }
 

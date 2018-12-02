@@ -9,9 +9,9 @@
           <icon name="angle-left" v-show="iconFlag"></icon>
           <icon name="angle-right" v-show="!iconFlag"></icon>
         </el-button>
-        <vue-scroll>
-          <drag style="height: 500px;"></drag>
-        </vue-scroll>
+        <!--<vue-scroll>-->
+          <drag></drag>
+        <!--</vue-scroll>-->
 
       </el-col>
 

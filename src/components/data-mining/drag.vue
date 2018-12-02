@@ -1,32 +1,32 @@
 <template>
+
   <div class='drag-content' id="dragCon">
     <el-tabs v-model="activeName">
       <el-tab-pane class="tab-pane-font" label="字段选择" name="first">
-        <div>
-          <div style="margin-top:130px" v-if="loadingUsergroupList">
-            <div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div>
+        <vue-scroll>
+          <div style="height: 500px;">
+            <div style="margin-top:130px" v-if="loadingUsergroupList">
+              <div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div>
+            </div>
+            <div class='select-ul' v-if="dragFlag">
+              <div style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
+                <div class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)'
+                     style="list-style-type:none; ">
+                  <svg class="icon" aria-hidden="true" style="margin-right:10px">
+                    <use xlink:href="#icon-wenzi"></use>
+                  </svg>{{textField}}</div>
+              </div>
+              <div style="display:table;text-align: left;" v-for="(numberField) in numberFields" :key="numberField">
+                <div class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)'
+                     style="list-style-type:none; ">
+                  <svg class="icon" aria-hidden="true" style="margin-right:10px">
+                    <use xlink:href="#icon-wellnum"></use>
+                  </svg>{{numberField}}</div>
+              </div>
+
+            </div> <!-- 拖动的标签 -->
           </div>
-          <div class='select-ul' v-if="dragFlag">
-            <div style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
-              <div class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)'
-                  style="list-style-type:none; ">
-                <svg class="icon" aria-hidden="true" style="margin-right:10px">
-                  <use xlink:href="#icon-wenzi"></use>
-                </svg>
-                {{textField}}
-              </div>
-            </div>
-            <div style="display:table;text-align: left;" v-for="(numberField) in numberFields" :key="numberField">
-              <div class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)'
-                  style="list-style-type:none; ">
-                <svg class="icon" aria-hidden="true" style="margin-right:10px">
-                  <use xlink:href="#icon-wellnum"></use>
-                </svg>
-                {{numberField}}
-              </div>
-            </div>
-          </div> <!-- 拖动的标签 -->
-        </div>
+        </vue-scroll>
       </el-tab-pane>
       <el-tab-pane class="tab-pane-font" label="参数设置" name="second">
 
@@ -101,6 +101,7 @@
 
 <style scoped>
   .select-ul {
+    margin-top: -10px;
     padding: 5px;
     text-align: center;
 

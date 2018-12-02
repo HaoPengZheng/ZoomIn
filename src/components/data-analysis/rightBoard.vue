@@ -97,7 +97,8 @@
           this.winWidth = document.documentElement.clientWidth;
 
         //DIV高度为浏览器窗口的高度
-        document.getElementById("rightBoard").style.height = this.winHeight * 0.95 + "px";
+        // document.getElementById("rightBoard").style.height = this.winHeight * 0.95 + "px";
+        document.getElementById("rightBoard").style.height = document.getElementById('app-border').offsetHeight+26+'px';
         //console.log(document.getElementById("rightBoardScrollbar").style.height)
       },
       nextClick() {
