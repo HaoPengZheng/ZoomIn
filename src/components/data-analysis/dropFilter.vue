@@ -5,7 +5,7 @@
             <el-col :span="24" >
                 <!-- 字段框 -->
                 <div class="analysisDropFilterStyle el-input el-input-group el-input-group--prepend" style="margin-left:1px;">
-                    <div class="el-input-group__prepend" style="border: 0px solid #dcdfe6" >筛选<svg class="icon" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg></div>
+                    <div class="el-input-group__prepend" style="border: 0px solid #dcdfe6" >筛选 <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shaixuan"></use></svg></div>
                     <div style="border-bottom: 1px solid #D0D0D0;height: 40px;text-align: left;margin-top:0px" @drop='filterDrop($event)' @ondrop="removeDrop($event)" @dragover='allowDrop($event)' @ondragstart="drag(event)">
                         <el-tooltip class="item" effect="dark"  v-for="(item,index) in dropFilter" :key="index" :content="filterFlag[index]" placement="bottom">
                         <el-tag
@@ -19,13 +19,13 @@
                         <div>
                             <div class="insert-tag"></div>
                         </div>
-                        
+
                     </div>
                 </div>
             </el-col>
         </el-row>
     </div>
-    
+
      <el-dialog :visible.sync="dialogVisible" >
             <el-radio v-model="radio" :label="true">条件过滤</el-radio>
             <el-radio v-model="radio" :label="false">表达式过滤</el-radio>
@@ -55,7 +55,7 @@
             <el-radio v-model="textRadio" label="label1">精准过滤</el-radio>
             <el-radio v-model="textRadio" label="label2">条件过滤</el-radio>
             <el-radio v-model="textRadio" label="label3">表达式过滤</el-radio>
-            
+
             <!-- 精准过滤 -->
             <el-card style="margin:50px"  shadow="hover" v-if="textRadio === 'label1'">
               <el-transfer
@@ -95,7 +95,7 @@
 
     </div>
 
-    
+
 </template>
 
 <script>
@@ -172,7 +172,7 @@ import dropFilterTextItem from './dropFilterTextItem'
 
             },
             filterDrop:function(ev){
-              ev.preventDefault();  
+              ev.preventDefault();
 			        var data = ev.dataTransfer.getData("ID");//拖动的元素的ID
                         this.dropFilter.push(data)
                         if(this.isNumber(this.isNumberArray[data]))this.dialogVisible = true
@@ -192,7 +192,7 @@ import dropFilterTextItem from './dropFilterTextItem'
                         Bus.$emit('filterdata', data)
                         //给字段筛选的精确筛选穿梭框赋值
                         //console.log(this.dropFilter)
-                        
+
             },
             allowDrop:function(event){
               event.preventDefault();
@@ -312,7 +312,7 @@ import dropFilterTextItem from './dropFilterTextItem'
                 Bus.$emit('filterCancel','filterCancel')//这个地方是真的真的迷。。。。。删掉的话y轴会少一条数据
             }
 
-		    
+
     }
     }
 </script>
@@ -327,7 +327,7 @@ import dropFilterTextItem from './dropFilterTextItem'
 .analysisDropFilterStyle .el-input-group__prepend{
     background-color: #ffffff;
     border: 0px solid;
-    border-bottom: 0px solid #dcdfe6; 
+    border-bottom: 0px solid #dcdfe6;
 }
 </style>
 
@@ -355,7 +355,7 @@ import dropFilterTextItem from './dropFilterTextItem'
     width: 800px;
     cursor: pointer;
     text-align: left;
-    
+
 }
 .select-project-item {
     display: inline-block;

@@ -1,5 +1,5 @@
 <template>
-  <div id="rightBoard" style="height:700px;position:relative;">
+  <div id="rightBoard" style="position:relative;">
     <transition name="el-zoom-in-center">
       <div v-show="rightVisiable" class="transition-box">
         <!--<el-scrollbar>-->
@@ -69,6 +69,8 @@
       };
     },
     mounted() {
+      document.getElementById('rightBoard').style.height = document.getElementById('app-border').offsetHeight-25+'px';
+      // console.log(document.getElementById('app-border').offsetHeight)
       Bus.$on("featureConfigurationFlag", e => {
         this.featureConfigurationFlag = e;
       });
@@ -98,7 +100,7 @@
 
         //DIV高度为浏览器窗口的高度
         // document.getElementById("rightBoard").style.height = this.winHeight * 0.95 + "px";
-        document.getElementById("rightBoard").style.height = document.getElementById('app-border').offsetHeight+26+'px';
+        // document.getElementById("rightBoard").style.height = document.getElementById('app-border').offsetHeight + 26 + 'px';
         //console.log(document.getElementById("rightBoardScrollbar").style.height)
       },
       nextClick() {

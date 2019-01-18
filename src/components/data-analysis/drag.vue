@@ -4,7 +4,7 @@
       <div style="margin-top:130px" v-if="loadingUsergroupList">
         <div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div>
       </div>
-      <div class='select-ul' v-if="dragFlag">
+      <div class='select-ul' id="select-ul" v-if="dragFlag">
         <div style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
           <div class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)'
                style="list-style-type:none;">
@@ -44,6 +44,9 @@
     },
 
     mounted() {
+      // document.getElementById('dragCon').style.height=document.getElementById('app-border').offsetHeight-document.getElementById('dragCon').offsetTop+'px'
+      // console.log(document.getElementById('demo_line_02').offsetTop)
+      // console.log(document.getElementById('app-border').offsetHeight)
       Bus.$on('AxiosDataDragItem', (e) => {
         //console.log(e)
         this.keyArray = e

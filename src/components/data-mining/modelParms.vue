@@ -81,27 +81,14 @@
       testSizeChange: _.debounce(function () {
         Bus.$emit('test_size', this.num1)
       }, 500),
-      // testSizeChange(value) {
-      // _.debounce(function () {
-      //   Bus.$emit('test_size', value)
-      // },500);
-      // },
 
       mthPowerChange: _.debounce(function () {
         Bus.$emit('mth_power', this.num2)
       }, 500),
 
-      // mthPowerChange(value) {
-      //   Bus.$emit('mth_power', value)
-      // },
-
       errorType: _.debounce(function () {
         Bus.$emit('error_type', this.value)
       }, 500),
-
-      // errorType(value) {
-      //   Bus.$emit('error_type', value)
-      // }
     },
     mounted() {
       Bus.$on('modelParmsFlag', (type) => {

@@ -1,13 +1,14 @@
 <template>
 
   <div class='drag-content' id="dragCon">
+
     <el-tabs v-model="activeName">
       <el-tab-pane class="tab-pane-font" label="字段选择" name="first">
+        <div style="margin-top:-80px" v-if="loadingUsergroupList">
+          <div style="position: inherit!important;" v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div>
+        </div>
         <vue-scroll>
           <div style="height: 500px;">
-            <div style="margin-top:130px" v-if="loadingUsergroupList">
-              <div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div>
-            </div>
             <div class='select-ul' v-if="dragFlag">
               <div style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
                 <div class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)'

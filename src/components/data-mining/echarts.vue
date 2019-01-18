@@ -15,7 +15,7 @@
           <div class="echarts-font" id="font-position" v-show="bgFlag"></div>
           <img src="@/assets/chartBg.png" style="width:90%;height:90%;" v-show="bgFlag">
           <!-- 这里单独定义显示变量 -->
-          <img :src="picPath" style="width:90%;height:90%;margin:45px;" v-show="regressionFlag">
+          <img :src="picPath" style="width:90%;height:90%;" v-show="regressionFlag">
           <!-- 表格部分 -->
           <el-table
             :data="tableData"
@@ -162,6 +162,11 @@
       }
     },
     mounted() {
+      // Bus.$on('leftChange', () => {
+      //   // this.autoDivSize();
+      //   console.log('leftChange!!!')
+      // });
+
       Bus.$on('getMiningDataSetId', (e) => {
         this.dataSetId = e
         //alert(this.dataSetId)
@@ -209,16 +214,18 @@
 
       this.autoDivSize();//根据浏览器尺寸设置echarts的宽高
 
-      Bus.$on('wtf', (e) => {
+      Bus.$on('leftChange', (e) => {
         if (e) {
-          document.getElementById("myChart").style.width = this.winWidth * 0.87 + "px";
-          document.getElementById("echartsCard").style.width = this.winWidth * 0.898 + "px";
-          this.ClusterHeight = this.winWidth * 0.87 + "px";
+          document.getElementById("myChart").style.width = this.winWidth * 0.885 + "px";
+          // document.getElementById('myChart').style.width=document.getElementsByClassName('app-border')[0].offsetWidth+"px";
+          document.getElementById("echartsCard").style.width = this.winWidth * 0.885 + "px";
+          this.ClusterHeight = this.winWidth * 0.885 + "px";
+          console.log(document.getElementsByClassName('app-border')[0].offsetWidth)
         }
         else {
-          document.getElementById("myChart").style.width = this.winWidth * 0.67 + "px";
-          document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
-          this.ClusterHeight = this.winWidth * 0.67 + "px";
+          document.getElementById("myChart").style.width = this.winWidth * 0.680 + "px";
+          document.getElementById("echartsCard").style.width = this.winWidth * 0.680 + "px";
+          this.ClusterHeight = this.winWidth * 0.680 + "px";
         }
 
       })
@@ -452,13 +459,13 @@
 
         //DIV高度为浏览器窗口的高度
         document.getElementById("myChart").style.height = this.winHeight * 0.8 + "px";
-        document.getElementById("myChart").style.width = this.winWidth * 0.685 + "px";
+        document.getElementById("myChart").style.width = this.winWidth * 0.680 + "px";
         document.getElementById("chartData").style.height = this.winHeight * 0.7 + "px";
         document.getElementById("chartData").style.width = this.winWidth * 0.67 + "px";
         document.getElementById("errorInfo").style.height = this.winHeight * 0.7 + "px";
         document.getElementById("errorInfo").style.width = this.winWidth * 0.67 + "px";
         document.getElementById("echartsCard").style.height = this.winHeight * 0.84 + "px";
-        document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
+        document.getElementById("echartsCard").style.width = this.winWidth * 0.680 + "px";
         this.ClusterHeight = this.winHeight * 0.7 + "px";
         document.getElementById("font-position").style.marginTop = this.winHeight * 0.30 + "px";
       },
@@ -468,62 +475,62 @@
         this.tableVisible = false
         //发送请求
         // setTimeout(() => {
-          this.$axios
-            .post(
-              "http://120.79.146.91:8000/dataMining/regression/",
-              {
-                data_set: this.dataSetId,//是data_set_id,要和Axios.vue的id保持一致
-                title: Math.floor(Math.random() * (1000000 - 1 + 1) + 1),
-                desc: "zzzzz3",
-                category: this.category,
-                xlabel: this.xAxisLabel,
-                ylabel: this.yAxisLabel,
-                x_axis: this.xAxisString,
-                y_axis: this.yAxisString,
-                test_size: this.test_size,
-                mth_power: this.mth_power,
-                error_type: this.error_type
-              },
-              {
-                headers: {
-                  Authorization: "JWT " + localStorage.getItem("token")
-                }
+        this.$axios
+          .post(
+            "http://120.79.146.91:8000/dataMining/regression/",
+            {
+              data_set: this.dataSetId,//是data_set_id,要和Axios.vue的id保持一致
+              title: Math.floor(Math.random() * (1000000 - 1 + 1) + 1),
+              desc: "zzzzz3",
+              category: this.category,
+              xlabel: this.xAxisLabel,
+              ylabel: this.yAxisLabel,
+              x_axis: this.xAxisString,
+              y_axis: this.yAxisString,
+              test_size: this.test_size,
+              mth_power: this.mth_power,
+              error_type: this.error_type
+            },
+            {
+              headers: {
+                Authorization: "JWT " + localStorage.getItem("token")
               }
-            )
-            .then(r => {
-              console.log(r)
-              this.$message({
-                message: r.data.message,
-                type: 'success'
-              });
-              //console.log(r.data.data[0])
-              this.picPath = "http://120.79.146.91:8000" + r.data.data[0].slice(15, r.data.data[0].length);
-              // this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
-              // console.log(r.data.data[1])
-              if (r.data.data[1][0] == 'c') {
-                this.errorSumTips = "http://120.79.146.91:8000" + r.data.data[1].slice(15, r.data.data[1].length);
-                this.errorSumFlag = false
-              }
-              else {
-                if (this.error_type == 1) this.errorSumTips = 'MSE(平均绝对误差):' + r.data.data[1].slice(10, r.data.data[1].length)
-                if (this.error_type == 2) this.errorSumTips = 'MAE(均方误差):' + r.data.data[1].slice(10, r.data.data[1].length)
-                if (this.error_type == 3) this.errorSumTips = 'RMSE(均方根误差):' + r.data.data[1].slice(10, r.data.data[1].length)
-                this.errorSumFlag = true
-              }
-
-              console.log(this.errorSumTips)
-              this.loading = false
-              if (!this.ClusterFlag) this.regressionFlag = true //这句不好
-            })
-            .catch(response => {
-              console.log(response)
-              this.$message({
-                message: '操作失败，请重试',
-                showClose: true,
-                type: 'warning',
-                duration: 1000
-              });
+            }
+          )
+          .then(r => {
+            console.log(r)
+            this.$message({
+              message: r.data.message,
+              type: 'success'
             });
+            //console.log(r.data.data[0])
+            this.picPath = "http://120.79.146.91:8000" + r.data.data[0].slice(15, r.data.data[0].length);
+            // this.errorSumTips = "http://120.79.146.91:8000"+r.data.data[1].slice(15,r.data.data[1].length);
+            // console.log(r.data.data[1])
+            if (r.data.data[1][0] == 'c') {
+              this.errorSumTips = "http://120.79.146.91:8000" + r.data.data[1].slice(15, r.data.data[1].length);
+              this.errorSumFlag = false
+            }
+            else {
+              if (this.error_type == 1) this.errorSumTips = 'MSE(平均绝对误差):' + r.data.data[1].slice(10, r.data.data[1].length)
+              if (this.error_type == 2) this.errorSumTips = 'MAE(均方误差):' + r.data.data[1].slice(10, r.data.data[1].length)
+              if (this.error_type == 3) this.errorSumTips = 'RMSE(均方根误差):' + r.data.data[1].slice(10, r.data.data[1].length)
+              this.errorSumFlag = true
+            }
+
+            console.log(this.errorSumTips)
+            this.loading = false
+            if (!this.ClusterFlag) this.regressionFlag = true //这句不好
+          })
+          .catch(response => {
+            console.log(response)
+            this.$message({
+              message: '操作失败，请重试',
+              showClose: true,
+              type: 'warning',
+              duration: 1000
+            });
+          });
         // }, 500)
       },
 
@@ -575,6 +582,10 @@
   }
 </script>
 <style>
+  .el-tabs--border-card > .el-tabs__content {
+    padding: 0;
+  }
+
   .miningCardStyle {
     border: 0px;
     margin: 15px;
@@ -593,5 +604,10 @@
   .dropdowmMenuStyle {
     float: left;
     margin-left: 10px
+  }
+
+  .el-tabs__content {
+    display: flex;
+    justify-content: center;
   }
 </style>

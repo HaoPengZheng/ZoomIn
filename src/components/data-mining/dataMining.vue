@@ -2,17 +2,14 @@
   <div id="app">
     <el-row style="margin-top:1px;">
       <el-col :span="spanParms[0]" class="leftBoardStyle">
-        <div>
-          <table-info style="margin-bottom: 30px"></table-info>
-        </div>
         <el-button @click="btnClick" class="sizeBtn" id="sizeBtn">
           <icon name="angle-left" v-show="iconFlag"></icon>
           <icon name="angle-right" v-show="!iconFlag"></icon>
         </el-button>
-        <!--<vue-scroll>-->
+        <div v-show="leftFlag">
+          <table-info style="margin-bottom: 30px"></table-info>
           <drag></drag>
-        <!--</vue-scroll>-->
-
+        </div>
       </el-col>
 
       <el-col :span="spanParms[1]">
@@ -46,11 +43,11 @@
       </el-col>
 
       <el-col :span="spanParms[2]">
-        <vue-scroll>
-          <div>
+        <!--<vue-scroll >-->
+          <div v-show="leftFlag">
             <rightBoard/>
           </div>
-        </vue-scroll>
+        <!--</vue-scroll>-->
       </el-col>
 
     </el-row>
@@ -178,8 +175,9 @@
     width: 1px;
     position: absolute;
     right: 0px;
-    margin-top: 30px;
-    border: 0px
+    top: 100px;
+    border: 0px;
+    z-index: 999;
   }
 
   .leftBoardStyle {

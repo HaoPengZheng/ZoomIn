@@ -1756,11 +1756,21 @@
           pieData.push(pieDataItem)
         }
 
+        let that = this;
+
+        function getSelected() {
+          let selected = {};
+          that.Xdata.map((item, index) => {
+            selected[item] = index < 10;
+          })
+          return selected;
+        }
+
         let dom = this.$refs.myChart;
         this.myChart = this.$echarts.init(dom, this.chartStyle);
         this.option = {
           backgroundColor: '#FFF',
-          animation: false,
+          animation: true,
           title: {
             text: this.chartTitle,
             left: 'left',
@@ -1777,8 +1787,10 @@
           legend: {
             y: 'center',    //延Y轴居中
             x: 'right', //居右显示
+            type: 'scroll',
             orient: 'vertical',
             data: this.Xdata,
+            // selected: getSelected(),
             textStyle: {
               color: '#5A616A'
             }
@@ -1795,44 +1807,51 @@
               saveAsImage: {}
             }
           },
-          visualMap: {
-            show: false,
-            min: 0,//此处配置颜色渐变范围
-            max: Math.max.apply(null, pieValue) * 1.2,
-            inRange: {
-              colorLightness: [0, 1]
-            }
-          },
+          // visualMap: {
+          //   show: false,
+          //   min: 0,//此处配置颜色渐变范围
+          //   max: Math.max.apply(null, pieValue) * 1.2,
+          //   inRange: {
+          //     colorLightness: [0, 1]
+          //   }
+          // },
           series: [
             {
               name: '访问来源',
               type: 'pie',
               radius: '75%',
-              center: ['50%', '50%'],
+              center: ['40%', '50%'],
               data: pieData.sort(function (a, b) {
                 return a.value - b.value;
-              }),
-              label: {
-                normal: {
-                  textStyle: {
-                    color: '#AAAAAA'
-                  }
-                }
-              },
-              labelLine: {
-                normal: {
-                  lineStyle: {
-                    color: '#AAAAAA'
-                  },
-                  smooth: 0.2,
-                  length: 10,
-                  length2: 20
-                }
-              },
+              }).slice(0,10),
+              // label: {
+              //   normal: {
+              //     textStyle: {
+              //       color: '#AAAAAA'
+              //     }
+              //   }
+              // },
+              // labelLine: {
+              //   normal: {
+              //     lineStyle: {
+              //       color: '#AAAAAA'
+              //     },
+              //     smooth: 0.2,
+              //     length: 10,
+              //     length2: 20
+              //   }
+              // },
               animationTyp: 'scale',
               animationEasing: 'elasticOut',
               animationDelay: function (idx) {
                 return Math.random() * 200;
+              },
+              itemStyle: {
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
               }
             }
           ]
@@ -2173,7 +2192,7 @@
           this.winWidth = document.documentElement.clientWidth;
 
         //DIV高度为浏览器窗口的高度
-        document.getElementById("myChart").style.height = this.winHeight * 0.8-document.getElementById('drop').offsetHeight +15+ "px";
+        document.getElementById("myChart").style.height = this.winHeight * 0.8 - document.getElementById('drop').offsetHeight + 20 + "px";
         document.getElementById("myChart").style.width = this.winWidth * 0.67 + "px";
         // document.getElementById("echartsCard").style.height = this.winHeight * 0.84 + "px";
         // document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
@@ -2200,14 +2219,15 @@
 </script>
 <style>
   .analysisCardStyle {
-    /*margin: 21px;*/
+    margin: 15px;
     margin-top: 20px;
 
   }
 
   .echarts-font {
     font-family: '新宋体';
-    font-size: 10px;
+    font-size: 20px;
+    font-weight: bold;
     position: absolute;
     left: 45%;
 

@@ -6,6 +6,7 @@
     </el-button> -->
     <!-- 这里按钮还没有添加事件 -->
     <!--<el-scrollbar>-->
+    <vue-scroll>
       <div style="margin:10px;" class="rightBoardBtn">
         <el-button type="primary" style="width:100%;" @click="nextClick">下一步</el-button>
         <!-- <el-button  class="nextBtn" @click="nextClick">下一步</el-button> -->
@@ -28,6 +29,7 @@
         </el-collapse>
 
       </div>
+    </vue-scroll>
     <!--</el-scrollbar>-->
   </div>
 </template>

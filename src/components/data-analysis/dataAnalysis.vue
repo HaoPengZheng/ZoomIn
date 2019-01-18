@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <el-row>
-      <el-col :span="spanParms[0]" class="leftBoardStyle">
+      <el-col :span="spanParms[0]" class="leftBoardStyle" id="leftBoardStyle">
         <el-button @click="btnClick" class="sizeBtn" id="sizeBtn">
           <icon name="angle-left" v-show="iconFlag"></icon>
           <icon name="angle-right" v-show="!iconFlag"></icon>
@@ -9,12 +9,12 @@
         <!-- <transition name="el-zoom-in-center"> -->
         <div v-show="leftVisiable" class="transition-box">
           <table-info style="margin-bottom: 50px" v-show="leftVisiable"></table-info>
-          <div class="demo_line_02">
+          <div class="demo_line_02" id="demo_line_02">
             <span>维度数值</span>
           </div>
           <vue-scroll style="margin-top:30px;">
             <div>
-              <drag style="height: 500px"></drag>
+              <drag></drag>
             </div>
           </vue-scroll>
         </div>
@@ -50,7 +50,7 @@
         </div>
       </el-col>
 
-      <el-col :span="spanParms[2]">
+      <el-col :span="spanParms[2]" style="box-shadow: -10px 10px 20px -10px rgba(0,0,0,0.1);">
         <vue-scroll>
           <div>
             <rightBoard/>
@@ -110,6 +110,13 @@
       }
     },
     mounted() {
+      console.log(document.getElementById('demo_line_02').offsetTop)
+      console.log(document.getElementById('app-border').offsetHeight)
+      // document.getElementById('dragCon').style.height=document.getElementById('app-border').offsetHeight-document.getElementById('demo_line_02').offsetTop-55+'px'
+      // document.getElementById('dragCon').style.height = 480 + 'px'
+      document.getElementById('dragCon').style.height = document.getElementById('app-border').offsetHeight-document.getElementById('demo_line_02').offsetTop-50 + 'px'
+
+
       document.getElementById("sizeBtn").style.marginTop = document.getElementById("app").offsetHeight / 2.5 + 'px';
     }
   }
@@ -133,7 +140,7 @@
     border-left-style: solid;
     border-right-style: solid;
     border-color: #D0D0D0;
-    box-shadow: 0px -10px 10px 1px rgb(224, 224, 224) inset;
+    /*box-shadow: 0px 10px 30px 0 rgba(0,0,0,0.1) inset;*/
 
   }
 
@@ -159,6 +166,7 @@
     padding: 10px;
     background: #fff;
     position: relative;
+    box-shadow: 10px 10px 20px -10px rgba(0, 0, 0, 0.1);
   }
 
   .demo_line_02 {
