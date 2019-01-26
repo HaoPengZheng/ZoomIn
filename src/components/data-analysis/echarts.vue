@@ -90,6 +90,7 @@
     data() {
       return {
         msg: 'Welcome to Your Vue.js App',
+        // 表格原始数据
         echartAxiosData: [],
         originAxiosData: [],
         winHeight: 0,
@@ -104,8 +105,9 @@
         chartStyle: 'macarons',
         chartTitle: '图表标题',
         markPointArray: new Array(),
-        //表格数据
+        // 展示表格的数据表格数据
         tableData: [],
+        // 表格展示数据的名称
         fields: [],
         dropdownArray: [],
         dropdownTextItemArray: [],//图内筛选器的选项
@@ -202,19 +204,30 @@
 
       //1.监听X轴传值
       Bus.$on('rowdata', (e) => {
+        console.log('rowData!!!')
+
         this.xAxisItem.push(e)
         this.XAxisTitle.push(e)
         Bus.$emit('firstXAixs', e)
 
-        //表格
+        // 这里判断有问题，如果y轴事先有数据的话，就无法将x轴的数据录入fields数组里面
+        for (let j = 0; j < 15; j++) {
+          this.tableData[j] = this.echartAxiosData[j];
+        }
+        // 表格
         if (this.yAxisItemName.length < 1) {
           this.tableVisible = true
-          for (let j = 0; j < 15; j++) {
+          /*for (let j = 0; j < 15; j++) {
             this.tableData[j] = this.echartAxiosData[j];
-          }
+          }*/
           this.fields.push(e)
         }
         else {
+          /*for (let j = 0; j < 15; j++) {
+            this.tableData[j] = this.echartAxiosData[j];
+          }*/
+          // 无论怎么样都要讲数据插入进fields，不然移除时候会出问题
+          this.fields.unshift(e)
           //在新增拖动x轴，且y轴已经有值的时候，发送请求，重写数据
           //拼x轴字符串
           this.xAxisString = []
@@ -284,6 +297,8 @@
 
       //1.监听Y轴传值
       Bus.$on('coldata', (e) => {
+        console.log('colData!!!')
+
         for (let j = 0; j < 15; j++) {
           this.tableData[j] = this.echartAxiosData[j];
         }
@@ -407,6 +422,8 @@
 
       //2.然后是监听次轴传值
       Bus.$on('dropAxisCol', (e) => {
+        console.log('dropAxisCol!!')
+
         this.secondaryString.push(e)
         this.secondaryAxis = ''
         this.secondaryAxis = this.secondaryString[0];
@@ -528,6 +545,8 @@
 
       //次轴删除
       Bus.$on('secondRemove', (e) => {
+        console.log('secondRemove!!!')
+
         this.secondaryAxis = ""
         this.secondaryString = []
         this.chartMethod2nd = ''
@@ -698,6 +717,10 @@
 
       //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
       Bus.$on('rowdataRemove', (e) => {
+        console.log(`e: ${e}!!!`)
+        console.log(`fields: ${this.fields}`)
+        console.log('rowDataRemove!!!')
+
         this.xAxisItem.splice(e, 1);//这里删完之后要重新请求，所以要把请求写成方法
         this.XAxisTitle.splice(e, 1)
         for (let j = 0; j < 15; j++) {
@@ -779,10 +802,24 @@
 
       //2.监听y轴移除事件(还没有PATCH)
       Bus.$on('coldataRemove', (e) => {
+        /*console.log(`e: ${e}!!!`)
+        console.log(`fields: ${this.fields}`)
+        console.log('colDataRemove!!!')*/
+
+
         for (let j = 0; j < 15; j++) {
           this.tableData[j] = this.echartAxiosData[j];
         }
-        this.fields.splice(e, 1)
+        // 如果前面还有一个x轴的数据，应该+1
+        // this.fields.splice(e, 1)
+        if (this.XAxisTitle.length > 0) {
+          this.fields.splice(e + 1, 1)
+        }
+        else {
+          this.fields.splice(e, 1)
+        }
+
+
         if (this.xAxisItem.length < 1) this.tableVisible = true
 
         this.seriesData.splice(e, 1);
@@ -1823,7 +1860,7 @@
               center: ['40%', '50%'],
               data: pieData.sort(function (a, b) {
                 return a.value - b.value;
-              }).slice(0,10),
+              }).slice(0, 10),
               // label: {
               //   normal: {
               //     textStyle: {

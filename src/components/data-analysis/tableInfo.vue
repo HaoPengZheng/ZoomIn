@@ -11,10 +11,10 @@
                <svg class="icon"><use xlink:href="#icon-excel1"></use></svg>&nbsp;工作表信息
               </el-button>
         </span>
-       
+
         <el-dialog title="查看数据" :visible.sync="dialogTableVisible">
 
-            <a style="float: left">显示前15条数据，最近更新时间：{{getTime}}</a>
+            <a style="float: left">显示前30条数据，最近更新时间：{{getTime}}</a>
             <el-table
             :data="tableData"
             stripe border
@@ -60,9 +60,9 @@ import Bus from './Bus.js'
         Bus.$on('taskTitle',(e)=>{
           this.taskTitle = e
         })
-        
+
         this.getTime = this.getNowFormatDate()
-        
+
     },
     methods: {
       handleClose(done) {
@@ -115,7 +115,7 @@ import Bus from './Bus.js'
 .tableInfoStyle .el-input-group__prepend{
     background-color: #ffffff;
     border: 0px solid;
-    border-bottom: 0px solid #dcdfe6; 
+    border-bottom: 0px solid #dcdfe6;
     font-size: 5
 }
 </style>
