@@ -46,12 +46,17 @@
         </el-table-column>
       </el-table>
 
+      <div v-show="!tableVisible">
+        <div class="echarts-font" id="font-position" >当前图表无数据</div>
+        <img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;">
+      </div>
+
       <!-- Echarts部分 -->
       <div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
 
         <!-- 未显示图表时 -->
-        <div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>
-        <img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
+        <!--<div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>-->
+        <!--<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">-->
 
         <!-- 表格部分 -->
         <el-table
@@ -216,6 +221,7 @@
         }
         // 表格
         if (this.yAxisItemName.length < 1) {
+          this.tableSecVisible=true
           this.tableVisible = true
           /*for (let j = 0; j < 15; j++) {
             this.tableData[j] = this.echartAxiosData[j];
@@ -304,6 +310,7 @@
         }
         this.fields.push(e)
         if (this.xAxisItem == 0) {
+          this.tableSecVisible=true
           this.tableVisible = true
         }
 
@@ -797,6 +804,12 @@
           Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
           this.drawLine();
         }
+        // 如果两个维度都没有数据，则显示初始状态
+        if (this.yAxisItemName.length < 1 && this.xAxisItem.length < 1) {
+          this.tableSecVisible = false
+          this.tableVisible = false
+          // document.getElementById('myChart').style.display = 'block'
+        }
         Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
       })
 
@@ -834,7 +847,15 @@
         this.tableVisible = false
         this.myChart.dispose()
         this.drawLine();
+
+        // 如果两个维度都没有数据，则显示最初状态
+        if (this.yAxisItemName.length < 1 && this.xAxisItem.length < 1) {
+          this.tableSecVisible = false
+          this.tableVisible = false
+          // document.getElementById('myChart').style.display = 'block'
+        }
         Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
+
       })
 
       //3.监听图表类型改变(还没有PATCH)
