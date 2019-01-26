@@ -47,7 +47,7 @@
       </el-table>
 
       <div v-show="!tableVisible">
-        <div class="echarts-font" id="font-position" >当前图表无数据</div>
+        <div class="echarts-font" id="font-position">当前图表无数据</div>
         <img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;">
       </div>
 
@@ -221,7 +221,7 @@
         }
         // 表格
         if (this.yAxisItemName.length < 1) {
-          this.tableSecVisible=true
+          this.tableSecVisible = true
           this.tableVisible = true
           /*for (let j = 0; j < 15; j++) {
             this.tableData[j] = this.echartAxiosData[j];
@@ -309,8 +309,8 @@
           this.tableData[j] = this.echartAxiosData[j];
         }
         this.fields.push(e)
-        if (this.xAxisItem == 0) {
-          this.tableSecVisible=true
+        if (this.xAxisItem.length === 0) {
+          this.tableSecVisible = true
           this.tableVisible = true
         }
 
@@ -339,6 +339,7 @@
         }
 
         if (this.xAxisItem.length > 0) {
+          this.tableVisible = true
           this.chartMethod = this.chartMethod.join(',')
           //发送求和请求
           this.$axios
@@ -847,8 +848,8 @@
         // 此处应该判断y轴是否还存在数据，若存在则不应该改变tableVisible的值
         //this.tableVisible = false
 
-        if (this.yAxisItemName.length===0){
-          this.tableVisible=false
+        if (this.yAxisItemName.length === 0) {
+          this.tableVisible = false
         }
         this.myChart.dispose()
         this.drawLine();
