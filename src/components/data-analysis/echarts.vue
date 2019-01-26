@@ -844,7 +844,12 @@
           document.getElementById('myChart').style.display = 'none'
         }
         Bus.$emit('chartsType', this.yAxisItemName)//让右边图表类型改颜色
-        this.tableVisible = false
+        // 此处应该判断y轴是否还存在数据，若存在则不应该改变tableVisible的值
+        //this.tableVisible = false
+
+        if (this.yAxisItemName.length===0){
+          this.tableVisible=false
+        }
         this.myChart.dispose()
         this.drawLine();
 
