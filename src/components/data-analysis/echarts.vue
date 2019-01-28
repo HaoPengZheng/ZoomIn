@@ -729,6 +729,11 @@
         console.log(`fields: ${this.fields}`)
         console.log('rowDataRemove!!!')
 
+        // 清空上一次图标的数据
+        this.myChart.dispose()
+        this.Xdata = []
+        this.chartXAxis = {}
+
         this.xAxisItem.splice(e, 1);//这里删完之后要重新请求，所以要把请求写成方法
         this.XAxisTitle.splice(e, 1)
         for (let j = 0; j < 15; j++) {
@@ -791,7 +796,8 @@
               }
 
               this.chartMethod = this.chartMethod.split(',');
-
+              Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
+              this.drawLine();
             })
             .catch(response => {
               //alert("???")
@@ -802,8 +808,8 @@
                 duration: 1000
               });
             });
-          Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
-          this.drawLine();
+          // Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
+          // this.drawLine();
         }
         // 如果两个维度都没有数据，则显示初始状态
         if (this.yAxisItemName.length < 1 && this.xAxisItem.length < 1) {
@@ -1641,6 +1647,8 @@
 
       // 柱状以及折线图
       drawLine(type) {
+        console.log('drawLine!!!')
+
         //这里直接让chartYxis这些赋值而没有push会导致次轴失效,拿到外面出来
         this.chartXAxis = {
           type: 'category',
@@ -1751,6 +1759,8 @@
 
         let dom = this.$refs.myChart;
         this.myChart = this.$echarts.init(dom, this.chartStyle);
+        console.log('start!!!')
+        this.myChart.showLoading();
         this.option = {
           animation: true,
           title: {
@@ -1801,10 +1811,13 @@
 
         });
 
+        console.log('finished!!!')
+        console.log('chartXAxis: ', this.chartXAxis)
+        this.myChart.hideLoading();
         this.myChart.setOption(this.option, true);
         Bus.$emit('chartsOption', this.option)
         this.chartBase64 = this.myChart.getDataURL()
-        console.log(this.chartBase64)
+        // console.log(this.chartBase64)
       },
 
       //绘制饼图
