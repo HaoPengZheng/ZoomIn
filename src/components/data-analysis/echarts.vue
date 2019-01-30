@@ -418,7 +418,7 @@
             }
           )
           .then(r => {
-            console.log(r)
+            // console.log(r)
 
           })
           .catch(response => {
@@ -1019,6 +1019,8 @@
 
       //监听筛选移除，这是个神奇的东西，删除了之后导致y轴少一列数据
       Bus.$on('filterCancel', (e) => {
+        console.time('filterCancel')
+
         this.responseData = this.responseOriginData
         let str1 = this.responseData
         let str2 = str1.replace(/\["|\"]/g, "")
@@ -1032,22 +1034,34 @@
         //let yAixsData = JSON.parse(this.responseData)[dropName]
         this.yAxisItemName = Object.keys(responseDataJSON)
 
+        console.log(jsonFirstKeys)
+
         for (let index = 0; index < jsonFirstKeys.length; index++) {
+          // console.log(Object.values(JSON.parse(str3)[jsonFirstKeys[index]]))
+
           this.seriesDataItem = []
           this.Xdata = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[index]])
+
+
+          /* 这样循环重新录入数据会导致太多多余的循环，浏览器会卡死，直接赋值即可
+          console.time('loop')
           for (let i = 0; i < this.Xdata.length; i++) {
             this.seriesDataItem.push(JSON.parse(str3)[jsonFirstKeys[index]][this.Xdata[i]])
           }
+          console.timeEnd('loop')
+          console.log('seriesDataItem: ',this.seriesDataItem)*/
           this.seriesData.push({
             name: jsonFirstKeys[index],
             type: 'bar',
-            data: this.seriesDataItem,
+            data: Object.values(JSON.parse(str3)[jsonFirstKeys[index]]),
             itemStyle: {}
           })
         }
 
         this.myChart.dispose()
         this.drawLine()
+
+        console.timeEnd('filterCancel')
       })
 
 
@@ -1590,8 +1604,8 @@
 
     },
     methods: {
-
       setData(r, dropName) {
+        console.time('setData')
 
         this.responseData = r.data.data;
         this.responseOriginData = r.data.data;
@@ -1611,22 +1625,34 @@
         this.Xdata = []//每次循环清空X轴，否则重叠
         this.seriesDataItem = [] //清空serIDataItem否则重叠
 
-        //给X轴赋值,Xdata为echarts的X轴的值
+
+        /*给X,Y轴赋值,Xdata为echarts的X轴的值，现在貌似是没必要了，昂费运行时间
+        console.time('Xdata')
         for (let i = 0; i < Object.keys(element).length; i++) {
           this.Xdata.push(Object.keys(element)[i])
+          // this.seriesDataItem.push(element[Object.keys(element)[i]])
         }
-        //给Y轴赋值
+        console.timeEnd('Xdata')*/
+
+        // 给X轴赋值
+        this.Xdata = Object.keys(element)
+
+        // console.log('Xdata: ', this.Xdata)
+        // console.log('elemenet: ', Object.keys(element))
+        /*给Y轴赋值，但貌似也没啥用了
         for (let i = 0; i < Object.keys(element).length; i++) {
           this.seriesDataItem.push(element[Object.keys(element)[i]])
-        }
+        }*/
 
+
+        /* 现在看来这个东东是没啥用的，只会增加运行时间
         this.seriesData.push({
           name: this.yAxisItemName[this.yAxisItemName.length - 1],
           type: 'bar',
           data: this.seriesDataItem,
           itemStyle: {},
 
-        })
+        })*/
 
         //打开dataZoom，X轴大于10时,数据是前10条
         if (Object.keys(element).length > 10) {
@@ -1643,11 +1669,14 @@
           }]
         }
         Bus.$emit('filterClear', 'filterClear')//拖动y轴时直接清空筛选
+
+        console.timeEnd('setData')
       },
 
       // 柱状以及折线图
       drawLine(type) {
-        console.log('drawLine!!!')
+        // console.log('drawLine!!!')
+        console.time('drawLine')
 
         //这里直接让chartYxis这些赋值而没有push会导致次轴失效,拿到外面出来
         this.chartXAxis = {
@@ -1759,7 +1788,7 @@
 
         let dom = this.$refs.myChart;
         this.myChart = this.$echarts.init(dom, this.chartStyle);
-        console.log('start!!!')
+        // console.log('start!!!')
         this.myChart.showLoading();
         this.option = {
           animation: true,
@@ -1811,13 +1840,15 @@
 
         });
 
-        console.log('finished!!!')
-        console.log('chartXAxis: ', this.chartXAxis)
+        // console.log('finished!!!')
+        // console.log('chartXAxis: ', this.chartXAxis)
         this.myChart.hideLoading();
         this.myChart.setOption(this.option, true);
         Bus.$emit('chartsOption', this.option)
         this.chartBase64 = this.myChart.getDataURL()
         // console.log(this.chartBase64)
+
+        console.timeEnd('drawLine')
       },
 
       //绘制饼图
