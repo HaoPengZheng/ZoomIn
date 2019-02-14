@@ -46,12 +46,17 @@
         </el-table-column>
       </el-table>
 
+      <div v-show="!tableVisible">
+        <div class="echarts-font" id="font-position">当前图表无数据</div>
+        <img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;">
+      </div>
+
       <!-- Echarts部分 -->
       <div id="myChart" :style="{width: '0px', height: '0px'}" ref="myChart">
 
         <!-- 未显示图表时 -->
-        <div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>
-        <img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">
+        <!--<div class="echarts-font" id="font-position" v-show="!tableVisible">当前图表无数据</div>-->
+        <!--<img src="@/assets/chartBg.png" style="width:90%;height:90%;margin:40px;" v-show="!tableVisible">-->
 
         <!-- 表格部分 -->
         <el-table
@@ -90,6 +95,7 @@
     data() {
       return {
         msg: 'Welcome to Your Vue.js App',
+        // 表格原始数据
         echartAxiosData: [],
         originAxiosData: [],
         winHeight: 0,
@@ -104,8 +110,9 @@
         chartStyle: 'macarons',
         chartTitle: '图表标题',
         markPointArray: new Array(),
-        //表格数据
+        // 展示表格的数据表格数据
         tableData: [],
+        // 表格展示数据的名称
         fields: [],
         dropdownArray: [],
         dropdownTextItemArray: [],//图内筛选器的选项
@@ -175,13 +182,13 @@
       Bus.$on('leftChange', (e) => {
         if (e) {
           document.getElementById("myChart").style.width = this.winWidth * 0.87 + "px";
-          document.getElementById("echartsCard").style.width = this.winWidth * 0.898 + "px";
+          // document.getElementById("echartsCard").style.width = this.winWidth * 0.898 + "px";
           this.myChart.dispose();
           this.drawLine();
         }
         else {
           document.getElementById("myChart").style.width = this.winWidth * 0.67 + "px";
-          document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
+          // document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
           this.myChart.dispose();
           this.drawLine();
         }
@@ -202,19 +209,31 @@
 
       //1.监听X轴传值
       Bus.$on('rowdata', (e) => {
+        console.log('rowData!!!')
+
         this.xAxisItem.push(e)
         this.XAxisTitle.push(e)
         Bus.$emit('firstXAixs', e)
 
-        //表格
+        // 这里判断有问题，如果y轴事先有数据的话，就无法将x轴的数据录入fields数组里面
+        for (let j = 0; j < 15; j++) {
+          this.tableData[j] = this.echartAxiosData[j];
+        }
+        // 表格
         if (this.yAxisItemName.length < 1) {
+          this.tableSecVisible = true
           this.tableVisible = true
-          for (let j = 0; j < 15; j++) {
+          /*for (let j = 0; j < 15; j++) {
             this.tableData[j] = this.echartAxiosData[j];
-          }
+          }*/
           this.fields.push(e)
         }
         else {
+          /*for (let j = 0; j < 15; j++) {
+            this.tableData[j] = this.echartAxiosData[j];
+          }*/
+          // 无论怎么样都要讲数据插入进fields，不然移除时候会出问题
+          this.fields.unshift(e)
           //在新增拖动x轴，且y轴已经有值的时候，发送请求，重写数据
           //拼x轴字符串
           this.xAxisString = []
@@ -284,11 +303,14 @@
 
       //1.监听Y轴传值
       Bus.$on('coldata', (e) => {
+        console.log('colData!!!')
+
         for (let j = 0; j < 15; j++) {
           this.tableData[j] = this.echartAxiosData[j];
         }
         this.fields.push(e)
-        if (this.xAxisItem == 0) {
+        if (this.xAxisItem.length === 0) {
+          this.tableSecVisible = true
           this.tableVisible = true
         }
 
@@ -317,6 +339,7 @@
         }
 
         if (this.xAxisItem.length > 0) {
+          this.tableVisible = true
           this.chartMethod = this.chartMethod.join(',')
           //发送求和请求
           this.$axios
@@ -395,7 +418,7 @@
             }
           )
           .then(r => {
-            console.log(r)
+            // console.log(r)
 
           })
           .catch(response => {
@@ -407,6 +430,8 @@
 
       //2.然后是监听次轴传值
       Bus.$on('dropAxisCol', (e) => {
+        console.log('dropAxisCol!!')
+
         this.secondaryString.push(e)
         this.secondaryAxis = ''
         this.secondaryAxis = this.secondaryString[0];
@@ -528,6 +553,8 @@
 
       //次轴删除
       Bus.$on('secondRemove', (e) => {
+        console.log('secondRemove!!!')
+
         this.secondaryAxis = ""
         this.secondaryString = []
         this.chartMethod2nd = ''
@@ -698,6 +725,15 @@
 
       //2.监听X轴移除事件。这里只移除了一个(还没有PATCH)
       Bus.$on('rowdataRemove', (e) => {
+        console.log(`e: ${e}!!!`)
+        console.log(`fields: ${this.fields}`)
+        console.log('rowDataRemove!!!')
+
+        // 清空上一次图标的数据
+        this.myChart.dispose()
+        this.Xdata = []
+        this.chartXAxis = {}
+
         this.xAxisItem.splice(e, 1);//这里删完之后要重新请求，所以要把请求写成方法
         this.XAxisTitle.splice(e, 1)
         for (let j = 0; j < 15; j++) {
@@ -760,7 +796,8 @@
               }
 
               this.chartMethod = this.chartMethod.split(',');
-
+              Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
+              this.drawLine();
             })
             .catch(response => {
               //alert("???")
@@ -771,18 +808,38 @@
                 duration: 1000
               });
             });
-          Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
-          this.drawLine();
+          // Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
+          // this.drawLine();
+        }
+        // 如果两个维度都没有数据，则显示初始状态
+        if (this.yAxisItemName.length < 1 && this.xAxisItem.length < 1) {
+          this.tableSecVisible = false
+          this.tableVisible = false
+          // document.getElementById('myChart').style.display = 'block'
         }
         Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
       })
 
       //2.监听y轴移除事件(还没有PATCH)
       Bus.$on('coldataRemove', (e) => {
+        /*console.log(`e: ${e}!!!`)
+        console.log(`fields: ${this.fields}`)
+        console.log('colDataRemove!!!')*/
+
+
         for (let j = 0; j < 15; j++) {
           this.tableData[j] = this.echartAxiosData[j];
         }
-        this.fields.splice(e, 1)
+        // 如果前面还有一个x轴的数据，应该+1
+        // this.fields.splice(e, 1)
+        if (this.XAxisTitle.length > 0) {
+          this.fields.splice(e + 1, 1)
+        }
+        else {
+          this.fields.splice(e, 1)
+        }
+
+
         if (this.xAxisItem.length < 1) this.tableVisible = true
 
         this.seriesData.splice(e, 1);
@@ -794,10 +851,23 @@
           document.getElementById('myChart').style.display = 'none'
         }
         Bus.$emit('chartsType', this.yAxisItemName)//让右边图表类型改颜色
-        this.tableVisible = false
+        // 此处应该判断y轴是否还存在数据，若存在则不应该改变tableVisible的值
+        //this.tableVisible = false
+
+        if (this.yAxisItemName.length === 0) {
+          this.tableVisible = false
+        }
         this.myChart.dispose()
         this.drawLine();
+
+        // 如果两个维度都没有数据，则显示最初状态
+        if (this.yAxisItemName.length < 1 && this.xAxisItem.length < 1) {
+          this.tableSecVisible = false
+          this.tableVisible = false
+          // document.getElementById('myChart').style.display = 'block'
+        }
         Bus.$emit('picFilterItem', this.xAxisItem.concat(this.yAxisItemName))
+
       })
 
       //3.监听图表类型改变(还没有PATCH)
@@ -949,6 +1019,8 @@
 
       //监听筛选移除，这是个神奇的东西，删除了之后导致y轴少一列数据
       Bus.$on('filterCancel', (e) => {
+        console.time('filterCancel')
+
         this.responseData = this.responseOriginData
         let str1 = this.responseData
         let str2 = str1.replace(/\["|\"]/g, "")
@@ -962,22 +1034,34 @@
         //let yAixsData = JSON.parse(this.responseData)[dropName]
         this.yAxisItemName = Object.keys(responseDataJSON)
 
+        console.log(jsonFirstKeys)
+
         for (let index = 0; index < jsonFirstKeys.length; index++) {
+          // console.log(Object.values(JSON.parse(str3)[jsonFirstKeys[index]]))
+
           this.seriesDataItem = []
           this.Xdata = Object.keys(responseDataJSON[Object.keys(responseDataJSON)[index]])
+
+
+          /* 这样循环重新录入数据会导致太多多余的循环，浏览器会卡死，直接赋值即可
+          console.time('loop')
           for (let i = 0; i < this.Xdata.length; i++) {
             this.seriesDataItem.push(JSON.parse(str3)[jsonFirstKeys[index]][this.Xdata[i]])
           }
+          console.timeEnd('loop')
+          console.log('seriesDataItem: ',this.seriesDataItem)*/
           this.seriesData.push({
             name: jsonFirstKeys[index],
             type: 'bar',
-            data: this.seriesDataItem,
+            data: Object.values(JSON.parse(str3)[jsonFirstKeys[index]]),
             itemStyle: {}
           })
         }
 
         this.myChart.dispose()
         this.drawLine()
+
+        console.timeEnd('filterCancel')
       })
 
 
@@ -1520,8 +1604,8 @@
 
     },
     methods: {
-
       setData(r, dropName) {
+        console.time('setData')
 
         this.responseData = r.data.data;
         this.responseOriginData = r.data.data;
@@ -1541,22 +1625,34 @@
         this.Xdata = []//每次循环清空X轴，否则重叠
         this.seriesDataItem = [] //清空serIDataItem否则重叠
 
-        //给X轴赋值,Xdata为echarts的X轴的值
+
+        /*给X,Y轴赋值,Xdata为echarts的X轴的值，现在貌似是没必要了，昂费运行时间
+        console.time('Xdata')
         for (let i = 0; i < Object.keys(element).length; i++) {
           this.Xdata.push(Object.keys(element)[i])
+          // this.seriesDataItem.push(element[Object.keys(element)[i]])
         }
-        //给Y轴赋值
+        console.timeEnd('Xdata')*/
+
+        // 给X轴赋值
+        this.Xdata = Object.keys(element)
+
+        // console.log('Xdata: ', this.Xdata)
+        // console.log('elemenet: ', Object.keys(element))
+        /*给Y轴赋值，但貌似也没啥用了
         for (let i = 0; i < Object.keys(element).length; i++) {
           this.seriesDataItem.push(element[Object.keys(element)[i]])
-        }
+        }*/
 
+
+        /* 现在看来这个东东是没啥用的，只会增加运行时间
         this.seriesData.push({
           name: this.yAxisItemName[this.yAxisItemName.length - 1],
           type: 'bar',
           data: this.seriesDataItem,
           itemStyle: {},
 
-        })
+        })*/
 
         //打开dataZoom，X轴大于10时,数据是前10条
         if (Object.keys(element).length > 10) {
@@ -1573,10 +1669,15 @@
           }]
         }
         Bus.$emit('filterClear', 'filterClear')//拖动y轴时直接清空筛选
+
+        console.timeEnd('setData')
       },
 
       // 柱状以及折线图
       drawLine(type) {
+        // console.log('drawLine!!!')
+        console.time('drawLine')
+
         //这里直接让chartYxis这些赋值而没有push会导致次轴失效,拿到外面出来
         this.chartXAxis = {
           type: 'category',
@@ -1687,6 +1788,8 @@
 
         let dom = this.$refs.myChart;
         this.myChart = this.$echarts.init(dom, this.chartStyle);
+        // console.log('start!!!')
+        this.myChart.showLoading();
         this.option = {
           animation: true,
           title: {
@@ -1737,10 +1840,15 @@
 
         });
 
+        // console.log('finished!!!')
+        // console.log('chartXAxis: ', this.chartXAxis)
+        this.myChart.hideLoading();
         this.myChart.setOption(this.option, true);
         Bus.$emit('chartsOption', this.option)
         this.chartBase64 = this.myChart.getDataURL()
-        console.log(this.chartBase64)
+        // console.log(this.chartBase64)
+
+        console.timeEnd('drawLine')
       },
 
       //绘制饼图
@@ -1756,11 +1864,21 @@
           pieData.push(pieDataItem)
         }
 
+        let that = this;
+
+        function getSelected() {
+          let selected = {};
+          that.Xdata.map((item, index) => {
+            selected[item] = index < 10;
+          })
+          return selected;
+        }
+
         let dom = this.$refs.myChart;
         this.myChart = this.$echarts.init(dom, this.chartStyle);
         this.option = {
           backgroundColor: '#FFF',
-          animation: false,
+          animation: true,
           title: {
             text: this.chartTitle,
             left: 'left',
@@ -1777,8 +1895,10 @@
           legend: {
             y: 'center',    //延Y轴居中
             x: 'right', //居右显示
+            type: 'scroll',
             orient: 'vertical',
             data: this.Xdata,
+            // selected: getSelected(),
             textStyle: {
               color: '#5A616A'
             }
@@ -1795,44 +1915,51 @@
               saveAsImage: {}
             }
           },
-          visualMap: {
-            show: false,
-            min: 0,//此处配置颜色渐变范围
-            max: Math.max.apply(null, pieValue) * 1.2,
-            inRange: {
-              colorLightness: [0, 1]
-            }
-          },
+          // visualMap: {
+          //   show: false,
+          //   min: 0,//此处配置颜色渐变范围
+          //   max: Math.max.apply(null, pieValue) * 1.2,
+          //   inRange: {
+          //     colorLightness: [0, 1]
+          //   }
+          // },
           series: [
             {
               name: '访问来源',
               type: 'pie',
               radius: '75%',
-              center: ['50%', '50%'],
+              center: ['40%', '50%'],
               data: pieData.sort(function (a, b) {
                 return a.value - b.value;
-              }),
-              label: {
-                normal: {
-                  textStyle: {
-                    color: '#AAAAAA'
-                  }
-                }
-              },
-              labelLine: {
-                normal: {
-                  lineStyle: {
-                    color: '#AAAAAA'
-                  },
-                  smooth: 0.2,
-                  length: 10,
-                  length2: 20
-                }
-              },
+              }).slice(0, 10),
+              // label: {
+              //   normal: {
+              //     textStyle: {
+              //       color: '#AAAAAA'
+              //     }
+              //   }
+              // },
+              // labelLine: {
+              //   normal: {
+              //     lineStyle: {
+              //       color: '#AAAAAA'
+              //     },
+              //     smooth: 0.2,
+              //     length: 10,
+              //     length2: 20
+              //   }
+              // },
               animationTyp: 'scale',
               animationEasing: 'elasticOut',
               animationDelay: function (idx) {
                 return Math.random() * 200;
+              },
+              itemStyle: {
+                emphasis: {
+                  shadowBlur: 10,
+                  shadowOffsetX: 0,
+                  shadowColor: 'rgba(0, 0, 0, 0.5)'
+                }
               }
             }
           ]
@@ -2173,10 +2300,10 @@
           this.winWidth = document.documentElement.clientWidth;
 
         //DIV高度为浏览器窗口的高度
-        document.getElementById("myChart").style.height = this.winHeight * 0.8 + "px";
+        document.getElementById("myChart").style.height = this.winHeight * 0.8 - document.getElementById('drop').offsetHeight + 20 + "px";
         document.getElementById("myChart").style.width = this.winWidth * 0.67 + "px";
-        document.getElementById("echartsCard").style.height = this.winHeight * 0.84 + "px";
-        document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
+        // document.getElementById("echartsCard").style.height = this.winHeight * 0.84 + "px";
+        // document.getElementById("echartsCard").style.width = this.winWidth * 0.692 + "px";
         document.getElementById("font-position").style.marginTop = this.winHeight * 0.30 + "px";
 
       },
@@ -2200,14 +2327,15 @@
 </script>
 <style>
   .analysisCardStyle {
-    margin: 21px;
+    margin: 15px;
     margin-top: 20px;
 
   }
 
   .echarts-font {
     font-family: '新宋体';
-    font-size: 10px;
+    font-size: 20px;
+    font-weight: bold;
     position: absolute;
     left: 45%;
 

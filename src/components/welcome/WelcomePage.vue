@@ -181,7 +181,8 @@
     background-color: #fff;
     z-index: 999;
     color: #888;
-    border-bottom: 1px solid #dcdfe6;
+    /*border-bottom: 1px solid #dcdfe6;*/
+    box-shadow: rgba(0,0,0,0.2) 0 40px 50px -30px;
     transition: all .25s ease-in-out;
   }
 
@@ -274,7 +275,7 @@
   .bg-right-button:hover {
     opacity: 1.0;
     transition: all .25s ease-in-out;
-    box-shadow: #666 0 4px 10px 0;
+    box-shadow: rgba(0,0,0,0.3) 0 20px 50px -20px;
   }
 
   .changeNav .login {

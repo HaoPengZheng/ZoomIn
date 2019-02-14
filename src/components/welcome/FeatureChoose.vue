@@ -36,7 +36,7 @@
 <style scoped>
   .feature-choose {
     border-radius: 16px;
-    box-shadow: #d7d7d7 0 8px 10px 0px;
+    box-shadow: rgba(0,0,0,0.3) 0 40px 80px -40px;
     padding: 50px 50px 200px 50px;
     background-color: white;
     position: absolute;
@@ -79,7 +79,7 @@
   .choose-card:hover {
     transform: translateY(-15px);
     transition: all .25s ease-in-out;
-    box-shadow: #d6d6d6 0 6px 8px 2px;
+    box-shadow: rgba(0,0,0,0.3) 0 20px 40px -10px;
   }
 
   .choose-card h3 {

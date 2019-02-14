@@ -1,131 +1,148 @@
 <template>
-    <div class='drag-content' id="dragCon" >
-
-                <div>
-                    <div style="margin-top:130px" v-if="loadingUsergroupList"><div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div></div>
-                    <div class='select-ul' v-if="dragFlag">
-                        <ul  style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
-                            <li  class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)' style="list-style-type:none; ">
-                                <svg class="icon" aria-hidden="true" style="margin-right:15px"><use xlink:href="#icon-wenzi"></use></svg>{{textField}}
-                            </li>
-                        </ul>
-                        <ul  style="display:table;text-align: left;" v-for="(numberField) in numberFields" :key="numberField">
-                            <li  class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)' style="list-style-type:none; ">
-                                <svg class="icon" aria-hidden="true" style="margin-right:15px"><use xlink:href="#icon-wellnum"></use></svg>{{numberField}}
-                            </li>
-                        </ul>
-                    </div> <!-- 拖动的标签 -->
-                </div>
+  <div class='drag-content' id="dragCon">
+    <div>
+      <div style="margin-top:130px" v-if="loadingUsergroupList">
+        <div v-loading="loadingUsergroupList" element-loading-text="数据加载中…"></div>
+      </div>
+      <div class='select-ul' id="select-ul" v-if="dragFlag">
+        <div style="display:table;text-align: left;" v-for="(textField,index) in textFields" :key="index">
+          <div class='select-item' :id=textField :name=textField draggable='true' @dragstart='drag($event)'
+               style="list-style-type:none;">
+            <svg class="icon" aria-hidden="true" style="margin-right:10px">
+              <use xlink:href="#icon-wenzi"></use>
+            </svg>{{textField}}</div>
+        </div>
+        <div style="display:table;text-align: left;" v-for="(numberField) in numberFields" :key="numberField">
+          <div class='select-item' :id=numberField :name=numberField draggable='true' @dragstart='drag($event)'
+               style="list-style-type:none; ">
+            <svg class="icon" aria-hidden="true" style="margin-right:10px">
+              <use xlink:href="#icon-wellnum"></use>
+            </svg>{{numberField}}</div>
+        </div>
+      </div> <!-- 拖动的标签 -->
+    </div>
 
 
     <!-- <svg class="icon" aria-hidden="true"><use xlink:href="#icon-shuzi"></use></svg> -->
-    </div>
+  </div>
 </template>
 
 <script>
-import Bus from './Bus.js'
-    export default {
+  import Bus from './Bus.js'
+
+  export default {
     name: 'drag',
-    data () {
-        return {
-        keyArray:[],
-        numberFields:[],
-        textFields:[],
-        loadingUsergroupList:true,
-        dragFlag:false,
-        activeName:'first'
-        }
+    data() {
+      return {
+        keyArray: [],
+        numberFields: [],
+        textFields: [],
+        loadingUsergroupList: true,
+        dragFlag: false,
+        activeName: 'first'
+      }
     },
 
-    mounted(){
-        Bus.$on('AxiosDataDragItem', (e) => {
-    　　　　//console.log(e)
-            this.keyArray = e
-            this.loadingUsergroupList = false
-            this.dragFlag = true
+    mounted() {
+      // document.getElementById('dragCon').style.height=document.getElementById('app-border').offsetHeight-document.getElementById('dragCon').offsetTop+'px'
+      // console.log(document.getElementById('demo_line_02').offsetTop)
+      // console.log(document.getElementById('app-border').offsetHeight)
+      Bus.$on('AxiosDataDragItem', (e) => {
+        //console.log(e)
+        this.keyArray = e
+        this.loadingUsergroupList = false
+        this.dragFlag = true
 
-       })
-    }, 
-    watch:{
-        keyArray(val){
-            Object.keys(val).forEach((arrayItem,index)=>{
-                if(this.isNumber(val[Object.keys(val)[index]])){
-                    this.numberFields.push(Object.keys(val)[index])
-                }else{
-                    this.textFields.push(Object.keys(val)[index])
-                }
-            })
-            
-        }
+      })
     },
-    methods:{
-            drag:function(ev){
-                ev.dataTransfer.setData("ID", ev.target.innerText);//拖动元素的ID
-                //dom = ev.target
+    watch: {
+      keyArray(val) {
+        Object.keys(val).forEach((arrayItem, index) => {
+          if (this.isNumber(val[Object.keys(val)[index]])) {
+            this.numberFields.push(Object.keys(val)[index])
+          } else {
+            this.textFields.push(Object.keys(val)[index])
+          }
+        })
 
-            },
-            isNumber(val) {
-            var regPos = /^\d+(\.\d+)?$/; //非负浮点数
-            var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
-            if(regPos.test(val) || regNeg.test(val)) {
-                return true;
-                } else {
-                    return false;
-                }
-            },
-            
-            typeClassify(){
-                
-            }
-		    
+      }
+    },
+    methods: {
+      drag: function (ev) {
+        const data=(ev.target.innerText).trim();
+        ev.dataTransfer.setData("ID", data);//拖动元素的ID
+        //dom = ev.target
+
+      },
+      isNumber(val) {
+        var regPos = /^\d+(\.\d+)?$/; //非负浮点数
+        var regNeg = /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/; //负浮点数
+        if (regPos.test(val) || regNeg.test(val)) {
+          return true;
+        } else {
+          return false;
+        }
+      },
+
+      typeClassify() {
+
+      }
+
     }
-    }
+  }
 </script>
 
 <style scoped>
-.select-ul {
-  padding: 5px;
-  text-align: center;
-  
-  cursor:pointer;
+  .select-ul {
+    padding: 5px;
+    text-align: center;
 
-  color: #5A616A;
-  font-family: "Microsoft YaHei","宋体"
-}
-.select-item {
-  /* border:1px solid #5bc0de;
-  display: inline-block;
-  text-align: left;
-  border-radius: 3px;
-  margin-right: 15px;
-  cursor:pointer;
-  padding: 6px 20px;
-  color: #5bc0de;
-  width: 120px; */
-  color: rgb(100, 100, 100);
-  font-family: "微软雅黑";
-    border: 0px
-}
- .cursored{
-  cursor: default;
-}
+    cursor: pointer;
 
-.people-content {
+    color: #5A616A;
+    font-family: "Microsoft YaHei", "宋体"
+  }
+
+  .select-item {
+    /* border:1px solid #5bc0de;
+    display: inline-block;
+    text-align: left;
+    border-radius: 3px;
+    margin-right: 15px;
+    cursor:pointer;
+    padding: 6px 20px;
+    color: #5bc0de;
+    width: 120px; */
+    margin: 10px;
+    color: rgb(100, 100, 100);
+    font-family: "微软雅黑";
+    /*border: 0px*/
+  }
+
+  .cursored {
+    cursor: default;
+  }
+
+  .people-content {
     margin-top: 4px;
-}
-.select-project-item {
+  }
+
+  .select-project-item {
     display: inline-block;
     text-align: center;
     border-radius: 3px;
-}
-.drag-people-label{
-  margin-bottom:0;
-  padding-right:10px;
-}
-.tab-pane-font{
+  }
+
+  .drag-people-label {
+    margin-bottom: 0;
+    padding-right: 10px;
+  }
+
+  .tab-pane-font {
     text-align: center;
-}
-[v-cloak]{
-    display:none;
-}
+  }
+
+  [v-cloak] {
+    display: none;
+  }
 </style>
